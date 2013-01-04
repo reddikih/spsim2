@@ -27,31 +27,25 @@ public class DiskCache implements Cache {
 
 	@Override
 	public CacheResponse read(Block block) {
-		Block[] blocks = new Block[0];
-		Block read = getEntry(block);
-		if (read != null) {
-			blocks = new Block[] {read};
-		}
-		return new CacheResponse(parameter.getLatency(), blocks);
+		return new CacheResponse(parameter.getLatency(), getEntry(block));
 	}
 
 	@Override
 	public CacheResponse write(Block block) {
-		Block[] blocks = new Block[0];
-		Block cachedBlock = getEntry(block);
-		if (cachedBlock != null) {
-		} else {
+		Block result = getEntry(block);
+		if (result == Block.NULL) {
 			if (caches.size() < MAX_ENTRIES) {
 				addEntry(block);
+				result = block;
 			} else {
-				blocks = new Block[]{replaceEntry(block)};
+				result = replaceEntry(block);
 			}
 		}
-		return new CacheResponse(parameter.getLatency(), blocks);
+		return new CacheResponse(parameter.getLatency(), result);
 	}
 
 	private Block getEntry(Block block) {
-		Block result = null;
+		Block result = Block.NULL;
 		BigInteger blockId = block.getId();
 		if (caches.containsKey(blockId)) {
 			result = caches.get(blockId);

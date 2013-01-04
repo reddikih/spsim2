@@ -5,19 +5,19 @@ import sim.Block;
 public class CacheResponse {
 
 	private double responseTime;
-	private Block[] returnBlocks;
+	private Block result;
 
-	public CacheResponse(double responseTime, Block[] returnBlocks) {
+	public CacheResponse(double responseTime, Block result) {
 		this.responseTime = responseTime;
-		this.returnBlocks = returnBlocks;
+		this.result = result;
 	}
 
 	public double getResponseTime() {
 		return responseTime;
 	}
 
-	public Block[] getReturnBlocks() {
-		return returnBlocks;
+	public Block getResult() {
+		return result;
 	}
 
 }

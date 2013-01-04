@@ -1,14 +1,14 @@
 package sim.storage;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import java.math.BigInteger;
-import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
 
 import sim.Block;
 import sim.storage.util.ReplicaLevel;
@@ -30,35 +30,30 @@ public class DiskCacheTest {
 		Block block0 = new Block(new BigInteger(String.valueOf(0)), ReplicaLevel.ZERO, 0.001, 0);
 		CacheResponse response = diskCache.write(block0);
 		assertThat(response.getResponseTime(), is(0.0001));
-		boolean arrayEquality = Arrays.equals(response.getReturnBlocks(), new Block[0]);
-		assertThat(arrayEquality, is(true));
+		assertThat(response.getResult(), is(block0));
 
 		Block block1 = new Block(new BigInteger(String.valueOf(1)), ReplicaLevel.ZERO, 0.002, 0);
 		response = diskCache.write(block1);
-		arrayEquality = Arrays.equals(response.getReturnBlocks(), new Block[0]);
-		assertThat(arrayEquality, is(true));
+		assertThat(response.getResult(), is(block1));
 
 		Block block2 = new Block(new BigInteger(String.valueOf(2)), ReplicaLevel.ZERO, 0.003, 0);
 		response = diskCache.write(block2);
-		arrayEquality = Arrays.equals(response.getReturnBlocks(), new Block[0]);
-		assertThat(arrayEquality, is(true));
+		assertThat(response.getResult(), is(block2));
 
 		Block block3 = new Block(new BigInteger(String.valueOf(3)), ReplicaLevel.ZERO, 0.004, 0);
 		response = diskCache.write(block3);
-		arrayEquality = Arrays.equals(response.getReturnBlocks(), new Block[0]);
-		assertThat(arrayEquality, is(true));
+		assertThat(response.getResult(), is(block3));
 
 		// overflow check
 		Block block4 = new Block(new BigInteger(String.valueOf(4)), ReplicaLevel.ZERO, 0.0019, 0);
 		response = diskCache.write(block4);
-		arrayEquality = Arrays.equals(response.getReturnBlocks(), new Block[]{block0});
-		assertThat(arrayEquality, is(true));
+		assertThat(response.getResult(), is(block0));
+
 
 		// arrival time consistency check.
 		Block block5 = new Block(new BigInteger(String.valueOf(5)), ReplicaLevel.ZERO, 0.005, 0);
 		response = diskCache.write(block5);
-		arrayEquality = Arrays.equals(response.getReturnBlocks(), new Block[]{block4});
-		assertThat(arrayEquality, is(true));
+		assertThat(response.getResult(), is(block4));
 		assertThat(response.getResponseTime(), is(0.0001));
 	}
 
@@ -68,7 +63,6 @@ public class DiskCacheTest {
 		diskCache = new DiskCache(0, param, BLOCK_SIZE);
 
 		CacheResponse response;
-		boolean arrayEquality;
 
 		Block block0 = new Block(new BigInteger(String.valueOf(0)), ReplicaLevel.ZERO, 0.001, 0);
 		response = diskCache.write(block0);
@@ -82,14 +76,12 @@ public class DiskCacheTest {
 		// block2 can be written on cache without replace.
 		Block block2 = new Block(new BigInteger(String.valueOf(2)), ReplicaLevel.ZERO, 0.004, 0);
 		response = diskCache.write(block2);
-		arrayEquality = Arrays.equals(response.getReturnBlocks(), new Block[0]);
-		assertThat(arrayEquality, is(true));
+		assertThat(response.getResult(), is(block2));
 
 		// In this time, block1 is replaced because of memory size limit.
 		Block block3 = new Block(new BigInteger(String.valueOf(3)), ReplicaLevel.ZERO, 0.005, 0);
 		response = diskCache.write(block3);
-		arrayEquality = Arrays.equals(response.getReturnBlocks(), new Block[]{block1});
-		assertThat(arrayEquality, is(true));
+		assertThat(response.getResult(), is(block1));
 		assertThat(response.getResponseTime(), is(0.0001));
 	}
 
@@ -99,24 +91,19 @@ public class DiskCacheTest {
 		diskCache = new DiskCache(0, param, BLOCK_SIZE);
 
 		CacheResponse response;
-		boolean arrayEquality;
 
 		Block block0 = new Block(new BigInteger(String.valueOf(0)), ReplicaLevel.ZERO, 0.000, 0);
 		response = diskCache.write(block0);
-		arrayEquality = Arrays.equals(response.getReturnBlocks(), new Block[0]);
-		assertThat(arrayEquality, is(true));
+		assertThat(response.getResult(), is(block0));
 
 		Block theSameBlock = new Block(new BigInteger(String.valueOf(0)), ReplicaLevel.ZERO, 0.001, 0);
 		response = diskCache.write(theSameBlock);
-		arrayEquality = Arrays.equals(response.getReturnBlocks(), new Block[0]);
-		assertThat(arrayEquality, is(true));
+		assertThat(response.getResult(), is(theSameBlock));
 
 		Block block1 = new Block(new BigInteger(String.valueOf(1)), ReplicaLevel.ZERO, 0.002, 0);
 		response = diskCache.write(block1);
-		arrayEquality = Arrays.equals(response.getReturnBlocks(), new Block[]{block0});
-		assertThat(arrayEquality, is(true));
-		arrayEquality = Arrays.equals(response.getReturnBlocks(), new Block[]{theSameBlock});
-		assertThat(arrayEquality, is(true));
+		assertThat(response.getResult(), is(block0));
+		assertThat(response.getResult(), is(theSameBlock));
 
 	}
 
@@ -126,20 +113,18 @@ public class DiskCacheTest {
 		diskCache = new DiskCache(0, param, BLOCK_SIZE);
 
 		CacheResponse response;
-		boolean arrayEquality;
 
 		Block block0 = new Block(new BigInteger(String.valueOf(0)), ReplicaLevel.ZERO, 0.001, 0);
 		response = diskCache.read(block0);
 		assertThat(response.getResponseTime(), is(0.0001));
-		arrayEquality = Arrays.equals(response.getReturnBlocks(), new Block[0]);
-		assertThat(arrayEquality, is(true));
+		assertThat(response.getResult(), is(Block.NULL));
 
 		response = diskCache.write(block0);
 		assertThat(response.getResponseTime(), is(0.0001));
+		assertThat(response.getResult(), is(block0));
 		response = diskCache.read(block0);
 		assertThat(response.getResponseTime(), is(0.0001));
-		arrayEquality = Arrays.equals(response.getReturnBlocks(), new Block[]{block0});
-		assertThat(arrayEquality, is(true));
+		assertThat(response.getResult(), is(block0));
 	}
 
 }
