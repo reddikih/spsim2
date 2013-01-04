@@ -12,6 +12,8 @@ public class Parameter {
 
 	public static final int BLOCK_SIZE = 4 * 1024;
 
+	public static final int NUMBER_OF_REPLICA = 2;
+
 
 	///--- Cache memory parameters. ---///
 	/** Capacity threshold ratio of cache memory. (0.0 - 1.0) */

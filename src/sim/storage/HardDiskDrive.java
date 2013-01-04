@@ -24,18 +24,27 @@ public class HardDiskDrive {
 	}
 
 	public double read(Block[] blocks) {
-		return 0.0;
+		return diskAccess(blocks);
 	}
 
 	public double write(Block[] blocks) {
-		double response = 0.0;
+		return diskAccess(blocks);
+	}
+
+	private double diskAccess(Block[] blocks) {
+		double response = Double.MIN_VALUE;
+		if (blocks.length < 1) return response;
+		double arrivalTime = blocks[0].getAccessTime();
+
 		for (Block block : blocks) {
-			response += diskAccess(block.BLOCK_SIZE, block.getAccessTime());
+			assert block.getAccessTime() == arrivalTime;
+			double blockResponse = calclateAccessTime(Block.BLOCK_SIZE, block.getAccessTime());
+			response = response < blockResponse ? blockResponse : response;
 		}
 		return response;
 	}
 
-	private double diskAccess(int size, double arrivalTime) {
+	private double calclateAccessTime(int size, double arrivalTime) {
 		double serviceTime = calculateServiceTime(size);
 		double queueingTime = calculateQueueingTime(arrivalTime);
 		double responseTime = serviceTime + queueingTime;
@@ -65,6 +74,10 @@ public class HardDiskDrive {
 	private void updateAccessParameter(double arrivalTime, double responseTime) {
 		this.lastArrivalTime = arrivalTime;
 		this.lastResponseTime = responseTime;
+	}
+
+	public int getId() {
+		return id;
 	}
 
 }

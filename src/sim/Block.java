@@ -7,15 +7,18 @@ import sim.storage.util.ReplicaLevel;
 public class Block {
 
 	public final static int BLOCK_SIZE = 4096;
+	public final static Block NULL = new Block(new BigInteger("-1"), null, Double.MIN_VALUE, -1);
 
 	private BigInteger id;
 	private ReplicaLevel repLevel;
 	private double accessTime;
+	private int primaryDiskId;
 
-	public Block(BigInteger id, ReplicaLevel repLevel, double accessTime) {
+	public Block(BigInteger id, ReplicaLevel repLevel, double accessTime, int primaryDiskId) {
 		this.id = id;
 		this.repLevel = repLevel;
 		this.accessTime = accessTime;
+		this.primaryDiskId = primaryDiskId;
 	}
 
 	public double getAccessTime() {
@@ -45,6 +48,10 @@ public class Block {
 	@Override
 	public int hashCode() {
 		return this.getId().hashCode();
+	}
+
+	public int getPrimaryDiskId() {
+		return primaryDiskId;
 	}
 
 }
