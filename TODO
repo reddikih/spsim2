@@ -1,0 +1,12 @@
+Simulatorの導通確認
+CacheMemoryの動作
+CacheMemoryのread
+CacheMemoryのwrite
+HDDの動作
+HDDのread
+HDDのwrite
+○HDDのディスクキャッシュの動作
+○HDDのディスクキャッシュのread
+○HDDのディスクキャッシュのwrite
+○Blockのequals()
+○BlockのhashCode()
