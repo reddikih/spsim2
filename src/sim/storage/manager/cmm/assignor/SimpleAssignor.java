@@ -1,0 +1,23 @@
+package sim.storage.manager.cmm.assignor;
+
+public class SimpleAssignor implements IAssignor {
+
+	private int numCacheMemory;
+	private int numDisksPerGroup;
+
+	public SimpleAssignor(int numCacheMemory, int numDisksPerGroup) {
+		this.numCacheMemory = numCacheMemory;
+		this.numDisksPerGroup = numDisksPerGroup;
+	}
+
+	@Override
+	public int assign(int primaryDiskId, int replicaLevel) {
+		int result = -1;
+		if (replicaLevel == 0) {
+			result = (int)Math.ceil(primaryDiskId / numDisksPerGroup) % numCacheMemory;
+		} else {
+			result = (assign(primaryDiskId, replicaLevel - 1) + 1) % numCacheMemory;
+		}
+		return result;
+	}
+}

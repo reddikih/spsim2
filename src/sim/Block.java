@@ -12,13 +12,13 @@ public class Block {
 	private BigInteger id;
 	private ReplicaLevel repLevel;
 	private double accessTime;
-	private int primaryDiskId;
+	private int diskId;
 
-	public Block(BigInteger id, ReplicaLevel repLevel, double accessTime, int primaryDiskId) {
+	public Block(BigInteger id, ReplicaLevel repLevel, double accessTime, int diskId) {
 		this.id = id;
 		this.repLevel = repLevel;
 		this.accessTime = accessTime;
-		this.primaryDiskId = primaryDiskId;
+		this.diskId = diskId;
 	}
 
 	public double getAccessTime() {
@@ -50,8 +50,8 @@ public class Block {
 		return this.getId().hashCode();
 	}
 
-	public int getPrimaryDiskId() {
-		return primaryDiskId;
+	public int getDiskId() {
+		return diskId;
 	}
 
 }
