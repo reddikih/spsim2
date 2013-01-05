@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import sim.Block;
+import sim.storage.CacheResponse;
 import sim.storage.manager.cmm.assignor.IAssignor;
 import sim.storage.util.ReplicaLevel;
 
@@ -21,6 +22,15 @@ public class RAPoSDACacheMemoryManager {
 		this.cacheMemories = cacheMemories;
 		this.assignor = assignor;
 		this.numReplica = numReplica;
+	}
+
+	public CacheResponse read(Block block) {
+		int assignedMemory = assignor.assign(
+				block.getPrimaryDiskId(),
+				block.getRepLevel().getValue());
+
+		CacheMemory cm = cacheMemories.get(assignedMemory);
+		return cm.read(block);
 	}
 
 //	public List<RAPoSDACacheWriteResponse> write(Block block) {
@@ -73,6 +83,15 @@ public class RAPoSDACacheMemoryManager {
 		response = cm.write(block);
 
 		return response;
+	}
+
+	public CacheResponse remove(Block toRemove) {
+		int assignedMemory = assignor.assign(
+				toRemove.getPrimaryDiskId(),
+				toRemove.getRepLevel().getValue());
+
+		CacheMemory cm = cacheMemories.get(assignedMemory);
+		return cm.remove(toRemove);
 	}
 
 }

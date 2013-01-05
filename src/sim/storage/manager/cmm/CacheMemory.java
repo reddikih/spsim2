@@ -66,7 +66,9 @@ public class CacheMemory {
 	}
 
 	public CacheResponse remove(Block block) {
-		return null;
+		Region region = regions.get(block.getRepLevel());
+		assert region != null;
+		return new CacheResponse(parameter.getLatency(), region.remove(block));
 	}
 
 	public int getId() {
