@@ -9,21 +9,28 @@ Simulatorの導通確認
 ○HDDのread(キャッシュ無し)
 ○HDDのwrite(キャッシュ無し)
 ○HDDのread/writeメソッド内容の統一
-(RAPoSDA)CacheMemoryManagerのread
-
+○(RAPoSDA)CacheMemoryManagerのread
 ○(RAPoSDA)CacheMemoryManagerのwrite
 ○オーバーフローチェック
-
+○(RAPoSDA)CacheMemoryManagerのremove
 ○Regionの実装
 ○CacheMemoryの実装
 ○IAssignorの追加
-SimpleAssignorの実装
+○SimpleAssignorの実装
 ○BalancedAssignorの実装
 
+DataDiskManagerの実装
+DataDiskのread実装
+DataDiskのwrite実装
+CacheDiskManagerの実装
+CacheDiskのread実装
+CacheDiskのwrite実装
+
+StorageManagerの実装
+SMの初期化処理
+SMのread実装
+SMのwrite実装
 
 統計値収集
 HDDの消費電力計算
 Memoryの消費電力計算
-
-
-
