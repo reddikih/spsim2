@@ -5,6 +5,7 @@ import org.junit.runners.Suite;
 
 import sim.storage.DiskCacheTest;
 import sim.storage.HardDiskDriveTest;
+import sim.storage.manager.cmm.RAPoSDACacheMemoryManagerTest;
 import sim.storage.manager.cmm.RegionTest;
 
 @RunWith(Suite.class)
@@ -12,6 +13,7 @@ import sim.storage.manager.cmm.RegionTest;
 	DiskCacheTest.class,
 	HardDiskDriveTest.class,
 	RegionTest.class,
+	RAPoSDACacheMemoryManagerTest.class,
 })
 
 public class AllTests {}

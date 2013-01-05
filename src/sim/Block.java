@@ -12,13 +12,24 @@ public class Block {
 	private BigInteger id;
 	private ReplicaLevel repLevel;
 	private double accessTime;
-	private int diskId;
+	private int ownerDiskId;
+	private int primaryDiskId;
 
-	public Block(BigInteger id, ReplicaLevel repLevel, double accessTime, int diskId) {
+
+	/**
+	 * TODO this constructor may be delete in the future.
+	 */
+	public Block(BigInteger id, ReplicaLevel repLevel, double accessTime, int ownerDiskId) {
 		this.id = id;
 		this.repLevel = repLevel;
 		this.accessTime = accessTime;
-		this.diskId = diskId;
+		this.ownerDiskId = ownerDiskId;
+	}
+
+	public Block(BigInteger id, double accessTime, int primaryDiskId) {
+		this.id = id;
+		this.accessTime = accessTime;
+		this.primaryDiskId = primaryDiskId;
 	}
 
 	public double getAccessTime() {
@@ -37,6 +48,22 @@ public class Block {
 		return repLevel;
 	}
 
+	public void setRepLevel(ReplicaLevel repLevel) {
+		this.repLevel = repLevel;
+	}
+
+	public int getOwnerDiskId() {
+		return ownerDiskId;
+	}
+
+	public void setOwnerDiskId(int ownerDiskId) {
+		this.ownerDiskId = ownerDiskId;
+	}
+
+	public int getPrimaryDiskId() {
+		return primaryDiskId;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) return true;
@@ -49,9 +76,4 @@ public class Block {
 	public int hashCode() {
 		return this.getId().hashCode();
 	}
-
-	public int getDiskId() {
-		return diskId;
-	}
-
 }

@@ -52,7 +52,11 @@ public class Region {
 			if (blocks.size() < maxEntries ) {
 				blocks.put(block.getId(), block);
 				result = block;
-				incrementBufferCounter(block.getDiskId());
+				incrementBufferCounter(block.getOwnerDiskId());
+			} else {
+				// overflow
+				blocks.put(block.getId(), block);
+				incrementBufferCounter(block.getOwnerDiskId());
 			}
 		}
 		return result;
@@ -62,7 +66,7 @@ public class Region {
 		Block result = Block.NULL;
 		if (block == null) return result;
 		result = blocks.remove(block.getId());
-		decrementBufferCounter(block.getDiskId());
+		decrementBufferCounter(block.getOwnerDiskId());
 
 		return result;
 	}

@@ -19,6 +19,10 @@ public class CacheMemory {
 		this.parameter = parameter;
 		this.regions = new HashMap<ReplicaLevel, Region>();
 
+		setUpRegions(numReplica, blockSize);
+	}
+
+	private void setUpRegions(int numReplica, int blockSize) {
 		// cache memory capacity(number of blocks) per region
 		int maxEntries = (int)Math.ceil(this.parameter.getCapacity() / blockSize / numReplica);
 		for (ReplicaLevel repLevel : ReplicaLevel.values()) {
