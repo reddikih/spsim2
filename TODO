@@ -1,27 +1,27 @@
-Simulator‚Ì“±’ÊŠm”F
-›CacheMemory‚Ìread
-›CacheMemory‚Ìwrite
-›HDD‚ÌƒfƒBƒXƒNƒLƒƒƒbƒVƒ…‚Ì“®ì
-›HDD‚ÌƒfƒBƒXƒNƒLƒƒƒbƒVƒ…‚Ìread
-›HDD‚ÌƒfƒBƒXƒNƒLƒƒƒbƒVƒ…‚Ìwrite
-›Block‚Ìequals()
-›Block‚ÌhashCode()
-›HDD‚Ìread(ƒLƒƒƒbƒVƒ…–³‚µ)
-›HDD‚Ìwrite(ƒLƒƒƒbƒVƒ…–³‚µ)
-›HDD‚Ìread/writeƒƒ\ƒbƒh“à—e‚Ì“ˆê
+Simulatorã®å°é€šç¢ºèª
+â—‹CacheMemoryã®read
+â—‹CacheMemoryã®write
+â—‹HDDã®ãƒ‡ã‚£ã‚¹ã‚¯ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã®å‹•ä½œ
+â—‹HDDã®ãƒ‡ã‚£ã‚¹ã‚¯ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã®read
+â—‹HDDã®ãƒ‡ã‚£ã‚¹ã‚¯ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã®write
+â—‹Blockã®equals()
+â—‹Blockã®hashCode()
+â—‹HDDã®read(ã‚­ãƒ£ãƒƒã‚·ãƒ¥ç„¡ã—)
+â—‹HDDã®write(ã‚­ãƒ£ãƒƒã‚·ãƒ¥ç„¡ã—)
+â—‹HDDã®read/writeãƒ¡ã‚½ãƒƒãƒ‰å†…å®¹ã®çµ±ä¸€
 
-(RAPoSDA)CacheMemoryManager‚Ìread
-(RAPoSDA)CacheMemoryManager‚Ìwrite
-›Region‚ÌÀ‘•
-›CacheMemory‚ÌÀ‘•
-›IAssignor‚Ì’Ç‰Á
-SimpleAssignor‚ÌÀ‘•
-›BalancedAssignor‚ÌÀ‘•
+(RAPoSDA)CacheMemoryManagerã®read
+(RAPoSDA)CacheMemoryManagerã®write
+â—‹Regionã®å®Ÿè£…
+â—‹CacheMemoryã®å®Ÿè£…
+â—‹IAssignorã®è¿½åŠ 
+SimpleAssignorã®å®Ÿè£…
+â—‹BalancedAssignorã®å®Ÿè£…
 
 
-“Œv’lûW
-HDD‚ÌÁ”ï“d—ÍŒvZ
-Memory‚ÌÁ”ï“d—ÍŒvZ
+çµ±è¨ˆå€¤åé›†
+HDDã®æ¶ˆè²»é›»åŠ›è¨ˆç®—
+Memoryã®æ¶ˆè²»é›»åŠ›è¨ˆç®—
 
 
 
