@@ -9,9 +9,11 @@ Simulatorの導通確認
 ○HDDのread(キャッシュ無し)
 ○HDDのwrite(キャッシュ無し)
 ○HDDのread/writeメソッド内容の統一
-
 (RAPoSDA)CacheMemoryManagerのread
-(RAPoSDA)CacheMemoryManagerのwrite
+
+○(RAPoSDA)CacheMemoryManagerのwrite
+○オーバーフローチェック
+
 ○Regionの実装
 ○CacheMemoryの実装
 ○IAssignorの追加
