@@ -14,7 +14,7 @@ public class SimpleAssignor implements IAssignor {
 	public int assign(int primaryDiskId, int replicaLevel) {
 		int result = -1;
 		if (replicaLevel == 0) {
-			result = (int)Math.ceil(primaryDiskId / numDisksPerGroup) % numCacheMemory;
+			result = (int)Math.floor(primaryDiskId / numDisksPerGroup) % numCacheMemory;
 		} else {
 			result = (assign(primaryDiskId, replicaLevel - 1) + 1) % numCacheMemory;
 		}
