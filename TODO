@@ -1,10 +1,6 @@
 Simulatorの導通確認
-CacheMemoryの動作
-CacheMemoryのread
-CacheMemoryのwrite
-HDDの動作
-HDDのread
-※HDDのwrite
+○CacheMemoryのread
+○CacheMemoryのwrite
 ○HDDのディスクキャッシュの動作
 ○HDDのディスクキャッシュのread
 ○HDDのディスクキャッシュのwrite
@@ -15,7 +11,17 @@ HDDのread
 ○HDDのread/writeメソッド内容の統一
 
 (RAPoSDA)CacheMemoryManagerのread
-Regionの実装
-CacheMemoryの実装
 (RAPoSDA)CacheMemoryManagerのwrite
+○Regionの実装
+○CacheMemoryの実装
+○IAssignorの追加
+SimpleAssignorの実装
+○BalancedAssignorの実装
+
+
+統計値収集
+HDDの消費電力計算
+Memoryの消費電力計算
+
+
 
