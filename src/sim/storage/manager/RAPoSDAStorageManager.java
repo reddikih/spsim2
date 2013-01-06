@@ -90,25 +90,27 @@ public class RAPoSDAStorageManager {
 
 	private DiskResponse readFromDataDisk(Block block) {
 
-		List<DiskState> diskStates =
-			extractActiveDisks(ddm.getRelatedDisksState(block));
+		List<DiskState> relatedDiskStates = ddm.getRelatedDisksState(block);
+		List<DiskState> activeDiskStates = extractActiveDisks(relatedDiskStates);
 
 		// case 1. one of n disks is spinning.
-		if (diskStates.size() == 1)
-			return readFrom(block, diskStates.get(0));
+		if (activeDiskStates.size() == 1)
+			return actualRead(block, activeDiskStates.get(0));
 
 		// case 2. some of n disks are spinning.
-		if (diskStates.size() < diskStates.size()) {
-			DiskState diskState = cmm.getMaxBufferDisk(diskStates);
-			return readFrom(block, diskState);
+		if (activeDiskStates.size() > 0
+				&& activeDiskStates.size() < relatedDiskStates.size()) {
+			DiskState diskState = cmm.getMaxBufferDisk(activeDiskStates);
+			return actualRead(block, diskState);
 		}
 
 		// case 3. all of n disks are stopping.
-		DiskState diskState = ddm.getLongestStandbyDisk(diskStates);
-		return readFrom(block, diskState);
+		assert activeDiskStates.size() == 0;
+		DiskState diskState = ddm.getLongestStandbyDisk(activeDiskStates);
+		return actualRead(block, diskState);
 	}
 
-	private DiskResponse readFrom(Block block, DiskState diskState) {
+	private DiskResponse actualRead(Block block, DiskState diskState) {
 		int ownerDiskId = assignOwnerDiskId(
 				block.getPrimaryDiskId(), diskState.getRepLevel());
 		block.setOwnerDiskId(ownerDiskId);
