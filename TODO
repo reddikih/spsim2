@@ -20,6 +20,9 @@ Simulatorの導通確認
 ○BalancedAssignorの実装
 
 DataDiskManagerの実装
+○DDMからのwrite
+○DDMからのread
+DDMからのspinup/down
 DataDiskのread実装
 DataDiskのwrite実装
 CacheDiskManagerの実装
@@ -28,9 +31,22 @@ CacheDiskのwrite実装
 
 StorageManagerの実装
 SMの初期化処理
-SMのread実装
-SMのwrite実装
+○SMのread実装
+○SMのwrite実装
+○StorageManager.assignDiskIdの分離
+
+CacheMemoryからのread時は全てのキャッシュメモリのレプリカを含むRegionから探す
+DDM.getRelatedDiskState()の実装
+DDM.getLongestStandbyDisk()の実装
+CacheDiskは内部的にはプライマリブロックのみのキャッシュとして振舞う．
+CacheMemoryManager.getMaxBufferDisk()の単体テストを実装する
 
 統計値収集
 HDDの消費電力計算
 Memoryの消費電力計算
+
+※n重化した時のreadのアルゴリズムはちょっと変わる．（論文でも明記すること）
+・nディスク中1台だけ回転中：そのディスクからread
+・nディスク中複数台回転中：それぞれのレプリカが所属するRegionのバッファが長い方からread
+・nディスクが停止中：停止期間の最も長いディスクからread
+
