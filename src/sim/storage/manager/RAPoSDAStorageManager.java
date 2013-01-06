@@ -14,6 +14,7 @@ import sim.storage.manager.cdm.RAPoSDACacheDiskManager;
 import sim.storage.manager.cmm.RAPoSDACacheMemoryManager;
 import sim.storage.manager.cmm.RAPoSDACacheWriteResponse;
 import sim.storage.manager.ddm.RAPoSDADataDiskManager;
+import sim.storage.util.DiskInfo;
 import sim.storage.util.DiskState;
 import sim.storage.util.ReplicaLevel;
 
@@ -62,6 +63,8 @@ public class RAPoSDAStorageManager {
 		Block[] blocks = requestMap.get(request.getKey());
 		if (blocks == null) throw new IllegalArgumentException();
 
+		updateArrivalTimeOfBlocks(blocks, request.getArrvalTime());
+
 		double respTime = Double.MIN_VALUE;
 
 		for (Block b : blocks) {
@@ -90,8 +93,8 @@ public class RAPoSDAStorageManager {
 
 	private DiskResponse readFromDataDisk(Block block) {
 
-		List<DiskState> relatedDiskStates = ddm.getRelatedDisksState(block);
-		List<DiskState> activeDiskStates = extractActiveDisks(relatedDiskStates);
+		List<DiskInfo> relatedDiskStates = ddm.getRelatedDisksInfo(block);
+		List<DiskInfo> activeDiskStates = extractActiveDisks(relatedDiskStates);
 
 		// case 1. one of n disks is spinning.
 		if (activeDiskStates.size() == 1)
@@ -100,30 +103,30 @@ public class RAPoSDAStorageManager {
 		// case 2. some of n disks are spinning.
 		if (activeDiskStates.size() > 0
 				&& activeDiskStates.size() < relatedDiskStates.size()) {
-			DiskState diskState = cmm.getMaxBufferDisk(activeDiskStates);
+			DiskInfo diskState = cmm.getMaxBufferDisk(activeDiskStates);
 			return actualRead(block, diskState);
 		}
 
 		// case 3. all of n disks are stopping.
 		assert activeDiskStates.size() == 0;
-		DiskState diskState = ddm.getLongestStandbyDisk(activeDiskStates);
+		DiskInfo diskState = ddm.getLongestStandbyDiskInfo(activeDiskStates);
 		return actualRead(block, diskState);
 	}
 
-	private DiskResponse actualRead(Block block, DiskState diskState) {
+	private DiskResponse actualRead(Block block, DiskInfo diskInfo) {
 		int ownerDiskId = assignOwnerDiskId(
-				block.getPrimaryDiskId(), diskState.getRepLevel());
+				block.getPrimaryDiskId(), diskInfo.getRepLevel());
 		block.setOwnerDiskId(ownerDiskId);
-		block.setRepLevel(diskState.getRepLevel());
+		block.setRepLevel(diskInfo.getRepLevel());
 		return ddm.read(new Block[]{block});
 	}
 
-	private List<DiskState> extractActiveDisks(List<DiskState> diskStates) {
-		List<DiskState> result = new ArrayList<DiskState>();
-		for (DiskState state : diskStates) {
-			if (DiskState.State.ACTIVE.equals(state.getState())
-					|| DiskState.State.IDLE.equals(state.getState()))
-				result.add(state);
+	private List<DiskInfo> extractActiveDisks(List<DiskInfo> diskInfos) {
+		List<DiskInfo> result = new ArrayList<DiskInfo>();
+		for (DiskInfo dInfo : diskInfos) {
+			if (DiskState.ACTIVE.equals(dInfo.getDiskState())
+					|| DiskState.IDLE.equals(dInfo.getDiskState()))
+				result.add(dInfo);
 		}
 		return result;
 	}
@@ -134,6 +137,8 @@ public class RAPoSDAStorageManager {
 			// new request
 			blocks = divideRequest(request);
 			requestMap.put(request.getKey(), blocks);
+		} else {
+			updateArrivalTimeOfBlocks(blocks, request.getArrvalTime());
 		}
 
 		double respTime = Double.MIN_VALUE;
@@ -157,7 +162,7 @@ public class RAPoSDAStorageManager {
 					// write to cache disk asynchronously
 					writeToCacheDisk(ddResp.getResults(), ddResp.getResponseTime());
 
-					// delete blocks on the cache written in disks.
+					// delete blocks on the cache already written in disks.
 					double cmDeletedTime = deleteBlocksOnCache(
 							ddResp.getResults(),
 							ddResp.getResponseTime() + arrivalTime);

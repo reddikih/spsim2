@@ -6,19 +6,24 @@ import java.util.List;
 
 import sim.Block;
 import sim.storage.DiskResponse;
+import sim.storage.util.DiskInfo;
 import sim.storage.util.DiskState;
+import sim.storage.util.ReplicaLevel;
 
 public class RAPoSDADataDiskManager {
 
 	private final int numberOfDataDisks;
+	private final int numberOfReplica;
 
 	private HashMap<Integer, DataDisk> dataDiskMap;
 
 	public RAPoSDADataDiskManager(
 			int numberOfDataDisks,
+			int numberOfReplica,
 			HashMap<Integer, DataDisk> dataDiskMap) {
 
 		this.numberOfDataDisks = numberOfDataDisks;
+		this.numberOfReplica = numberOfReplica;
 		this.dataDiskMap = dataDiskMap;
 	}
 
@@ -60,26 +65,35 @@ public class RAPoSDADataDiskManager {
 	}
 
 	public boolean isSpinning(int diskId, double accessTime) {
-		// TODO Auto-generated method stub
-		return true;
+		DataDisk dd = dataDiskMap.get(diskId);
+		assert dd != null;
+		DiskState state = dd.getState(accessTime);
+		return DiskState.ACTIVE == state || DiskState.IDLE == state;
 	}
 
 	public double spinUp(int diskId, double accessTime) {
-		double latency = Double.MAX_VALUE;
-		// TODO need implement.
-		return latency;
+		DataDisk dd = dataDiskMap.get(diskId);
+		assert dd != null;
+		return dd.stateUpdate(accessTime);
 	}
 
 	public int getNumberOfDataDisks() {
 		return numberOfDataDisks;
 	}
 
-	public List<DiskState> getRelatedDisksState(Block block) {
+	public List<DiskInfo> getRelatedDisksInfo(Block block) {
+		List<DiskInfo> diskInfos = new ArrayList<DiskInfo>();
+		for (int i=0; i < numberOfReplica; i++) {
+			int diskId = (block.getPrimaryDiskId() + i) % numberOfDataDisks;
+			DataDisk dd = dataDiskMap.get(diskId);
+			assert dd != null;
+//			DiskInfo info = new DiskInfo(diskId, dd.getState(block.getAccessTime()), ReplicaLevel.valueOf(i));
+		}
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public DiskState getLongestStandbyDisk(List<DiskState> diskStates) {
+	public DiskInfo getLongestStandbyDiskInfo(List<DiskInfo> diskInfos) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -7,10 +7,10 @@ public class HardDiskDrive {
 	private final static int SECTOR_SIZE = 512;
 	private final int id;
 
-	private double lastArrivalTime;
-	private double lastResponseTime;
+	protected double lastArrivalTime;
+	protected double lastResponseTime;
 
-	private HDDParameter parameters;
+	protected HDDParameter parameters;
 	private DiskCache diskCache;
 
 	public HardDiskDrive(int id, HDDParameter parameter) {

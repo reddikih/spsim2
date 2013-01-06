@@ -6,7 +6,7 @@ import java.util.List;
 import sim.Block;
 import sim.storage.CacheResponse;
 import sim.storage.manager.cmm.assignor.IAssignor;
-import sim.storage.util.DiskState;
+import sim.storage.util.DiskInfo;
 
 public class RAPoSDACacheMemoryManager {
 
@@ -52,10 +52,10 @@ public class RAPoSDACacheMemoryManager {
 		return cm.remove(toRemove);
 	}
 
-	public DiskState getMaxBufferDisk(List<DiskState> diskStates) {
-		DiskState result = null;
+	public DiskInfo getMaxBufferDisk(List<DiskInfo> diskStates) {
+		DiskInfo result = null;
 		int maxBuffer = Integer.MIN_VALUE;
-		for (DiskState diskState : diskStates) {
+		for (DiskInfo diskState : diskStates) {
 			int cmIdx = assignor.assign(
 					diskState.getDiskId() - diskState.getRepLevel().getValue(),
 					diskState.getRepLevel().getValue());

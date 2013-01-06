@@ -34,14 +34,7 @@ public class HardDiskDriveTest {
 				Parameter.HDD_SECTORS_PER_TRACK,
 				Parameter.HDD_FULL_STROKE_SEEK_TIME,
 				Parameter.HDD_HEAD_SWITCH_OVERHEAD,
-				Parameter.HDD_COMMAND_OVERHEAD,
-				Parameter.HDD_ACTIVE_POWER,
-				Parameter.HDD_IDLE_POWER,
-				Parameter.HDD_STANDBY_POWER,
-				Parameter.HDD_SPINDOWN_ENERGY,
-				Parameter.HDD_SPINUP_ENERGY,
-				Parameter.HDD_SPINDOWN_TIME,
-				Parameter.HDD_SPINUP_TIME
+				Parameter.HDD_COMMAND_OVERHEAD
 		);
 
 		withDiskCacheParam = new HDDParameter(
@@ -53,14 +46,7 @@ public class HardDiskDriveTest {
 				Parameter.HDD_SECTORS_PER_TRACK,
 				Parameter.HDD_FULL_STROKE_SEEK_TIME,
 				Parameter.HDD_HEAD_SWITCH_OVERHEAD,
-				Parameter.HDD_COMMAND_OVERHEAD,
-				Parameter.HDD_ACTIVE_POWER,
-				Parameter.HDD_IDLE_POWER,
-				Parameter.HDD_STANDBY_POWER,
-				Parameter.HDD_SPINDOWN_ENERGY,
-				Parameter.HDD_SPINUP_ENERGY,
-				Parameter.HDD_SPINDOWN_TIME,
-				Parameter.HDD_SPINUP_TIME
+				Parameter.HDD_COMMAND_OVERHEAD
 		);
 
 		HardDiskDrive hdd = new HardDiskDrive(0, withoutDiskCacheParam);
