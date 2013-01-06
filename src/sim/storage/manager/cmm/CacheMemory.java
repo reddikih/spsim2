@@ -75,4 +75,8 @@ public class CacheMemory {
 		return id;
 	}
 
+	public Region getRegion(ReplicaLevel repLevel) {
+		return regions.get(repLevel);
+	}
+
 }

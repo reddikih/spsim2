@@ -112,4 +112,8 @@ public class Region {
 		}
 	}
 
+	public int getBufferLenght() {
+		return blocks.size();
+	}
+
 }

@@ -1,7 +1,9 @@
 package sim.storage.manager;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import sim.Block;
 import sim.Request;
@@ -12,6 +14,7 @@ import sim.storage.manager.cdm.RAPoSDACacheDiskManager;
 import sim.storage.manager.cmm.RAPoSDACacheMemoryManager;
 import sim.storage.manager.cmm.RAPoSDACacheWriteResponse;
 import sim.storage.manager.ddm.RAPoSDADataDiskManager;
+import sim.storage.util.DiskState;
 import sim.storage.util.ReplicaLevel;
 
 public class RAPoSDAStorageManager {
@@ -55,6 +58,74 @@ public class RAPoSDAStorageManager {
 		this.requestMap = new HashMap<Long, Block[]>();
 	}
 
+	public Response read(Request request) {
+		Block[] blocks = requestMap.get(request.getKey());
+		if (blocks == null) throw new IllegalArgumentException();
+
+		double respTime = Double.MIN_VALUE;
+
+		for (Block b : blocks) {
+			// retrieve from cache memory
+			CacheResponse cmResp = cmm.read(b);
+			if (!Block.NULL.equals(cmResp.getResult())) {
+				respTime = respTime < cmResp.getResponseTime()
+							? cmResp.getResponseTime() : respTime;
+			} else {
+				// retrieve from cache disk
+				DiskResponse cdResp = cdm.read(b);
+				if (cdResp.getResults().length == 1) {
+					respTime = respTime < cdResp.getResponseTime()
+							? cdResp.getResponseTime() : respTime;
+				} else {
+					// read from data disk.
+					DiskResponse ddResp = readFromDataDisk(b);
+					assert ddResp.getResults().length == 1;
+					respTime = respTime < ddResp.getResponseTime()
+							? ddResp.getResponseTime() : respTime;
+				}
+			}
+		}
+		return new Response(request.getKey(), respTime);
+	}
+
+	private DiskResponse readFromDataDisk(Block block) {
+
+		List<DiskState> diskStates =
+			extractActiveDisks(ddm.getRelatedDisksState(block));
+
+		// case 1. one of n disks is spinning.
+		if (diskStates.size() == 1)
+			return readFrom(block, diskStates.get(0));
+
+		// case 2. some of n disks are spinning.
+		if (diskStates.size() < diskStates.size()) {
+			DiskState diskState = cmm.getMaxBufferDisk(diskStates);
+			return readFrom(block, diskState);
+		}
+
+		// case 3. all of n disks are stopping.
+		DiskState diskState = ddm.getLongestStandbyDisk(diskStates);
+		return readFrom(block, diskState);
+	}
+
+	private DiskResponse readFrom(Block block, DiskState diskState) {
+		int ownerDiskId = assignOwnerDiskId(
+				block.getPrimaryDiskId(), diskState.getRepLevel());
+		block.setOwnerDiskId(ownerDiskId);
+		block.setRepLevel(diskState.getRepLevel());
+		return ddm.read(new Block[]{block});
+	}
+
+	private List<DiskState> extractActiveDisks(List<DiskState> diskStates) {
+		List<DiskState> result = new ArrayList<DiskState>();
+		for (DiskState state : diskStates) {
+			if (DiskState.State.ACTIVE.equals(state.getState())
+					|| DiskState.State.IDLE.equals(state.getState()))
+				result.add(state);
+		}
+		return result;
+	}
+
 	public Response write(Request request) {
 		Block[] blocks = requestMap.get(request.getKey());
 		if (blocks == null) {
@@ -90,7 +161,8 @@ public class RAPoSDAStorageManager {
 							ddResp.getResponseTime() + arrivalTime);
 
 					// return least response time;
-					double tempResp = arrivalTime + ddResp.getResponseTime() + cmDeletedTime;
+					double tempResp =
+						arrivalTime + ddResp.getResponseTime() + cmDeletedTime;
 					respTime = respTime < tempResp ? tempResp : respTime;
 				}
 			}
@@ -139,8 +211,9 @@ public class RAPoSDAStorageManager {
 					block.getPrimaryDiskId());
 			replica.setRepLevel(repLevel);
 			replica.setOwnerDiskId(
-					(replica.getPrimaryDiskId() + replica.getRepLevel().getValue())
-					% ddm.getTotalDataDisks());
+					assignOwnerDiskId(
+							replica.getPrimaryDiskId(),
+							replica.getRepLevel()));
 			replicas[repLevel.getValue()] = replica;
 		}
 		return replicas;
@@ -155,16 +228,21 @@ public class RAPoSDAStorageManager {
 			BigInteger blockId = nextBlockId();
 			blocks[i] = new Block(blockId,
 								  request.getArrvalTime(),
-								  assignDiskId(blockId));
+								  assignPrimaryDiskId(blockId));
 		}
 		return blocks;
 	}
 
-	private int assignDiskId(BigInteger blockId) {
-		BigInteger numDataDisk = new BigInteger(String.valueOf(ddm.getTotalDataDisks()));
+	private int assignPrimaryDiskId(BigInteger blockId) {
+		BigInteger numDataDisk =
+			new BigInteger(String.valueOf(ddm.getNumberOfDataDisks()));
 		// TODO try to separate assignor class.
 		// There is not only roundrobin favor assgin algorithm.
 		return (blockId.mod(numDataDisk)).intValue();
+	}
+
+	private int assignOwnerDiskId(int primaryDiskId, ReplicaLevel repLevel) {
+		return primaryDiskId + repLevel.getValue() % ddm.getNumberOfDataDisks();
 	}
 
 	private BigInteger nextBlockId() {

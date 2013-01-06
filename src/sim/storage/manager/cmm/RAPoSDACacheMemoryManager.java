@@ -1,10 +1,12 @@
 package sim.storage.manager.cmm;
 
 import java.util.HashMap;
+import java.util.List;
 
 import sim.Block;
 import sim.storage.CacheResponse;
 import sim.storage.manager.cmm.assignor.IAssignor;
+import sim.storage.util.DiskState;
 
 public class RAPoSDACacheMemoryManager {
 
@@ -48,5 +50,23 @@ public class RAPoSDACacheMemoryManager {
 
 		CacheMemory cm = cacheMemories.get(assignedMemory);
 		return cm.remove(toRemove);
+	}
+
+	public DiskState getMaxBufferDisk(List<DiskState> diskStates) {
+		DiskState result = null;
+		int maxBuffer = Integer.MIN_VALUE;
+		for (DiskState diskState : diskStates) {
+			int cmIdx = assignor.assign(
+					diskState.getDiskId() - diskState.getRepLevel().getValue(),
+					diskState.getRepLevel().getValue());
+			CacheMemory cm = cacheMemories.get(cmIdx);
+			assert cm != null;
+			Region region = cm.getRegion(diskState.getRepLevel());
+			if (maxBuffer < region.getBufferLenght()) {
+				maxBuffer = region.getBufferLenght();
+				result = diskState;
+			}
+		}
+		return result;
 	}
 }
