@@ -23,8 +23,8 @@ DataDiskManagerの実装
 ○DDMからのwrite
 ○DDMからのread
 DDMからのspinup/down
-DataDiskのread実装
-DataDiskのwrite実装
+○DataDiskのread実装
+○DataDiskのwrite実装
 CacheDiskManagerの実装
 CacheDiskのread実装
 CacheDiskのwrite実装
@@ -40,9 +40,11 @@ DDM.getRelatedDiskState()の実装
 DDM.getLongestStandbyDisk()の実装
 CacheDiskは内部的にはプライマリブロックのみのキャッシュとして振舞う．
 CacheMemoryManager.getMaxBufferDisk()の単体テストを実装する
+DataDiskの単体テスト
+RAPoSDADataDiskManagerの単体テスト
 
 統計値収集
-HDDの消費電力計算
+○HDDの消費電力計算
 Memoryの消費電力計算
 
 ※n重化した時のreadのアルゴリズムはちょっと変わる．（論文でも明記すること）
@@ -50,3 +52,6 @@ Memoryの消費電力計算
 ・nディスク中複数台回転中：それぞれのレプリカが所属するRegionのバッファが長い方からread
 ・nディスクが停止中：停止期間の最も長いディスクからread
 
+※SimTimeManagerの処理はいらない．シミュレーションの終了時刻は最後のクライアントの
+処理が終わってから，最後のリクエストの発行時間と応答時間から終了時間を算出して，
+その値でSMにclose処理を依頼すれば問題ない．
