@@ -7,6 +7,7 @@ import sim.storage.DiskCacheTest;
 import sim.storage.HardDiskDriveTest;
 import sim.storage.manager.cmm.RAPoSDACacheMemoryManagerTest;
 import sim.storage.manager.cmm.RegionTest;
+import sim.storage.manager.ddm.RAPoSDADataDiskManagerTest;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
@@ -14,6 +15,7 @@ import sim.storage.manager.cmm.RegionTest;
 	HardDiskDriveTest.class,
 	RegionTest.class,
 	RAPoSDACacheMemoryManagerTest.class,
+	RAPoSDADataDiskManagerTest.class,
 })
 
 public class AllTests {}

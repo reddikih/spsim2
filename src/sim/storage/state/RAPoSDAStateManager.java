@@ -15,20 +15,24 @@ public class RAPoSDAStateManager {
 	}
 
 	public DiskState getState(double arrivalTime, double lastActiveTime) {
+		// if disk access is the first, then the disk state is IDLE.
+		if (lastActiveTime == 0) 
+			return DiskState.IDLE;
+		
 		DiskState result;
 		double delta = arrivalTime - lastActiveTime;
 
 		if (delta < 0) {
-			// Active中に再アクセス
+			// Access during Active
 			result = DiskState.ACTIVE;
 		} else if (delta <= spindownThreshold) {
-			// Idle中に再アクセス
+			// Access during Idle
 			result = DiskState.IDLE;
 		} else if (delta <= (spindownThreshold + parameter.getSpindownTime())) {
-			// Spindown中に再アクセス
+			// Access during Spindown
 			result = DiskState.SPINDOWN;
 		} else {
-			// Standby中に再アクセス
+			// Access during Standby
 			result = DiskState.STANDBY;
 		}
 		return result;
@@ -152,5 +156,4 @@ public class RAPoSDAStateManager {
 		}
 		return result;
 	}
-
 }

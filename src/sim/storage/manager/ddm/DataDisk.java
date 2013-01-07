@@ -22,18 +22,14 @@ public class DataDisk extends HardDiskDrive {
 	@Override
 	public double read(Block[] blocks) {
 		double arrivalTime = blocks[0].getAccessTime();
-		double delay =
-			stm.stateUpdate(arrivalTime, lastArrivalTime, lastResponseTime);
-		updateArrivalTimeOfBlocks(blocks, arrivalTime + delay);
+		stm.stateUpdate(arrivalTime, lastArrivalTime, lastResponseTime);
 		return super.read(blocks);
 	}
 
 	@Override
 	public double write(Block[] blocks) {
 		double arrivalTime = blocks[0].getAccessTime();
-		double delay =
-			stm.stateUpdate(arrivalTime, lastArrivalTime, lastResponseTime);
-		updateArrivalTimeOfBlocks(blocks, arrivalTime + delay);
+		stm.stateUpdate(arrivalTime, lastArrivalTime, lastResponseTime);
 		return super.write(blocks);
 	}
 
@@ -42,13 +38,15 @@ public class DataDisk extends HardDiskDrive {
 	}
 
 	public double stateUpdate(double updateTime) {
-		return stm.stateUpdate(updateTime, lastArrivalTime, lastResponseTime);
+		double latency = stm.stateUpdate(
+				updateTime, lastArrivalTime, lastResponseTime);
+		lastArrivalTime = lastArrivalTime + lastResponseTime + latency;
+		lastResponseTime = 0.0;
+		return latency;
 	}
 
-	// Duplicate with RAPoSDAStorageManager.updateArrivalTimeOfBlocks()
-	private void updateArrivalTimeOfBlocks(Block[] blocks, double arrivalTime) {
-		for (Block block : blocks) {
-			block.setAccessTime(arrivalTime);
-		}
+	public double getStandbyTime(double accessTime) {
+		double result = accessTime - (lastArrivalTime + lastResponseTime);
+		return result < 0 ? 0 : result;
 	}
 }

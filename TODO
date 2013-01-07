@@ -18,11 +18,10 @@ Simulatorの導通確認
 ○IAssignorの追加
 ○SimpleAssignorの実装
 ○BalancedAssignorの実装
-
-DataDiskManagerの実装
+○DataDiskManagerの実装
 ○DDMからのwrite
 ○DDMからのread
-DDMからのspinup/down
+○DDMからのspinup
 ○DataDiskのread実装
 ○DataDiskのwrite実装
 CacheDiskManagerの実装
@@ -36,15 +35,18 @@ SMの初期化処理
 ○StorageManager.assignDiskIdの分離
 
 CacheMemoryからのread時は全てのキャッシュメモリのレプリカを含むRegionから探す
-DDM.getRelatedDiskState()の実装
-DDM.getLongestStandbyDisk()の実装
+○DDM.getRelatedDiskState()の実装
+○DDM.getLongestStandbyDisk()の実装
+
+○初回アクセス時のディスク状態の管理
+
 CacheDiskは内部的にはプライマリブロックのみのキャッシュとして振舞う．
 CacheMemoryManager.getMaxBufferDisk()の単体テストを実装する
 DataDiskの単体テスト
-RAPoSDADataDiskManagerの単体テスト
 
 統計値収集
-○HDDの消費電力計算
+△HDDの消費電力計算
+連続アクセス時の消費電力計算のテスト
 Memoryの消費電力計算
 
 ※n重化した時のreadのアルゴリズムはちょっと変わる．（論文でも明記すること）

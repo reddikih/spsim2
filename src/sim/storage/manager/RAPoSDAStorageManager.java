@@ -23,8 +23,8 @@ public class RAPoSDAStorageManager {
 	/**
 	 * TODO
 	 * データディスクは，それぞれ担当するBlockIDの範囲を持っていること．
-	 * そうしないと，新しい書き込みは常にラウンドロビンでディスクに割り当てられ，キャッシュメモリのキューの増え方は，
-	 * 各メモリで常に同一となってしまう
+	 * そうしないと，新しい書き込みは常にラウンドロビンでディスクに割り当てられ，
+	 * キャッシュメモリのキューの増え方は， 各メモリで常に同一となってしまう．
 	 */
 
 	private RAPoSDACacheMemoryManager cmm;
@@ -109,7 +109,10 @@ public class RAPoSDAStorageManager {
 
 		// case 3. all of n disks are stopping.
 		assert activeDiskStates.size() == 0;
-		DiskInfo diskState = ddm.getLongestStandbyDiskInfo(activeDiskStates);
+		DiskInfo diskState = 
+				ddm.getLongestStandbyDiskInfo(
+						activeDiskStates,
+						block.getAccessTime());
 		return actualRead(block, diskState);
 	}
 
@@ -157,10 +160,14 @@ public class RAPoSDAStorageManager {
 						request.getArrvalTime() + response.getResponseTime();
 
 					// write to data disk
-					DiskResponse ddResp = writeToDataDisk(response, arrivalTime);
+					DiskResponse ddResp =
+							writeToDataDisk(response, arrivalTime);
 
 					// write to cache disk asynchronously
-					writeToCacheDisk(ddResp.getResults(), ddResp.getResponseTime());
+					// after data disk write.
+					writeToCacheDisk(
+							ddResp.getResults(),
+							ddResp.getResponseTime() + arrivalTime);
 
 					// delete blocks on the cache already written in disks.
 					double cmDeletedTime = deleteBlocksOnCache(
@@ -169,7 +176,7 @@ public class RAPoSDAStorageManager {
 
 					// return least response time;
 					double tempResp =
-						arrivalTime + ddResp.getResponseTime() + cmDeletedTime;
+						ddResp.getResponseTime() + cmDeletedTime;
 					respTime = respTime < tempResp ? tempResp : respTime;
 				}
 			}

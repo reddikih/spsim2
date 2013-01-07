@@ -21,12 +21,15 @@ public class RAPoSDADataDiskManager {
 			int numberOfDataDisks,
 			int numberOfReplica,
 			HashMap<Integer, DataDisk> dataDiskMap) {
+		
+		if (numberOfDataDisks != dataDiskMap.size())
+			throw new IllegalArgumentException("number of data disks is invalid.");
 
 		this.numberOfDataDisks = numberOfDataDisks;
 		this.numberOfReplica = numberOfReplica;
 		this.dataDiskMap = dataDiskMap;
 	}
-
+	
 	public DiskResponse write(Block[] blocks) {
 		List<Block> writtenBlocks = new ArrayList<Block>();
 		double arrivalTime = blocks[0].getAccessTime();
@@ -83,19 +86,38 @@ public class RAPoSDADataDiskManager {
 
 	public List<DiskInfo> getRelatedDisksInfo(Block block) {
 		List<DiskInfo> diskInfos = new ArrayList<DiskInfo>();
-		for (int i=0; i < numberOfReplica; i++) {
+		
+		int i = 0;
+		for (ReplicaLevel repLevel : ReplicaLevel.values()) {
+			if (numberOfReplica <= i) break;
 			int diskId = (block.getPrimaryDiskId() + i) % numberOfDataDisks;
 			DataDisk dd = dataDiskMap.get(diskId);
 			assert dd != null;
-//			DiskInfo info = new DiskInfo(diskId, dd.getState(block.getAccessTime()), ReplicaLevel.valueOf(i));
+			DiskInfo info = new DiskInfo(
+					diskId,
+					dd.getState(block.getAccessTime()),
+					repLevel);
+			diskInfos.add(info);
+			i++;
 		}
-		// TODO Auto-generated method stub
-		return null;
+		return diskInfos;
 	}
 
-	public DiskInfo getLongestStandbyDiskInfo(List<DiskInfo> diskInfos) {
-		// TODO Auto-generated method stub
-		return null;
+	public DiskInfo getLongestStandbyDiskInfo(
+			List<DiskInfo> diskInfos, double accessTime) {
+		
+		DiskInfo longestSleeper = null;
+		double longestSleepTime = Double.MIN_VALUE;
+		for (DiskInfo dInfo : diskInfos) {
+			DataDisk dd = dataDiskMap.get(dInfo.getDiskId());
+			assert dd != null;
+			double sleepTime = dd.getStandbyTime(accessTime);
+			if (longestSleepTime < sleepTime) {
+				longestSleepTime = sleepTime;
+				longestSleeper = dInfo;
+			}
+		}
+		return longestSleeper;
 	}
 
 }
