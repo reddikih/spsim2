@@ -71,20 +71,29 @@ public class RAPoSDAStorageManager {
 			// retrieve from cache memory
 			CacheResponse cmResp = cmm.read(b);
 			if (!Block.NULL.equals(cmResp.getResult())) {
-				respTime = respTime < cmResp.getResponseTime()
-							? cmResp.getResponseTime() : respTime;
+				respTime =
+					respTime < cmResp.getResponseTime()
+					? cmResp.getResponseTime() : respTime;
 			} else {
 				// retrieve from cache disk
 				DiskResponse cdResp = cdm.read(b);
 				if (cdResp.getResults().length == 1) {
-					respTime = respTime < cdResp.getResponseTime()
-							? cdResp.getResponseTime() : respTime;
+					respTime =
+						respTime < cdResp.getResponseTime()
+						? cdResp.getResponseTime() : respTime;
 				} else {
 					// read from data disk.
 					DiskResponse ddResp = readFromDataDisk(b);
 					assert ddResp.getResults().length == 1;
-					respTime = respTime < ddResp.getResponseTime()
-							? ddResp.getResponseTime() : respTime;
+					respTime =
+						respTime < ddResp.getResponseTime()
+						? ddResp.getResponseTime() : respTime;
+
+					// write to cache disk asynchronously
+					// after read from data disk.
+					writeToCacheDisk(
+							ddResp.getResults(),
+							ddResp.getResponseTime() + b.getAccessTime());
 				}
 			}
 		}
@@ -109,7 +118,7 @@ public class RAPoSDAStorageManager {
 
 		// case 3. all of n disks are stopping.
 		assert activeDiskStates.size() == 0;
-		DiskInfo diskState = 
+		DiskInfo diskState =
 				ddm.getLongestStandbyDiskInfo(
 						activeDiskStates,
 						block.getAccessTime());
@@ -177,6 +186,7 @@ public class RAPoSDAStorageManager {
 					// return least response time;
 					double tempResp =
 						ddResp.getResponseTime() + cmDeletedTime;
+
 					respTime = respTime < tempResp ? tempResp : respTime;
 				}
 			}
@@ -189,8 +199,9 @@ public class RAPoSDAStorageManager {
 		double response = Double.MIN_VALUE;
 		for (Block block : blocks) {
 			CacheResponse cmResp = cmm.remove(block);
-			response = response < cmResp.getResponseTime()
-							? cmResp.getResponseTime() : response;
+			response =
+				response < cmResp.getResponseTime()
+				? cmResp.getResponseTime() : response;
 		}
 		return response;
 	}
@@ -240,9 +251,10 @@ public class RAPoSDAStorageManager {
 		blocks = new Block[numBlocks];
 		for (int i=0; i < numBlocks; i++) {
 			BigInteger blockId = nextBlockId();
-			blocks[i] = new Block(blockId,
-								  request.getArrvalTime(),
-								  assignPrimaryDiskId(blockId));
+			blocks[i] = new Block(
+					blockId,
+					request.getArrvalTime(),
+					assignPrimaryDiskId(blockId));
 		}
 		return blocks;
 	}
