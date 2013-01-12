@@ -110,8 +110,8 @@ public class RAPoSDAStorageManager {
 			return actualRead(block, activeDiskStates.get(0));
 
 		// case 2. some of n disks are spinning.
-		if (activeDiskStates.size() > 0
-				&& activeDiskStates.size() < relatedDiskStates.size()) {
+		if (activeDiskStates.size() > 1
+				&& activeDiskStates.size() <= relatedDiskStates.size()) {
 			DiskInfo diskState = cmm.getMaxBufferDisk(activeDiskStates);
 			return actualRead(block, diskState);
 		}
@@ -162,8 +162,7 @@ public class RAPoSDAStorageManager {
 				if (response.getOverflows().length == 0) {
 					respTime =
 						response.getResponseTime() > respTime
-						? response.getResponseTime()
-						: respTime;
+						? response.getResponseTime() : respTime;
 				} else { // cache overflow
 					double arrivalTime =
 						request.getArrvalTime() + response.getResponseTime();

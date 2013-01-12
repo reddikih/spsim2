@@ -33,8 +33,8 @@ public class RAPoSDACacheMemoryManager {
 	public RAPoSDACacheWriteResponse write(Block block) {
 		RAPoSDACacheWriteResponse response;
 		int assignedMemory = assignor.assign(
-								block.getPrimaryDiskId(),
-								block.getRepLevel().getValue());
+				block.getPrimaryDiskId(),
+				block.getRepLevel().getValue());
 
 		// write to corresponding cache memory
 		CacheMemory cm = cacheMemories.get(assignedMemory);

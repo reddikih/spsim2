@@ -44,6 +44,8 @@ CacheDiskは内部的にはプライマリブロックのみのキャッシュ�
 CacheMemoryManager.getMaxBufferDisk()の単体テストを実装する
 DataDiskの単体テスト
 
+RAPoSDACacheMemoryManager.getMaxBufferDisk()は多分バグある．
+
 統計値収集
 △HDDの消費電力計算
 連続アクセス時の消費電力計算のテスト
