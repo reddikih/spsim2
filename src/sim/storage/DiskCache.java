@@ -20,7 +20,7 @@ public class DiskCache implements Cache {
 	public DiskCache(int diskId, CacheParameter parameter, int blockSize) {
 		this.diskId = diskId;
 		this.parameter = parameter;
-		this.MAX_ENTRIES = (int)Math.ceil((double)this.parameter.getCapacity() / blockSize);
+		this.MAX_ENTRIES = (int)Math.floor((double)this.parameter.getCapacity() / blockSize);
 		this.caches = new HashMap<BigInteger, Block>();
 		this.usedKeys = new TreeMap<Double, BigInteger>();
 	}

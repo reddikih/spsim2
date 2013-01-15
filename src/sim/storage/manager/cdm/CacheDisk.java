@@ -1,13 +1,100 @@
 package sim.storage.manager.cdm;
 
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
+
+import sim.Block;
+import sim.storage.Cache;
+import sim.storage.CacheResponse;
 import sim.storage.HDDParameter;
 import sim.storage.HardDiskDrive;
+import sim.storage.state.CacheDiskStateManager;
 
-public class CacheDisk extends HardDiskDrive {
+public class CacheDisk extends HardDiskDrive implements Cache {
 
-	public CacheDisk(int id, HDDParameter parameter) {
+	private CacheDiskStateManager stm;
+	private long maxEntries;
+
+	private HashMap<BigInteger, Block> caches;
+	private TreeMap<Double, BigInteger> usedKeys;
+
+
+	public CacheDisk(
+			int id,
+			int blockSize,
+			HDDParameter parameter,
+			CacheDiskStateManager stm) {
 		super(id, parameter);
-		// TODO Auto-generated constructor stub
+		init(blockSize, stm);
+	}
+
+	private void init(int blockSize, CacheDiskStateManager stm) {
+		this.stm = stm;
+		this.maxEntries =
+			(int)Math.floor((double)parameter.getHddSize() / blockSize);
+		this.caches = new HashMap<BigInteger, Block>();
+		this.usedKeys = new TreeMap<Double, BigInteger>();
+	}
+
+	@Override
+	public CacheResponse read(Block block) {
+		Block retrieved = getEntry(block);
+		double response = Double.MAX_VALUE;
+		if (!Block.NULL.equals(retrieved)) {
+			response = actualRead(new Block[]{retrieved});
+		}
+		return new CacheResponse(response, retrieved);
+	}
+
+	private double actualRead(Block[] blocks) {
+		double arrivalTime = blocks[0].getAccessTime();
+		stm.stateUpdate(arrivalTime, lastArrivalTime, lastResponseTime);
+		return super.read(blocks);
+	}
+
+	private Block getEntry(Block block) {
+		Block result = Block.NULL;
+		BigInteger blockId = block.getId();
+		if (caches.containsKey(blockId)) {
+			Block temp = caches.get(blockId);
+			if (temp.getAccessTime() <= block.getAccessTime()) {
+				result = temp;
+				usedKeys.remove(result.getAccessTime());
+				usedKeys.put(block.getAccessTime(), blockId);
+				result.setAccessTime(block.getAccessTime());
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public CacheResponse write(Block block) {
+		Block result = getEntry(block);
+		if (Block.NULL.equals(result)) {
+			if (caches.size() < maxEntries) {
+				addEntry(block);
+				result = block;
+			} else {
+				result = replaceEntry(block);
+			}
+		}
+		double diskTime = write(new Block[]{result});
+		return new CacheResponse(diskTime, result);
+	}
+
+	private void addEntry(Block block) {
+		caches.put(block.getId(), block);
+		usedKeys.put(block.getAccessTime(), block.getId());
+	}
+
+	private Block replaceEntry(Block block) {
+		Block removed = null;
+		Map.Entry<Double, BigInteger> lruEntry = usedKeys.pollFirstEntry();
+		removed = caches.remove(lruEntry.getValue());
+		addEntry(block);
+		return removed;
 	}
 
 }

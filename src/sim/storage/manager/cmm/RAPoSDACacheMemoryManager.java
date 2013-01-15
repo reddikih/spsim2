@@ -52,10 +52,10 @@ public class RAPoSDACacheMemoryManager {
 		return cm.remove(toRemove);
 	}
 
-	public DiskInfo getMaxBufferDisk(List<DiskInfo> diskStates) {
+	public DiskInfo getMaxBufferDisk(List<DiskInfo> diskInfos) {
 		DiskInfo result = null;
 		int maxBuffer = Integer.MIN_VALUE;
-		for (DiskInfo diskState : diskStates) {
+		for (DiskInfo diskState : diskInfos) {
 			int cmIdx = assignor.assign(
 					diskState.getDiskId() - diskState.getRepLevel().getValue(),
 					diskState.getRepLevel().getValue());

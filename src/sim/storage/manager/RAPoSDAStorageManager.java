@@ -76,8 +76,8 @@ public class RAPoSDAStorageManager {
 					? cmResp.getResponseTime() : respTime;
 			} else {
 				// retrieve from cache disk
-				DiskResponse cdResp = cdm.read(b);
-				if (cdResp.getResults().length == 1) {
+				CacheResponse cdResp = cdm.read(b);
+				if (!Block.NULL.equals(cdResp.getResult())) {
 					respTime =
 						respTime < cdResp.getResponseTime()
 						? cdResp.getResponseTime() : respTime;

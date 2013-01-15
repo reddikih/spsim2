@@ -1,6 +1,7 @@
 package sim.storage.manager.cdm;
 
 import sim.Block;
+import sim.storage.CacheResponse;
 import sim.storage.DiskResponse;
 
 public class RAPoSDACacheDiskManager {
@@ -10,7 +11,7 @@ public class RAPoSDACacheDiskManager {
 		return null;
 	}
 
-	public DiskResponse read(Block b) {
+	public CacheResponse read(Block b) {
 		// TODO Auto-generated method stub
 		return null;
 	}

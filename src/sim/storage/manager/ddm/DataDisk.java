@@ -3,17 +3,17 @@ package sim.storage.manager.ddm;
 import sim.Block;
 import sim.storage.HDDParameter;
 import sim.storage.HardDiskDrive;
-import sim.storage.state.RAPoSDAStateManager;
+import sim.storage.state.DataDiskStateManager;
 import sim.storage.util.DiskState;
 
 public class DataDisk extends HardDiskDrive {
 
-	private RAPoSDAStateManager stm;
+	private DataDiskStateManager stm;
 
 	public DataDisk(
 			int id,
 			HDDParameter parameter,
-			RAPoSDAStateManager stm) {
+			DataDiskStateManager stm) {
 
 		super(id, parameter);
 		this.stm = stm;

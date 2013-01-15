@@ -10,7 +10,7 @@ public class HardDiskDrive {
 	protected double lastArrivalTime;
 	protected double lastResponseTime;
 
-	protected HDDParameter parameters;
+	protected HDDParameter parameter;
 	private DiskCache diskCache;
 
 	public HardDiskDrive(int id, HDDParameter parameter) {
@@ -19,7 +19,7 @@ public class HardDiskDrive {
 
 	public HardDiskDrive(int id, HDDParameter parameter, DiskCache diskCache) {
 		this.id = id;
-		this.parameters = parameter;
+		this.parameter = parameter;
 		this.diskCache = diskCache;
 	}
 
@@ -56,11 +56,11 @@ public class HardDiskDrive {
 
 	private double calculateServiceTime(int size) {
 		int block_len = (int)Math.ceil(size / SECTOR_SIZE);
-		double fsst = parameters.getFullStrokeSeekTime();         // full stroke seek time.
-		double fdrt = 60.0 / parameters.getRpm();                 // full disk rotation time
-		int sec_per_track = parameters.getSectorsPerTrack();      // sectors per track
-		double overhead = parameters.getHeadSwitchOverhead() + parameters.getCommandOverhead(); // overhead time
-		double transfer_rate = 1.0 / ((double)parameters.getTransferRate() / SECTOR_SIZE); // sectors/s
+		double fsst = parameter.getFullStrokeSeekTime();         // full stroke seek time.
+		double fdrt = 60.0 / parameter.getRpm();                 // full disk rotation time
+		int sec_per_track = parameter.getSectorsPerTrack();      // sectors per track
+		double overhead = parameter.getHeadSwitchOverhead() + parameter.getCommandOverhead(); // overhead time
+		double transfer_rate = 1.0 / ((double)parameter.getTransferRate() / SECTOR_SIZE); // sectors/s
 
 		return (fsst/2) + (fdrt/2) + fdrt*(block_len/sec_per_track) + overhead + transfer_rate;
 	}

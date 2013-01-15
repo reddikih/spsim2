@@ -2,23 +2,22 @@ package sim.storage.state;
 
 import sim.storage.util.DiskState;
 
-public class RAPoSDAStateManager {
+public class DataDiskStateManager extends StateManager {
 
 	private double spindownThreshold;
-	private DiskStateParameter parameter;
 
-	public RAPoSDAStateManager(
+	public DataDiskStateManager(
 			double spindownThreshold, DiskStateParameter parameter) {
+		super(parameter);
 
 		this.spindownThreshold = spindownThreshold;
-		this.parameter = parameter;
 	}
 
 	public DiskState getState(double arrivalTime, double lastActiveTime) {
 		// if disk access is the first, then the disk state is IDLE.
-		if (lastActiveTime == 0) 
+		if (lastActiveTime == 0)
 			return DiskState.IDLE;
-		
+
 		DiskState result;
 		double delta = arrivalTime - lastActiveTime;
 
@@ -132,28 +131,5 @@ public class RAPoSDAStateManager {
 			break;
 		}
 		return latency;
-	}
-
-	private double calcEnergy(DiskState state, double time) {
-		double result = 0.0;
-
-		switch (state) {
-		case ACTIVE :
-			result = parameter.getActivePower() * time;
-			break;
-		case IDLE :
-			result = parameter.getIdlePower() * time;
-			break;
-		case SPINDOWN :
-			result = parameter.getSpindownEnergy();
-			break;
-		case STANDBY :
-			result = parameter.getStandbyPower() * time;
-			break;
-		case SPINUP :
-			result = parameter.getSpinupEnergy();
-			break;
-		}
-		return result;
 	}
 }
