@@ -1,15 +1,15 @@
 Simulatorの導通確認
-CacheDiskManagerの実装
-CMMのwrite時のCDへの割り当て（ラウンドロビン）
-CacheDiskのread実装
-CacheDiskのwrite実装
+○CacheDiskManagerの実装
+○CDMのwrite時のCDへの割り当て（ラウンドロビン）
+○CacheDiskのread実装
+○CacheDiskのwrite実装
 SMの初期化処理
 CacheMemoryからのread時は全てのキャッシュメモリのレプリカを含むRegionから探す
 CacheMemoryManager.getMaxBufferDisk()の単体テストを実装する
 RAPoSDACacheMemoryManager.getMaxBufferDisk()は多分バグある．
+
 CacheDiskとDiskCacheの重複を取り除く（リファクタリングする）
 CacheDiskとDataDiskの重複を取り除く（リファクタリングする）
-
 ブロックIDの表現をBigIntegerからLongに変更する（BigIntegerの必要性は低い）
 
 統計値収集

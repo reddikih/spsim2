@@ -150,6 +150,7 @@ public class RAPoSDAStorageManager {
 			blocks = divideRequest(request);
 			requestMap.put(request.getKey(), blocks);
 		} else {
+			// update(override) request
 			updateArrivalTimeOfBlocks(blocks, request.getArrvalTime());
 		}
 
