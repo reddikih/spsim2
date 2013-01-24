@@ -88,6 +88,40 @@ public class RAPoSDACacheDiskManagerTest {
 	}
 
 	@Test
+	public void writeIdempotent() {
+		int numcd = 2;
+		RAPoSDACacheDiskManager cdm = new RAPoSDACacheDiskManager(numcd, getCacheDiskMap(numcd));
+
+		Block[] blocks;
+		DiskResponse cdres;
+
+		Block b00 = new Block(new BigInteger("0"), 0.0, 0);
+		Block b01 = new Block(new BigInteger("1"), 0.1, 0);
+		Block b02 = new Block(new BigInteger("2"), 0.2, 0);
+		Block b03 = new Block(new BigInteger("3"), 0.3, 0);
+		blocks = new Block[]{b00,b01,b02,b03};
+		cdres = cdm.write(blocks);
+		assertThat(cdres.getResults(), is(blocks));
+
+		// replace check.
+		Block b05 = new Block(new BigInteger("4"), 0.4, 0);
+		blocks = new Block[]{b05};
+		cdres = cdm.write(blocks);
+		assertThat(cdres.getResults(), is(new Block[]{b00}));
+
+		// idempotent check.
+		Block b04 = new Block(new BigInteger("0"), 0.5, 0);
+		blocks = new Block[]{b04};
+		cdres = cdm.write(blocks);
+		assertThat(cdres.getResults(), is(new Block[]{b01}));
+
+		Block b06 = new Block(new BigInteger("0"), 0.6, 0);
+		blocks = new Block[]{b06};
+		cdres = cdm.write(blocks);
+		assertThat(cdres.getResults(), is(blocks));
+}
+
+	@Test
 	public void readFromCDM() {
 		int numcd = 3;
 		RAPoSDACacheDiskManager cdm = new RAPoSDACacheDiskManager(numcd, getCacheDiskMap(numcd));

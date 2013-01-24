@@ -4,13 +4,14 @@ public class Parameter {
 
 	///--- System parameters. ---///
 	public static final int NUMBER_OF_CACHE_MEMORIES = 3;
-	public static final int NUMBER_OF_CACHE_DISKS = 2;
-	public static final int NUBER_OF_DISKS_PER_CACHE_GROUP = 3;
+	public static final int NUMBER_OF_CACHE_DISKS = 1;
+	public static final int NUBER_OF_DISKS_PER_CACHE_GROUP = 2;
 
 	/** Spindown threshold time represents by second. */
 	public static final double SPINDOWN_THRESHOLD = 10.0;
 
-	public static final int BLOCK_SIZE = 4 * 1024;
+//	public static final int BLOCK_SIZE = 4 * 1024;
+	public static final int BLOCK_SIZE = 1;
 
 	public static final int NUMBER_OF_REPLICA = 2;
 
@@ -20,7 +21,8 @@ public class Parameter {
 	public static final double CACHE_MEMORY_THRESHOLD = 1.0;
 
 	/** Cache memory size. 4GB by default. */
-	public static final long CACHE_MEMORY_SIZE = 4 * 1024 * 1024 * 1024;
+//	public static final long CACHE_MEMORY_SIZE = 4 * 1024 * 1024 * 1024;
+	public static final long CACHE_MEMORY_SIZE = 0;
 
 	/** Memory access latency represents by second. */
 	public static final double CACHE_MEMORY_LATENCY = 0.00001;
@@ -28,7 +30,7 @@ public class Parameter {
 
 	///--- HDD parameters. ---///
 	/** HDD size. 2TB by spec. */
-	public static final long HDD_SIZE = 2 * 1024 * 1024 * 1024 * 1024;
+	public static final long HDD_SIZE = 2L * 1024 * 1024 * 1024 * 1024;
 
 	public static final int HDD_NUMBER_OF_PLATTER = 5;
 

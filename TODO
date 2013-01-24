@@ -1,15 +1,18 @@
-Simulatorの導通確認
+○Simulatorの導通確認
 ○CacheDiskManagerの実装
 ○CDMのwrite時のCDへの割り当て（ラウンドロビン）
 ○CacheDiskのread実装
 ○CacheDiskのwrite実装
-SMの初期化処理
+○SMの初期化処理
 CacheMemoryからのread時は全てのキャッシュメモリのレプリカを含むRegionから探す
 CacheMemoryManager.getMaxBufferDisk()の単体テストを実装する
 RAPoSDACacheMemoryManager.getMaxBufferDisk()は多分バグある．
+ログ出力処理
+CLIパーサー追加
 統計値収集
 HDDの消費電力計算
 Memoryの消費電力計算
+シナリオテスト
 
 CacheDiskとDiskCacheの重複を取り除く（リファクタリングする）
 CacheDiskとDataDiskの重複を取り除く（リファクタリングする）
@@ -21,6 +24,3 @@ CacheDiskとDataDiskの重複を取り除く（リファクタリングする）
 ・nディスク中1台だけ回転中：そのディスクからread
 ・nディスク中複数台回転中：それぞれのレプリカが所属するRegionのバッファが長い方からread
 ・nディスクが停止中：停止期間の最も長いディスクからread
-※SimTimeManagerの処理はいらない．シミュレーションの終了時刻は最後のクライアントの
-処理が終わってから，最後のリクエストの発行時間と応答時間から終了時間を算出して，
-その値でSMにclose処理を依頼すれば問題ない．
