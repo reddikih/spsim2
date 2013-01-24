@@ -31,6 +31,7 @@ public class CacheDisk extends HardDiskDrive implements Cache {
 	}
 
 	private void init(int blockSize, CacheDiskStateManager stm) {
+		assert stm != null;
 		this.stm = stm;
 		this.maxEntries =
 			(int)Math.floor((double)parameter.getHddSize() / blockSize);
@@ -80,6 +81,7 @@ public class CacheDisk extends HardDiskDrive implements Cache {
 				result = replaceEntry(block);
 			}
 		}
+		result.setAccessTime(block.getAccessTime());
 		double diskTime = write(new Block[]{result});
 		return new CacheResponse(diskTime, result);
 	}

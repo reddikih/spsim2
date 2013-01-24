@@ -18,6 +18,8 @@ public class HardDiskDrive {
 	}
 
 	public HardDiskDrive(int id, HDDParameter parameter, DiskCache diskCache) {
+		if (parameter == null)
+			throw new IllegalArgumentException("HDDParameter shouldn't be null.");
 		this.id = id;
 		this.parameter = parameter;
 		this.diskCache = diskCache;

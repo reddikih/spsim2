@@ -59,7 +59,7 @@ public class RAPoSDACacheDiskManager {
 			// When a block replaced in the cache disk,
 			// then delete the corresponding entry of block2cdMap.
 			if (!cResp.getResult().equals(b))
-				deleteReplacedBlockFromMap(b);
+				deleteReplacedBlockFromMap(cResp.getResult());
 
 			respTime =
 				respTime < cResp.getResponseTime()
