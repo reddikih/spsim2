@@ -4,9 +4,8 @@
 ○CacheDiskのread実装
 ○CacheDiskのwrite実装
 ○SMの初期化処理
+○CacheMemoryManager.getMaxBufferDisk()の単体テストを実装する
 CacheMemoryからのread時は全てのキャッシュメモリのレプリカを含むRegionから探す
-CacheMemoryManager.getMaxBufferDisk()の単体テストを実装する
-RAPoSDACacheMemoryManager.getMaxBufferDisk()は多分バグある．
 ログ出力処理
 CLIパーサー追加
 統計値収集

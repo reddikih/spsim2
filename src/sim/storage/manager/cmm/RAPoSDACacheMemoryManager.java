@@ -55,16 +55,16 @@ public class RAPoSDACacheMemoryManager {
 	public DiskInfo getMaxBufferDisk(List<DiskInfo> diskInfos) {
 		DiskInfo result = null;
 		int maxBuffer = Integer.MIN_VALUE;
-		for (DiskInfo diskState : diskInfos) {
+		for (DiskInfo diskInfo : diskInfos) {
 			int cmIdx = assignor.assign(
-					diskState.getDiskId() - diskState.getRepLevel().getValue(),
-					diskState.getRepLevel().getValue());
+					diskInfo.getDiskId() - diskInfo.getRepLevel().getValue(),
+					diskInfo.getRepLevel().getValue());
 			CacheMemory cm = cacheMemories.get(cmIdx);
 			assert cm != null;
-			Region region = cm.getRegion(diskState.getRepLevel());
+			Region region = cm.getRegion(diskInfo.getRepLevel());
 			if (maxBuffer < region.getBufferLenght()) {
 				maxBuffer = region.getBufferLenght();
-				result = diskState;
+				result = diskInfo;
 			}
 		}
 		return result;

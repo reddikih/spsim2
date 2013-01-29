@@ -4,7 +4,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +17,8 @@ import sim.storage.CacheParameter;
 import sim.storage.CacheResponse;
 import sim.storage.manager.cmm.assignor.BalancedAssignor;
 import sim.storage.manager.cmm.assignor.IAssignor;
+import sim.storage.util.DiskInfo;
+import sim.storage.util.DiskState;
 import sim.storage.util.ReplicaLevel;
 
 @RunWith(JUnit4.class)
@@ -33,6 +37,24 @@ public class RAPoSDACacheMemoryManagerTest {
 			cacheMemories.put(i, cm);
 		}
 		cmm = new RAPoSDACacheMemoryManager(cacheMemories, assignor, numReplica);
+	}
+
+	private Block[] generateBlocks(
+			int primDiskId,
+			int originId,
+			double originTime,
+			int numReplica,
+			int numdd) {
+		Block[] result = new Block[numReplica];
+		for (ReplicaLevel rLevel : ReplicaLevel.values()) {
+			numReplica--;
+			if (numReplica < 0) break;
+			Block block = new Block(new BigInteger(String.valueOf(originId++)), originTime++, primDiskId);
+			block.setOwnerDiskId((primDiskId + rLevel.getValue()) % numdd);
+			block.setRepLevel(rLevel);
+			result[rLevel.getValue()] = block;
+		}
+		return result;
 	}
 
 	@Test
@@ -149,19 +171,19 @@ public class RAPoSDACacheMemoryManagerTest {
 		RAPoSDACacheWriteResponse response;
 		Block[] blocks;
 
-		blocks = generateBlocks(0, 0, 0.0, 2);
+		blocks = generateBlocks(0, 0, 0.0, 2, 10);
 		for (Block b : blocks) {
 			response = cmm.write(b);
 			assertThat(response.getResponseTime(), is(0.0001));
 			assertThat(response.getOverflows().length, is(0));
 		}
-		blocks = generateBlocks(0, 2, 2.0, 2);
+		blocks = generateBlocks(0, 2, 2.0, 2, 10);
 		for (Block b : blocks) {
 			response = cmm.write(b);
 			assertThat(response.getResponseTime(), is(0.0001));
 			assertThat(response.getOverflows().length, is(0));
 		}
-		blocks = generateBlocks(0, 4, 4.0, 2);
+		blocks = generateBlocks(0, 4, 4.0, 2, 10);
 		for (Block b : blocks) {
 			response = cmm.write(b);
 			assertThat(response.getResponseTime(), is(0.0001));
@@ -200,13 +222,13 @@ public class RAPoSDACacheMemoryManagerTest {
 		RAPoSDACacheWriteResponse response;
 		Block[] blocks;
 
-		blocks = generateBlocks(0, 0, 0.0, 2);
+		blocks = generateBlocks(0, 0, 0.0, 2, 10);
 		for (Block b : blocks) {
 			response = cmm.write(b);
 			assertThat(response.getResponseTime(), is(0.0001));
 			assertThat(response.getOverflows().length, is(0));
 		}
-		blocks = generateBlocks(0, 2, 2.0, 2);
+		blocks = generateBlocks(0, 2, 2.0, 2, 10);
 		for (Block b : blocks) {
 			response = cmm.write(b);
 			assertThat(response.getResponseTime(), is(0.0001));
@@ -232,24 +254,84 @@ public class RAPoSDACacheMemoryManagerTest {
 //		resp = cmm.read(untilExist);
 //		assertThat(resp.getResponseTime(), is(0.0001));
 //		assertThat(resp.getResult(), is(Block.NULL));
-
 	}
 
-	private Block[] generateBlocks(
-			int primDiskId, int originId, double originTime, int numReplica) {
+	@Test
+	public void getMaxBufferDiskWithReplicaThree() {
+		int numdd = 6, primaryDiskId = 5;
+		int numReplica = 3, numCacheMemory = 3, cacheSize = 12, blockSize = 1;
+		init(numReplica, numCacheMemory, cacheSize, blockSize);
 
-		Block[] result = new Block[numReplica];
+		Block[] blocks;
 
-		for (ReplicaLevel rLevel : ReplicaLevel.values()) {
-			numReplica--;
-			if (numReplica < 0) break;
-			Block block = new Block(new BigInteger(String.valueOf(originId++)), originTime++, primDiskId);
-			block.setOwnerDiskId(primDiskId + rLevel.getValue());
-			block.setRepLevel(rLevel);
-			result[rLevel.getValue()] = block;
+		blocks = generateBlocks(primaryDiskId, 0, 0.0, numReplica, numdd);
+		for (Block b : blocks) {
+			cmm.write(b);
 		}
-		return result;
+
+		List<DiskInfo> relDisks = new ArrayList<DiskInfo>();
+		for (ReplicaLevel repLevel : ReplicaLevel.values()) {
+			if (repLevel.getValue() >= numReplica) break;
+			relDisks.add(new DiskInfo(
+					(primaryDiskId + repLevel.getValue()) % numdd,
+					DiskState.ACTIVE,
+					repLevel)
+			);
+		}
+
+		// now CM0.R=1, CM1.R=2, CM2.R=0 are has one block each other.
+		// And then, write into CM0.R=1, cause CM0 has max buffer.
+		// Therefore, disk0 is determinded as the max buffer disk.
+		Block block = new Block(new BigInteger("3"), 4.0, primaryDiskId);
+		block.setRepLevel(ReplicaLevel.ONE);
+		cmm.write(block);
+		DiskInfo maxBuffDisk = cmm.getMaxBufferDisk(relDisks);
+		assertThat(maxBuffDisk.getDiskId(), is(0));
+
+		// One more check.
+		// Now that case adding two block into CM1.R2 region.
+		// Thus, disk1 is determined as the max buffer disk.
+		block = new Block(new BigInteger("4"), 5.0, primaryDiskId);
+		block.setRepLevel(ReplicaLevel.TWO);
+		cmm.write(block);
+		block = new Block(new BigInteger("5"), 5.0, primaryDiskId);
+		block.setRepLevel(ReplicaLevel.TWO);
+		cmm.write(block);
+		maxBuffDisk = cmm.getMaxBufferDisk(relDisks);
+		assertThat(maxBuffDisk.getDiskId(), is(1));
+
 	}
 
+	@Test
+	public void getMaxBufferDiskWithReplicaFour() {
+		int numdd = 8, primaryDiskId = 6;
+		int numReplica = 4, numCacheMemory = 4, cacheSize = 8, blockSize = 1;
+		init(numReplica, numCacheMemory, cacheSize, blockSize);
 
+		Block[] blocks;
+
+		blocks = generateBlocks(primaryDiskId, 0, 0.0, numReplica, numdd);
+		for (Block b : blocks) {
+			cmm.write(b);
+		}
+
+		List<DiskInfo> relDisks = new ArrayList<DiskInfo>();
+		for (ReplicaLevel repLevel : ReplicaLevel.values()) {
+			if (repLevel.getValue() >= numReplica) break;
+			relDisks.add(new DiskInfo(
+					(primaryDiskId + repLevel.getValue()) % numdd,
+					DiskState.ACTIVE,
+					repLevel)
+			);
+		}
+
+		// now CM0.R=2, CM1.R=3, CM2.R=0, CM3.R=1 are has one block each other.
+		// And then, write into D4.R2(into CM0.R=2), cause CM0 has max buffer.
+		// Therefore, disk0 is determinded as the max buffer disk.
+		Block block = new Block(new BigInteger("4"), 5.0, 2);
+		block.setRepLevel(ReplicaLevel.TWO);
+		cmm.write(block);
+		DiskInfo maxBuffDisk = cmm.getMaxBufferDisk(relDisks);
+		assertThat(maxBuffDisk.getDiskId(), is(0));
+	}
 }

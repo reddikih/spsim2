@@ -31,7 +31,7 @@ public class RAPoSDADataDiskManagerTest {
 	private static HDDParameter dParam;
 	private static DiskStateParameter dstParam;
 	private static double aBlockResp;
-	
+
 	@BeforeClass
 	public static void setUp() {
 		dParam = new HDDParameter(
@@ -45,7 +45,7 @@ public class RAPoSDADataDiskManagerTest {
 				Parameter.HDD_HEAD_SWITCH_OVERHEAD,
 				Parameter.HDD_COMMAND_OVERHEAD
 		);
-		
+
 		dstParam = new DiskStateParameter(
 				Parameter.HDD_ACTIVE_POWER,
 				Parameter.HDD_IDLE_POWER,
@@ -54,12 +54,12 @@ public class RAPoSDADataDiskManagerTest {
 				Parameter.HDD_SPINUP_ENERGY,
 				Parameter.HDD_SPINDOWN_TIME,
 				Parameter.HDD_SPINUP_TIME);
-		
+
 		HardDiskDrive hdd = new HardDiskDrive(0, dParam);
 		aBlockResp = hdd.write(
 				new Block[]{new Block(new BigInteger("0"), 0.0, 0)});
 	}
-	
+
 	private void init(int numDD, int numRep, double threshold) {
 		HashMap<Integer, DataDisk> ddMap =
 				new HashMap<Integer, DataDisk>();
@@ -70,53 +70,53 @@ public class RAPoSDADataDiskManagerTest {
 		}
 		ddm = new RAPoSDADataDiskManager(numDD, numRep, ddMap);
 	}
-	
+
 	private DataDisk getDataDisk(int id, DataDiskStateManager stm) {
 		return new DataDisk(id, dParam, stm);
 	}
-	
+
 	private DataDiskStateManager getSTM(double threshold) {
 		return 	new DataDiskStateManager(threshold, dstParam);
 	}
-	
+
 	private void initiationWrite(Block[] blocks) {
 		if (ddm == null)
 			throw new IllegalStateException("ddm is null.");
 		ddm.write(blocks);
 	}
-	
+
 	private long d2l(double dVal) {
 		// change time unit. seccond -> nano
 		return (long)(dVal * 1000000000);
 	}
-	
+
 	private void setOwnerDiskAndRepLevel(
 			Block block, ReplicaLevel repLevel, int numdd) {
 		block.setRepLevel(repLevel);
 		block.setOwnerDiskId(
-				(block.getPrimaryDiskId() + 
+				(block.getPrimaryDiskId() +
 				 block.getRepLevel().getValue()) % numdd);
 	}
-	
+
 	@Test
 	public void writeABlockToDDM() {
 		int numdd = 4, numRep = 3;
 		init(numdd, numRep, Double.MAX_VALUE);
-		
+
 		Block block0 = new Block(new BigInteger("0"), 0.0, 0);
-		
+
 		DiskResponse ddresp = ddm.write(new Block[]{block0});
 		assertThat(ddresp.getResponseTime(), is(aBlockResp));
 	}
-	
+
 	@Test
 	public void writeSomeBlocks() {
 		int numdd = 4, numRep = 3;
 		init(numdd, numRep, Double.MAX_VALUE);
-		
+
 		DiskResponse ddresp;
 		Block[] blocks;
-		
+
 		Block block00 = new Block(new BigInteger("0"), 0.0, 0);
 		setOwnerDiskAndRepLevel(block00, ReplicaLevel.ZERO, numdd);
 		Block block10 = new Block(new BigInteger("1"), 0.0, 1);
@@ -125,7 +125,7 @@ public class RAPoSDADataDiskManagerTest {
 		setOwnerDiskAndRepLevel(block20, ReplicaLevel.ZERO, numdd);
 		Block block30 = new Block(new BigInteger("3"), 0.0, 3);
 		setOwnerDiskAndRepLevel(block30, ReplicaLevel.ZERO, numdd);
-		
+
 		blocks = new Block[]{block00,block10,block20,block30};
 		ddresp = ddm.write(blocks);
 		assertThat(ddresp.getResponseTime(), is(aBlockResp));
@@ -147,7 +147,7 @@ public class RAPoSDADataDiskManagerTest {
 		ddresp = ddm.write(blocks);
 		assertThat(d2l(ddresp.getResponseTime()), is(d2l(aBlockResp*2)));
 		assertThat(Arrays.equals(ddresp.getResults(), blocks), is(true));
-		
+
 		Block block13 = new Block(new BigInteger("7"), 1.0 + (aBlockResp / 2), 1);
 		setOwnerDiskAndRepLevel(block13, ReplicaLevel.ZERO, numdd);
 		blocks = new Block[]{block13};
@@ -155,34 +155,34 @@ public class RAPoSDADataDiskManagerTest {
 		assertThat(d2l(ddresp.getResponseTime()), is(d2l(aBlockResp * 2 + aBlockResp / 2)));
 		assertThat(Arrays.equals(ddresp.getResults(), blocks), is(true));
 	}
-	
+
 	@Test
 	public void writeTheSameDiskWithDifferentReplicaLevelBlock() {
 		int numdd = 4, numRep = 3;
 		init(numdd, numRep, Double.MAX_VALUE);
-		
+
 		DiskResponse ddresp;
 		Block[] blocks;
-		
+
 		Block block00R0 = new Block(new BigInteger("0"), 1.0, 0);
 		setOwnerDiskAndRepLevel(block00R0, ReplicaLevel.ZERO, numdd);
 		Block block20R2 = new Block(new BigInteger("1"), 1.0, 2);
 		setOwnerDiskAndRepLevel(block20R2, ReplicaLevel.TWO, numdd);
-		
+
 		blocks = new Block[]{block00R0,block20R2};
 		ddresp = ddm.read(blocks);
 		assertThat(d2l(ddresp.getResponseTime()), is(d2l(aBlockResp * 2)));
 		assertThat(Arrays.equals(ddresp.getResults(), blocks), is(true));
 	}
-	
+
 	@Test
 	public void readFromDDM() {
 		int numdd = 4, numRep = 3;
 		init(numdd, numRep, Double.MAX_VALUE);
-		
+
 		DiskResponse ddresp;
 		Block[] blocks;
-		
+
 		Block block00 = new Block(new BigInteger("0"), 0.0, 0);
 		setOwnerDiskAndRepLevel(block00, ReplicaLevel.ZERO, numdd);
 		Block block10 = new Block(new BigInteger("1"), 0.0, 1);
@@ -191,33 +191,33 @@ public class RAPoSDADataDiskManagerTest {
 		setOwnerDiskAndRepLevel(block20, ReplicaLevel.ZERO, numdd);
 		Block block30 = new Block(new BigInteger("3"), 0.0, 3);
 		setOwnerDiskAndRepLevel(block30, ReplicaLevel.ZERO, numdd);
-		
+
 		blocks = new Block[]{block00,block10,block20,block30};
 		initiationWrite(blocks);
-		
+
 		block20.setAccessTime(0.5);
 		blocks = new Block[]{block20};
 		ddresp = ddm.read(blocks);
 		assertThat(d2l(ddresp.getResponseTime()), is(d2l(aBlockResp)));
 		assertThat(Arrays.equals(ddresp.getResults(), blocks), is(true));
-		
+
 		// read from the same disk hold different replica level blocks.
 		Block block31 = new Block(new BigInteger("4"), 1.0, 3);
 		setOwnerDiskAndRepLevel(block31, ReplicaLevel.ZERO, numdd);
 		Block block20R1 = new Block(new BigInteger("2"), 1.0, 2);
 		setOwnerDiskAndRepLevel(block20R1, ReplicaLevel.ONE, numdd);
-		
+
 		blocks = new Block[]{block31,block20R1};
 		ddresp = ddm.read(blocks);
 		assertThat(d2l(ddresp.getResponseTime()), is(d2l(aBlockResp * 2)));
 		assertThat(Arrays.equals(ddresp.getResults(), blocks), is(true));
 	}
-	
+
 	@Test
 	public void getRelatedDiskInfoTest() {
 		int numdd = 4, numRep = 3;
 		init(numdd, numRep, Double.MAX_VALUE);
-		
+
 		// key: expected diskId, value: expected ReplicaLevel.
 		HashMap<Integer, ReplicaLevel> expected = new HashMap<Integer, ReplicaLevel>();
 		List<DiskInfo> dInfos;
@@ -234,10 +234,10 @@ public class RAPoSDADataDiskManagerTest {
 		Block block30 = new Block(new BigInteger("3"), 15.0, 3);
 		setOwnerDiskAndRepLevel(block30, ReplicaLevel.ONE, numdd);
 		ddm.write(new Block[]{block30});
-		
+
 		// related to disk=0,repLevel=0
 		block00.setAccessTime(1.0);
-		
+
 		expected.put(0, ReplicaLevel.ZERO);
 		expected.put(1, ReplicaLevel.ONE);
 		expected.put(2, ReplicaLevel.TWO);
@@ -247,10 +247,10 @@ public class RAPoSDADataDiskManagerTest {
 			assertThat(expected.containsKey(dInfo.getDiskId()), is(true));
 			assertThat(expected.get(dInfo.getDiskId()), is(dInfo.getRepLevel()));
 		}
-		
-		// related to disk=2,repLevel=1 
+
+		// related to disk=2,repLevel=1
 		block20.setAccessTime(1.0);
-		
+
 		expected.clear();
 		expected.put(2, ReplicaLevel.ZERO);
 		expected.put(3, ReplicaLevel.ONE);
@@ -262,15 +262,15 @@ public class RAPoSDADataDiskManagerTest {
 			assertThat(expected.get(dInfo.getDiskId()), is(dInfo.getRepLevel()));
 		}
 	}
-	
+
 	@Test
 	public void getLongestStandbyDiskInfoTest() {
 		int numdd = 4, numRep = 3;
 		init(numdd, numRep, 10.0);
-		
+
 		List<DiskInfo> dInfos;
 		DiskInfo sleepest;
-		
+
 		Block block00 = new Block(new BigInteger("0"), 0.0, 0);
 		setOwnerDiskAndRepLevel(block00, ReplicaLevel.ZERO, numdd);
 		ddm.write(new Block[]{block00});
@@ -283,7 +283,7 @@ public class RAPoSDADataDiskManagerTest {
 		Block block30 = new Block(new BigInteger("3"), 3.0, 3);
 		setOwnerDiskAndRepLevel(block30, ReplicaLevel.ZERO, numdd);
 		ddm.write(new Block[]{block30});
-		
+
 		// related to disk=0,repLevel=0
 		// repLevel0 is disk0 last access =  0.0
 		// repLevel1 is disk1 last access =  1.0
@@ -300,17 +300,18 @@ public class RAPoSDADataDiskManagerTest {
 		Block block40 = new Block(new BigInteger("4"), 4.0, 0);
 		setOwnerDiskAndRepLevel(block40, ReplicaLevel.ZERO, numdd);
 		ddm.write(new Block[]{block40});
-		
+
 		// related to disk=3,repLevel=1
 		// repLevel0 is disk2 last access = 10.0
 		// repLevel1 is disk3 last access = 15.0
 		// repLevel2 is disk0 last access = 20.0
 		Block block50 = new Block(new BigInteger("5"), 50.0, 2);
 		setOwnerDiskAndRepLevel(block50, ReplicaLevel.ONE, numdd);
-		
+
 		dInfos = ddm.getRelatedDisksInfo(block50);
 		sleepest = ddm.getLongestStandbyDiskInfo(dInfos, block50.getAccessTime());
 		assertThat(sleepest.getDiskId(), is(2));
 		assertThat(sleepest.getDiskState(), is(DiskState.STANDBY));
 	}
+
 }
