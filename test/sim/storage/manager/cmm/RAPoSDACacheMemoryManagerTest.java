@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import sim.Block;
+import sim.Parameter;
 import sim.storage.CacheParameter;
 import sim.storage.CacheResponse;
 import sim.storage.manager.cmm.assignor.BalancedAssignor;
@@ -30,7 +31,7 @@ public class RAPoSDACacheMemoryManagerTest {
 
 	private void init(int numReplica, int numCacheMemory, int cacheSize, int blockSize) {
 		this.assignor = new BalancedAssignor(numCacheMemory);
-		this.cmParam = new CacheParameter(1.0, cacheSize, 0.0001);
+		this.cmParam = new CacheParameter(1.0, cacheSize, Parameter.CACHE_MEMORY_LATENCY);
 		HashMap<Integer, CacheMemory> cacheMemories = new HashMap<Integer, CacheMemory>();
 		for (int i=0; i < numCacheMemory; i++) {
 			CacheMemory cm = new CacheMemory(i, numReplica, cmParam, blockSize);
@@ -68,7 +69,7 @@ public class RAPoSDACacheMemoryManagerTest {
 		block0.setOwnerDiskId(0);
 		block0.setRepLevel(ReplicaLevel.ZERO);
 		response = cmm.write(block0);
-		assertThat(response.getResponseTime(), is(0.0001));
+		assertThat(response.getResponseTime(), is(Parameter.CACHE_MEMORY_LATENCY));
 		assertThat(response.getMaxBufferDiskId(), is(0));
 		assertThat(response.getOverflows().length, is(0));
 	}
@@ -106,41 +107,41 @@ public class RAPoSDACacheMemoryManagerTest {
 		blockR3.setRepLevel(ReplicaLevel.ONE);
 
 		response = cmm.write(blockP0);
-		assertThat(response.getResponseTime(), is(0.0001));
+		assertThat(response.getResponseTime(), is(Parameter.CACHE_MEMORY_LATENCY));
 		assertThat(response.getMaxBufferDiskId(), is(0));
 		assertThat(response.getOverflows().length, is(0));
 		response = cmm.write(blockR0);
-		assertThat(response.getResponseTime(), is(0.0001));
+		assertThat(response.getResponseTime(), is(Parameter.CACHE_MEMORY_LATENCY));
 		assertThat(response.getMaxBufferDiskId(), is(1));
 		assertThat(response.getOverflows().length, is(0));
 		response = cmm.write(blockP1);
-		assertThat(response.getResponseTime(), is(0.0001));
+		assertThat(response.getResponseTime(), is(Parameter.CACHE_MEMORY_LATENCY));
 		assertThat(response.getMaxBufferDiskId(), is(1));
 		assertThat(response.getOverflows().length, is(0));
 		response = cmm.write(blockR1);
-		assertThat(response.getResponseTime(), is(0.0001));
+		assertThat(response.getResponseTime(), is(Parameter.CACHE_MEMORY_LATENCY));
 		assertThat(response.getMaxBufferDiskId(), is(2));
 		assertThat(response.getOverflows().length, is(0));
 		response = cmm.write(blockP2);
-		assertThat(response.getResponseTime(), is(0.0001));
+		assertThat(response.getResponseTime(), is(Parameter.CACHE_MEMORY_LATENCY));
 		assertThat(response.getMaxBufferDiskId(), is(0));
 		assertThat(response.getOverflows().length, is(0));
 		response = cmm.write(blockR2);
-		assertThat(response.getResponseTime(), is(0.0001));
+		assertThat(response.getResponseTime(), is(Parameter.CACHE_MEMORY_LATENCY));
 		assertThat(response.getMaxBufferDiskId(), is(1));
 		assertThat(response.getOverflows().length, is(0));
 		response = cmm.write(blockP3);
-		assertThat(response.getResponseTime(), is(0.0001));
+		assertThat(response.getResponseTime(), is(Parameter.CACHE_MEMORY_LATENCY));
 		assertThat(response.getMaxBufferDiskId(), is(1));
 		assertThat(response.getOverflows().length, is(0));
 		response = cmm.write(blockR3);
-		assertThat(response.getResponseTime(), is(0.0001));
+		assertThat(response.getResponseTime(), is(Parameter.CACHE_MEMORY_LATENCY));
 		assertThat(response.getMaxBufferDiskId(), is(2));
 		assertThat(response.getOverflows().length, is(0));
 
 		// idenpotent check
 		response = cmm.write(blockP3);
-		assertThat(response.getResponseTime(), is(0.0001));
+		assertThat(response.getResponseTime(), is(Parameter.CACHE_MEMORY_LATENCY));
 		assertThat(response.getMaxBufferDiskId(), is(1));
 		assertThat(response.getOverflows().length, is(0));
 
@@ -149,7 +150,7 @@ public class RAPoSDACacheMemoryManagerTest {
 		blockP4.setOwnerDiskId(2);
 		blockP4.setRepLevel(ReplicaLevel.ZERO);
 		response = cmm.write(blockP4);
-		assertThat(response.getResponseTime(), is(0.0001));
+		assertThat(response.getResponseTime(), is(Parameter.CACHE_MEMORY_LATENCY));
 		assertThat(response.getMaxBufferDiskId(), is(2));
 		assertThat(response.getOverflows().length, is(3));
 
@@ -158,7 +159,7 @@ public class RAPoSDACacheMemoryManagerTest {
 		blockR4.setOwnerDiskId(3);
 		blockR4.setRepLevel(ReplicaLevel.ONE);
 		response = cmm.write(blockR4);
-		assertThat(response.getResponseTime(), is(0.0001));
+		assertThat(response.getResponseTime(), is(Parameter.CACHE_MEMORY_LATENCY));
 		assertThat(response.getMaxBufferDiskId(), is(3));
 		assertThat(response.getOverflows().length, is(3));
 	}
@@ -174,19 +175,19 @@ public class RAPoSDACacheMemoryManagerTest {
 		blocks = generateBlocks(0, 0, 0.0, 2, 10);
 		for (Block b : blocks) {
 			response = cmm.write(b);
-			assertThat(response.getResponseTime(), is(0.0001));
+			assertThat(response.getResponseTime(), is(Parameter.CACHE_MEMORY_LATENCY));
 			assertThat(response.getOverflows().length, is(0));
 		}
 		blocks = generateBlocks(0, 2, 2.0, 2, 10);
 		for (Block b : blocks) {
 			response = cmm.write(b);
-			assertThat(response.getResponseTime(), is(0.0001));
+			assertThat(response.getResponseTime(), is(Parameter.CACHE_MEMORY_LATENCY));
 			assertThat(response.getOverflows().length, is(0));
 		}
 		blocks = generateBlocks(0, 4, 4.0, 2, 10);
 		for (Block b : blocks) {
 			response = cmm.write(b);
-			assertThat(response.getResponseTime(), is(0.0001));
+			assertThat(response.getResponseTime(), is(Parameter.CACHE_MEMORY_LATENCY));
 			assertThat(response.getOverflows().length, is(0));
 		}
 
@@ -195,7 +196,7 @@ public class RAPoSDACacheMemoryManagerTest {
 		overflow.setOwnerDiskId(0);
 		overflow.setRepLevel(ReplicaLevel.ZERO);
 		response = cmm.write(overflow);
-		assertThat(response.getResponseTime(), is(0.0001));
+		assertThat(response.getResponseTime(), is(Parameter.CACHE_MEMORY_LATENCY));
 		assertThat(response.getMaxBufferDiskId(), is(0));
 		assertThat(response.getOverflows().length, is(4));
 
@@ -209,7 +210,7 @@ public class RAPoSDACacheMemoryManagerTest {
 		notOverflow.setOwnerDiskId(2);
 		notOverflow.setRepLevel(ReplicaLevel.ZERO);
 		response = cmm.write(notOverflow);
-		assertThat(response.getResponseTime(), is(0.0001));
+		assertThat(response.getResponseTime(), is(Parameter.CACHE_MEMORY_LATENCY));
 		assertThat(response.getMaxBufferDiskId(), is(2));
 		assertThat(response.getOverflows().length, is(0));
 	}
@@ -225,34 +226,34 @@ public class RAPoSDACacheMemoryManagerTest {
 		blocks = generateBlocks(0, 0, 0.0, 2, 10);
 		for (Block b : blocks) {
 			response = cmm.write(b);
-			assertThat(response.getResponseTime(), is(0.0001));
+			assertThat(response.getResponseTime(), is(Parameter.CACHE_MEMORY_LATENCY));
 			assertThat(response.getOverflows().length, is(0));
 		}
 		blocks = generateBlocks(0, 2, 2.0, 2, 10);
 		for (Block b : blocks) {
 			response = cmm.write(b);
-			assertThat(response.getResponseTime(), is(0.0001));
+			assertThat(response.getResponseTime(), is(Parameter.CACHE_MEMORY_LATENCY));
 			assertThat(response.getOverflows().length, is(0));
 		}
 		Block read = new Block(new BigInteger("0"), 5.0, 0);
 		read.setOwnerDiskId(0);
 		read.setRepLevel(ReplicaLevel.ZERO);
 		CacheResponse resp = cmm.read(read);
-		assertThat(resp.getResponseTime(), is(0.0001));
+		assertThat(resp.getResponseTime(), is(Parameter.CACHE_MEMORY_LATENCY));
 		assertThat(resp.getResult(), is(read));
 
 		Block notExist = new Block(new BigInteger("11"), 6.0, 0);
 		notExist.setOwnerDiskId(0);
 		notExist.setRepLevel(ReplicaLevel.ZERO);
 		resp = cmm.read(notExist);
-		assertThat(resp.getResponseTime(), is(0.0001));
+		assertThat(resp.getResponseTime(), is(Parameter.CACHE_MEMORY_LATENCY));
 		assertThat(resp.getResult(), is(Block.NULL));
 
 //		Block untilExist = new Block(new BigInteger("2"), 1.5, 0);
 //		untilExist.setOwnerDiskId(0);
 //		untilExist.setRepLevel(ReplicaLevel.ZERO);
 //		resp = cmm.read(untilExist);
-//		assertThat(resp.getResponseTime(), is(0.0001));
+//		assertThat(resp.getResponseTime(), is(Parameter.CACHE_MEMORY_LATENCY));
 //		assertThat(resp.getResult(), is(Block.NULL));
 	}
 
@@ -333,5 +334,52 @@ public class RAPoSDACacheMemoryManagerTest {
 		cmm.write(block);
 		DiskInfo maxBuffDisk = cmm.getMaxBufferDisk(relDisks);
 		assertThat(maxBuffDisk.getDiskId(), is(0));
+	}
+
+	@Test
+	public void serchFromAllRelatedCacheMemories() {
+		int primaryDiskId = 0, numdd = 10;
+		int numReplica = 3, numCacheMemory = 3, cacheSize = 6, blockSize = 1;
+		init(numReplica, numCacheMemory, cacheSize, blockSize);
+
+		Block[] blocks;
+
+		Block blockR0 = new Block(new BigInteger("0"), 0.0, primaryDiskId);
+		blockR0.setRepLevel(ReplicaLevel.ZERO);
+		Block blockR1 = new Block(new BigInteger("0"), 0.0, primaryDiskId);
+		blockR1.setRepLevel(ReplicaLevel.ONE);
+		Block blockR2 = new Block(new BigInteger("0"), 0.0, primaryDiskId);
+		blockR2.setRepLevel(ReplicaLevel.TWO);
+		blocks = new Block[]{blockR0, blockR1, blockR2};
+		for (Block b : blocks) {
+			cmm.write(b);
+		}
+
+		// At this time, the block replicas with id 0 are cached CM0 to CM2
+		CacheResponse cResp = cmm.read(blockR0);
+		assertThat(cResp.getResponseTime(), is(Parameter.CACHE_MEMORY_LATENCY));
+		assertThat(cResp.getResult(), is(blockR0));
+
+		// if remove blockR0(primary), since replicas are still living in cacheds
+		// (r=1, r=2), read the blockR0 will hit.
+		cmm.remove(blockR0);
+		cResp = cmm.read(blockR0);
+		assertThat(cResp.getResponseTime(), is(Parameter.CACHE_MEMORY_LATENCY));
+		assertThat(cResp.getResult(), is(blockR0));
+
+		// if remove blockR1(r=1), since replicas are still living in cacheds
+		// (r=2), read the blockR0 will hit.
+		cmm.remove(blockR1);
+		cResp = cmm.read(blockR0);
+		assertThat(cResp.getResponseTime(), is(Parameter.CACHE_MEMORY_LATENCY));
+		assertThat(cResp.getResult(), is(blockR0));
+
+		// if remove blockR1(r=2), since there are no replicas in the cacheds
+		// , read the blockR0 will not hit.
+		cmm.remove(blockR2);
+		cResp = cmm.read(blockR0);
+		assertThat(cResp.getResponseTime(), is(Parameter.CACHE_MEMORY_LATENCY));
+		assertThat(cResp.getResult(), is(Block.NULL));
+
 	}
 }

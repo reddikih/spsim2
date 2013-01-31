@@ -7,11 +7,13 @@ import sim.Block;
 import sim.storage.CacheResponse;
 import sim.storage.manager.cmm.assignor.IAssignor;
 import sim.storage.util.DiskInfo;
+import sim.storage.util.ReplicaLevel;
 
 public class RAPoSDACacheMemoryManager {
 
 	private HashMap<Integer, CacheMemory> cacheMemories;
 	private IAssignor assignor;
+	private int numReplica;
 
 	public RAPoSDACacheMemoryManager(
 			HashMap<Integer, CacheMemory> cacheMemories,
@@ -19,15 +21,29 @@ public class RAPoSDACacheMemoryManager {
 			int numReplica) {
 		this.cacheMemories = cacheMemories;
 		this.assignor = assignor;
+		this.numReplica = numReplica;
 	}
 
 	public CacheResponse read(Block block) {
-		int assignedMemory = assignor.assign(
-				block.getPrimaryDiskId(),
-				block.getRepLevel().getValue());
+		CacheResponse result = null;
+		int primDiskId = block.getPrimaryDiskId();
 
-		CacheMemory cm = cacheMemories.get(assignedMemory);
-		return cm.read(block);
+		for (ReplicaLevel repLevel : ReplicaLevel.values()) {
+			if (repLevel.getValue() >= numReplica) break;
+			int assignedMemory =
+				assignor.assign(primDiskId, repLevel.getValue());
+			CacheMemory cm = cacheMemories.get(assignedMemory);
+			assert cm != null;
+			Block retrieveBlock = new Block(
+					block.getId(),
+					block.getAccessTime(),
+					block.getPrimaryDiskId());
+			retrieveBlock.setRepLevel(repLevel);
+			result = cm.read(retrieveBlock);
+			if (result.getResult().equals(block)) break;
+		}
+		assert result != null;
+		return result;
 	}
 
 	public RAPoSDACacheWriteResponse write(Block block) {
