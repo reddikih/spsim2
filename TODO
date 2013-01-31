@@ -5,18 +5,19 @@
 ○CacheDiskのwrite実装
 ○SMの初期化処理
 ○CacheMemoryManager.getMaxBufferDisk()の単体テストを実装する
-CacheMemoryからのread時は全てのキャッシュメモリのレプリカを含むRegionから探す
-ログ出力処理
-CLIパーサー追加
+○CacheMemoryからのread時は全てのキャッシュメモリのレプリカを含むRegionから探す
 統計値収集
 HDDの消費電力計算
+SMのclose()処理の実装
+ログ出力処理
+CLIパーサー追加
 Memoryの消費電力計算
 シナリオテスト
 
 CacheDiskとDiskCacheの重複を取り除く（リファクタリングする）
 CacheDiskとDataDiskの重複を取り除く（リファクタリングする）
+ディスクの状態変更の方法を見直す（リファクタリングする）
 ブロックIDの表現をBigIntegerからLongに変更する（BigIntegerの必要性は低い）
-ディスクの状態変更の方法を見直す（データ構造とアルゴリズムの両方をリファクタリングする）
 
 ※CacheDiskは内部的にはプライマリブロックのみのキャッシュとして振舞う．
 ※n重化した時のreadのアルゴリズムはちょっと変わる．（論文でも明記すること）
