@@ -208,8 +208,9 @@ public class RAPoSDAStorageManager {
 
 	private DiskResponse writeToDataDisk(
 			RAPoSDACacheWriteResponse cmResp, double arrivalTime) {
-		if(!ddm.isSpinning(cmResp.getMaxBufferDiskId(), arrivalTime))
-			ddm.spinUp(cmResp.getMaxBufferDiskId(), arrivalTime);
+		int maxBufferDiskId = cmResp.getMaxBufferDiskId();
+		if(!ddm.isSpinning(maxBufferDiskId, arrivalTime))
+			ddm.spinUp(maxBufferDiskId, arrivalTime);
 		Block[] blocks = cmResp.getOverflows();
 		updateArrivalTimeOfBlocks(blocks, arrivalTime);
 		return ddm.write(blocks);
