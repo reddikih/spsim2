@@ -4,5 +4,8 @@
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="lib" path="lib/junit-4.10.jar" sourcepath="lib/junit-4.10-src.jar"/>
+	<classpathentry kind="lib" path="lib/logback-classic-1.0.9.jar" sourcepath="lib/logback-classic-1.0.9-sources.jar"/>
+	<classpathentry kind="lib" path="lib/logback-core-1.0.9.jar" sourcepath="lib/logback-core-1.0.9-sources.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-api-1.7.2.jar" sourcepath="lib/slf4j-api-1.7.2-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
