@@ -159,7 +159,7 @@ public class DataDiskTest {
 		assertThat(dd.isSpinning(accessTime), is(true));
 
 		thrown.expect(IllegalDiskStateException.class);
-		double delay = dd.spinUp(accessTime);
+		dd.spinUp(accessTime);
 	}
 
 }
