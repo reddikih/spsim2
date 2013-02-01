@@ -33,8 +33,13 @@ public abstract class StateManager {
 		return result;
 	}
 
+	public void postStateUpdate(DiskState state, double start, double end) {
+		double energy = calcEnergy(state, end - start);
+		// TODO log energy
+	}
+
 	public abstract DiskState getState(double arrivalTime, double lastActiveTime);
 
-	public abstract double stateUpdate(double updateTime, double lastArrivalTime, double lastResponseTime);
+	public abstract double stateUpdate(double updateTime, double lastIdleStartTime);
 
 }

@@ -30,37 +30,20 @@ public class CacheDiskStateManager extends StateManager {
 	@Override
 	public double stateUpdate(
 			double updateTime,
-			double lastArrivalTime,
-			double lastResponseTime) {
+			double lastIdleStartTime) {
 
 		double latency = 0.0;
 		double start, end;
 		double energy;
 
-		double lastActiveTime = lastArrivalTime + lastResponseTime;
-
-		DiskState state = getState(updateTime, lastActiveTime);
+		DiskState state = getState(updateTime, lastIdleStartTime);
 		switch (state) {
 		case ACTIVE :
-			start = lastArrivalTime;
-			end = lastActiveTime;
-			energy = calcEnergy(DiskState.ACTIVE, end - start);
-			if (energy > 0) {
-				// TODO log energy
-			}
-
 			// There is a few latency but no state change.
-			latency = (lastActiveTime) - updateTime;
+			latency = (lastIdleStartTime) - updateTime;
 			break;
 		case IDLE :
-			start = lastArrivalTime;
-			end = lastActiveTime;
-			energy = calcEnergy(DiskState.ACTIVE, end - start);
-			if (energy > 0) {
-				// TODO log energy
-			}
-
-			start = end;
+			start = lastIdleStartTime;
 			end = updateTime;
 			energy = calcEnergy(DiskState.IDLE, end - start);
 			if (energy > 0) {

@@ -7,8 +7,7 @@ public class HardDiskDrive {
 	private final static int SECTOR_SIZE = 512;
 	private final int id;
 
-	protected double lastArrivalTime;
-	protected double lastResponseTime;
+	protected double lastIdleStartTime;
 
 	protected HDDParameter parameter;
 	private DiskCache diskCache;
@@ -42,6 +41,7 @@ public class HardDiskDrive {
 			assert block.getAccessTime() == arrivalTime;
 			double blockResponse = calclateAccessTime(Block.BLOCK_SIZE, block.getAccessTime());
 			response = response < blockResponse ? blockResponse : response;
+			updateAccessParameter(arrivalTime, response);
 		}
 		return response;
 	}
@@ -50,8 +50,6 @@ public class HardDiskDrive {
 		double serviceTime = calculateServiceTime(size);
 		double queueingTime = calculateQueueingTime(arrivalTime);
 		double responseTime = serviceTime + queueingTime;
-
-		updateAccessParameter(arrivalTime, responseTime);
 
 		return responseTime;
 	}
@@ -68,14 +66,12 @@ public class HardDiskDrive {
 	}
 
 	private double calculateQueueingTime(double arrivalTime) {
-		double lastAccessTime = lastArrivalTime + lastResponseTime;
-		double queueingTime = arrivalTime < lastAccessTime ? lastAccessTime - arrivalTime : 0.0;
+		double queueingTime = arrivalTime < lastIdleStartTime ? lastIdleStartTime - arrivalTime : 0.0;
 		return queueingTime;
 	}
 
 	private void updateAccessParameter(double arrivalTime, double responseTime) {
-		this.lastArrivalTime = arrivalTime;
-		this.lastResponseTime = responseTime;
+		this.lastIdleStartTime = arrivalTime + responseTime;
 	}
 
 	public int getId() {

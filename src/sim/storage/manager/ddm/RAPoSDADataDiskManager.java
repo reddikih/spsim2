@@ -7,7 +7,6 @@ import java.util.List;
 import sim.Block;
 import sim.storage.DiskResponse;
 import sim.storage.util.DiskInfo;
-import sim.storage.util.DiskState;
 import sim.storage.util.ReplicaLevel;
 
 public class RAPoSDADataDiskManager {
@@ -76,7 +75,7 @@ public class RAPoSDADataDiskManager {
 	public double spinUp(int diskId, double accessTime) {
 		DataDisk dd = dataDiskMap.get(diskId);
 		assert dd != null;
-		return dd.stateUpdate(accessTime);
+		return dd.spinUp(accessTime);
 	}
 
 	public int getNumberOfDataDisks() {

@@ -11,6 +11,7 @@ import sim.storage.CacheResponse;
 import sim.storage.HDDParameter;
 import sim.storage.HardDiskDrive;
 import sim.storage.state.CacheDiskStateManager;
+import sim.storage.util.DiskState;
 
 public class CacheDisk extends HardDiskDrive implements Cache {
 
@@ -51,8 +52,13 @@ public class CacheDisk extends HardDiskDrive implements Cache {
 
 	private double actualRead(Block[] blocks) {
 		double arrivalTime = blocks[0].getAccessTime();
-		stm.stateUpdate(arrivalTime, lastArrivalTime, lastResponseTime);
-		return super.read(blocks);
+		double latency = stm.stateUpdate(arrivalTime, lastIdleStartTime);
+		double responseTime = super.read(blocks);
+
+		arrivalTime += latency;
+
+		stm.postStateUpdate(DiskState.ACTIVE, arrivalTime, responseTime);
+		return responseTime;
 	}
 
 	private Block getEntry(Block block) {
@@ -82,8 +88,19 @@ public class CacheDisk extends HardDiskDrive implements Cache {
 			}
 		}
 		result.setAccessTime(block.getAccessTime());
-		double diskTime = write(new Block[]{result});
+		double diskTime = actualWrite(new Block[]{result});
 		return new CacheResponse(diskTime, result);
+	}
+
+	private double actualWrite(Block[] blocks) {
+		double arrivalTime = blocks[0].getAccessTime();
+		double latency = stm.stateUpdate(arrivalTime, lastIdleStartTime);
+		double responseTime = super.write(blocks);
+
+		arrivalTime += latency;
+
+		stm.postStateUpdate(DiskState.ACTIVE, arrivalTime, responseTime);
+		return responseTime;
 	}
 
 	private void addEntry(Block block) {
