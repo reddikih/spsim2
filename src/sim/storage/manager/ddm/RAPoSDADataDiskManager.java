@@ -21,7 +21,7 @@ public class RAPoSDADataDiskManager {
 			int numberOfDataDisks,
 			int numberOfReplica,
 			HashMap<Integer, DataDisk> dataDiskMap) {
-		
+
 		if (numberOfDataDisks != dataDiskMap.size())
 			throw new IllegalArgumentException("number of data disks is invalid.");
 
@@ -29,7 +29,7 @@ public class RAPoSDADataDiskManager {
 		this.numberOfReplica = numberOfReplica;
 		this.dataDiskMap = dataDiskMap;
 	}
-	
+
 	public DiskResponse write(Block[] blocks) {
 		List<Block> writtenBlocks = new ArrayList<Block>();
 		double arrivalTime = blocks[0].getAccessTime();
@@ -70,8 +70,7 @@ public class RAPoSDADataDiskManager {
 	public boolean isSpinning(int diskId, double accessTime) {
 		DataDisk dd = dataDiskMap.get(diskId);
 		assert dd != null;
-		DiskState state = dd.getState(accessTime);
-		return DiskState.ACTIVE == state || DiskState.IDLE == state;
+		return dd.isSpinning(accessTime);
 	}
 
 	public double spinUp(int diskId, double accessTime) {
@@ -86,7 +85,7 @@ public class RAPoSDADataDiskManager {
 
 	public List<DiskInfo> getRelatedDisksInfo(Block block) {
 		List<DiskInfo> diskInfos = new ArrayList<DiskInfo>();
-		
+
 		int i = 0;
 		for (ReplicaLevel repLevel : ReplicaLevel.values()) {
 			if (numberOfReplica <= i) break;
@@ -105,7 +104,7 @@ public class RAPoSDADataDiskManager {
 
 	public DiskInfo getLongestStandbyDiskInfo(
 			List<DiskInfo> diskInfos, double accessTime) {
-		
+
 		DiskInfo longestSleeper = null;
 		double longestSleepTime = Double.MIN_VALUE;
 		for (DiskInfo dInfo : diskInfos) {

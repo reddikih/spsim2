@@ -45,6 +45,15 @@ public class DataDisk extends HardDiskDrive {
 		return latency;
 	}
 
+	public boolean isSpinning(double accessTime) {
+		DiskState state = getState(accessTime);
+		return DiskState.ACTIVE == state || DiskState.IDLE == state;
+	}
+
+	public double spinUp(double accessTime) {
+		return stm.spinUp(accessTime, lastArrivalTime + lastResponseTime);
+	}
+
 	public double getStandbyTime(double accessTime) {
 		double result = accessTime - (lastArrivalTime + lastResponseTime);
 		return result < 0 ? 0 : result;

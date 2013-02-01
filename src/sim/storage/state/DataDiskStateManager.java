@@ -132,4 +132,58 @@ public class DataDiskStateManager extends StateManager {
 		}
 		return latency;
 	}
+
+	public double spinUp(double accessTime, double lastIdleStartTime) {
+		DiskState current = getState(accessTime, lastIdleStartTime);
+		double tempDelay = 0.0;
+		double b, e, energy;
+
+		switch(current) {
+		case SPINDOWN:
+			tempDelay =
+				(lastIdleStartTime +
+				spindownThreshold +
+				parameter.getSpindownTime()) - accessTime;
+
+			// calculate idle energy
+			b = lastIdleStartTime;
+			e = b + spindownThreshold;
+			energy = calcEnergy(DiskState.IDLE, e - b);
+
+			// calculate spindown energy
+			b = e;
+			e = accessTime;
+			energy = calcEnergy(DiskState.SPINDOWN, e - b);
+
+			break;
+		case STANDBY:
+			// calculate idle energy
+			b = lastIdleStartTime;
+			e = b + spindownThreshold;
+			energy = calcEnergy(DiskState.IDLE, e - b);
+
+			// calculate spindown energy
+			b = e;
+			e = b + parameter.getSpindownTime();
+			energy = calcEnergy(DiskState.SPINDOWN, e - b);
+
+			// calculate standby energy
+			b = e;
+			e = accessTime;
+			energy = calcEnergy(DiskState.SPINDOWN, e - b);
+
+			break;
+		default:
+			throw new IllegalDiskStateException(
+					"invalid disk state in Spinning up the current is " +
+					current);
+		}
+
+		// calculate spinup energy
+		b = e;
+		e = b + parameter.getSpinupTime();
+		energy = calcEnergy(DiskState.SPINDOWN, e - b);
+
+		return tempDelay + parameter.getSpinupTime();
+	}
 }
