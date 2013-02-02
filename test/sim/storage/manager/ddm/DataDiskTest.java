@@ -162,4 +162,26 @@ public class DataDiskTest {
 		dd.spinUp(accessTime);
 	}
 
+	@Test
+	public void delayCheck() {
+		DataDisk dd = new DataDisk(0, diskParam, getStm(Parameter.SPINDOWN_THRESHOLD));
+		Block[] blocks = null;
+		double result;
+
+		double firstAccess = Parameter.SPINDOWN_THRESHOLD + Parameter.HDD_SPINDOWN_TIME + 1.0;
+		Block b0 = new Block(new BigInteger("0"), firstAccess, 0);
+		blocks = new Block[]{b0};
+		assertThat(dd.isSpinning(firstAccess), is(false));
+		dd.spinUp(firstAccess);
+		result = dd.write(blocks);
+		assertThat(result, is(aBlockResp + Parameter.HDD_SPINUP_TIME));
+
+		double secondAccess = firstAccess + 1.0;
+		double wait2nd = firstAccess + result - secondAccess;
+		Block b1 = new Block(new BigInteger("1"), secondAccess, 0);
+		blocks = new Block[]{b1};
+		result = dd.write(blocks);
+		assertThat(result, is(aBlockResp + wait2nd));
+	}
+
 }

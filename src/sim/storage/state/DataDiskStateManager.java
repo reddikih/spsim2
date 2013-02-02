@@ -1,10 +1,13 @@
 package sim.storage.state;
 
+import sim.storage.HardDiskDrive;
+import sim.storage.manager.ddm.DataDisk;
 import sim.storage.util.DiskState;
 
 public class DataDiskStateManager extends StateManager {
 
 	private double spindownThreshold;
+	private static String format = "DataDisk[%d] State:%s Energy:%.2f time:%.3f start:%.4f end:%.4f\n";
 
 	public DataDiskStateManager(
 			double spindownThreshold, DiskStateParameter parameter) {
@@ -13,15 +16,18 @@ public class DataDiskStateManager extends StateManager {
 		this.spindownThreshold = spindownThreshold;
 	}
 
+	@Override
 	public DiskState getState(double arrivalTime, double lastIdleStartTime) {
 		// if disk access is the first, then the disk state is IDLE.
+		boolean isFirst = false;
 		if (lastIdleStartTime == 0)
-			return DiskState.IDLE;
+//			return DiskState.IDLE;
+			isFirst = true;
 
 		DiskState result;
 		double delta = arrivalTime - lastIdleStartTime;
 
-		if (delta < 0) {
+		if (delta < 0 && !isFirst) {
 			// Access during Active
 			result = DiskState.ACTIVE;
 		} else if (delta <= spindownThreshold) {
@@ -37,7 +43,9 @@ public class DataDiskStateManager extends StateManager {
 		return result;
 	}
 
-	public double stateUpdate(double updateTime, double lastIdleStartTime) {
+	@Override
+	public double stateUpdate(
+			HardDiskDrive dd, double updateTime, double lastIdleStartTime) {
 
 		double latency = 0.0;
 		double start, end;
@@ -56,7 +64,15 @@ public class DataDiskStateManager extends StateManager {
 			end = updateTime;
 			energy = calcEnergy(DiskState.IDLE, end - start);
 			if (energy > 0) {
-				// TODO log energy
+				// TODO to be replaced with logging library
+				System.out.printf(
+						DataDiskStateManager.format,
+						dd.getId(),
+						DiskState.IDLE,
+						energy,
+						end - start,
+						start,
+						end);
 			}
 			break;
 		case SPINDOWN :
@@ -64,48 +80,86 @@ public class DataDiskStateManager extends StateManager {
 			end = start + spindownThreshold;
 			energy = calcEnergy(DiskState.IDLE, end - start);
 			if (energy > 0) {
-				// TODO log energy
+				// TODO to be replaced with logging library
+				System.out.printf(
+						DataDiskStateManager.format,
+						dd.getId(),
+						DiskState.IDLE,
+						energy,
+						end - start,
+						start,
+						end);
 			}
 
 			start = end;
 			end = updateTime;
 			energy = calcEnergy(DiskState.SPINDOWN, end - start);
 			if (energy > 0) {
-				// TODO log energy
+				// TODO to be replaced with logging library
+				System.out.printf(
+						DataDiskStateManager.format,
+						dd.getId(),
+						DiskState.SPINDOWN,
+						energy,
+						end - start,
+						start,
+						end);
 			}
-
-			latency = (end + parameter.getSpinupTime()) - updateTime;
 			break;
 		case STANDBY :
 			start = lastIdleStartTime;
 			end = start + spindownThreshold;
 			energy = calcEnergy(DiskState.IDLE, end - start);
 			if (energy > 0) {
-				// TODO log energy
+				// TODO to be replaced with logging library
+				System.out.printf(
+						DataDiskStateManager.format,
+						dd.getId(),
+						DiskState.IDLE,
+						energy,
+						end - start,
+						start,
+						end);
 			}
 
 			start = end;
 			end = start + parameter.getSpindownTime();
 			energy = calcEnergy(DiskState.SPINDOWN, end - start);
 			if (energy > 0) {
-				// TODO log energy
+				// TODO to be replaced with logging library
+				System.out.printf(
+						DataDiskStateManager.format,
+						dd.getId(),
+						DiskState.SPINDOWN,
+						energy,
+						end - start,
+						start,
+						end);
 			}
 
 			start = end;
 			end = updateTime;
 			energy = calcEnergy(DiskState.STANDBY, end - start);
 			if (energy > 0) {
-				// TODO log energy
+				// TODO to be replaced with logging library
+				System.out.printf(
+						DataDiskStateManager.format,
+						dd.getId(),
+						DiskState.STANDBY,
+						energy,
+						end - start,
+						start,
+						end);
 			}
 			break;
 		}
 		return latency;
 	}
 
-	public double spinUp(double accessTime, double lastIdleStartTime) {
+	public double spinUp(DataDisk dd, double accessTime, double lastIdleStartTime) {
 		DiskState current = getState(accessTime, lastIdleStartTime);
 		double tempDelay = 0.0;
-		double b, e, energy;
+		double start, end, energy;
 
 		switch(current) {
 		case SPINDOWN:
@@ -115,36 +169,76 @@ public class DataDiskStateManager extends StateManager {
 				parameter.getSpindownTime()) - accessTime;
 
 			// calculate idle energy
-			b = lastIdleStartTime;
-			e = b + spindownThreshold;
-			energy = calcEnergy(DiskState.IDLE, e - b);
-			// TODO log energy
+			start = lastIdleStartTime;
+			end = start + spindownThreshold;
+			energy = calcEnergy(DiskState.IDLE, end - start);
+			// TODO to be replaced with logging library
+			System.out.printf(
+					DataDiskStateManager.format,
+					dd.getId(),
+					DiskState.IDLE,
+					energy,
+					end - start,
+					start,
+					end);
 
 			// calculate spindown energy
-			b = e;
-			e = accessTime;
-			energy = calcEnergy(DiskState.SPINDOWN, e - b);
-			// TODO log energy
+			start = end;
+			end = accessTime;
+			energy = calcEnergy(DiskState.SPINDOWN, end - start);
+			// TODO to be replaced with logging library
+			System.out.printf(
+					DataDiskStateManager.format,
+					dd.getId(),
+					DiskState.SPINDOWN,
+					energy,
+					end - start,
+					start,
+					end);
 
 			break;
 		case STANDBY:
 			// calculate idle energy
-			b = lastIdleStartTime;
-			e = b + spindownThreshold;
-			energy = calcEnergy(DiskState.IDLE, e - b);
-			// TODO log energy
+			start = lastIdleStartTime;
+			end = start + spindownThreshold;
+			energy = calcEnergy(DiskState.IDLE, end - start);
+			// TODO to be replaced with logging library
+			System.out.printf(
+					DataDiskStateManager.format,
+					dd.getId(),
+					DiskState.IDLE,
+					energy,
+					end - start,
+					start,
+					end);
 
 			// calculate spindown energy
-			b = e;
-			e = b + parameter.getSpindownTime();
-			energy = calcEnergy(DiskState.SPINDOWN, e - b);
-			// TODO log energy
+			start = end;
+			end = start + parameter.getSpindownTime();
+			energy = calcEnergy(DiskState.SPINDOWN, end - start);
+			// TODO to be replaced with logging library
+			System.out.printf(
+					DataDiskStateManager.format,
+					dd.getId(),
+					DiskState.SPINDOWN,
+					energy,
+					end - start,
+					start,
+					end);
 
 			// calculate standby energy
-			b = e;
-			e = accessTime;
-			energy = calcEnergy(DiskState.SPINDOWN, e - b);
-			// TODO log energy
+			start = end;
+			end = accessTime;
+			energy = calcEnergy(DiskState.STANDBY, end - start);
+			// TODO to be replaced with logging library
+			System.out.printf(
+					DataDiskStateManager.format,
+					dd.getId(),
+					DiskState.STANDBY,
+					energy,
+					end - start,
+					start,
+					end);
 
 			break;
 		default:
@@ -154,11 +248,35 @@ public class DataDiskStateManager extends StateManager {
 		}
 
 		// calculate spinup energy
-		b = e;
-		e = b + parameter.getSpinupTime();
-		energy = calcEnergy(DiskState.SPINDOWN, e - b);
-		// TODO log energy
+		start = end;
+		end = start + parameter.getSpinupTime();
+		energy = calcEnergy(DiskState.SPINUP, end - start);
+		// TODO to be replaced with logging library
+		System.out.printf(
+				DataDiskStateManager.format,
+				dd.getId(),
+				DiskState.SPINUP,
+				energy,
+				end - start,
+				start,
+				end);
 
 		return tempDelay + parameter.getSpinupTime();
 	}
+
+	@Override
+	public void postStateUpdate(
+			HardDiskDrive disk, DiskState state, double start, double end) {
+		double energy = calcEnergy(state, end - start);
+		// TODO to be replaced with logging library
+		System.out.printf(
+				DataDiskStateManager.format,
+				disk.getId(),
+				state,
+				energy,
+				end - start,
+				start,
+				end);
+	}
+
 }

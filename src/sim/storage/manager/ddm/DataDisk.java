@@ -22,24 +22,32 @@ public class DataDisk extends HardDiskDrive {
 	@Override
 	public double read(Block[] blocks) {
 		double arrivalTime = blocks[0].getAccessTime();
-		double latency = stm.stateUpdate(arrivalTime, lastIdleStartTime);
+		double latency = stm.stateUpdate(this, arrivalTime, lastIdleStartTime);
 		double responseTime = super.read(blocks);
 
 		arrivalTime += latency;
 
-		stm.postStateUpdate(DiskState.ACTIVE, arrivalTime, responseTime);
+		stm.postStateUpdate(
+				this,
+				DiskState.ACTIVE,
+				arrivalTime,
+				arrivalTime + responseTime);
 		return responseTime;
 	}
 
 	@Override
 	public double write(Block[] blocks) {
 		double arrivalTime = blocks[0].getAccessTime();
-		double latency = stm.stateUpdate(arrivalTime, lastIdleStartTime);
+		double latency = stm.stateUpdate(this, arrivalTime, lastIdleStartTime);
 		double responseTime = super.write(blocks);
 
 		arrivalTime += latency;
 
-		stm.postStateUpdate(DiskState.ACTIVE, arrivalTime, responseTime);
+		stm.postStateUpdate(
+				this,
+				DiskState.ACTIVE,
+				arrivalTime,
+				arrivalTime + responseTime);
 		return responseTime;
 	}
 
@@ -53,11 +61,13 @@ public class DataDisk extends HardDiskDrive {
 	}
 
 	public double spinUp(double accessTime) {
-		return stm.spinUp(accessTime, lastIdleStartTime);
+		double delay = stm.spinUp(this, accessTime, lastIdleStartTime);
+		lastIdleStartTime = accessTime + delay;
+		return delay;
 	}
 
 	public void close(double closeTime) {
-		stm.stateUpdate(closeTime, lastIdleStartTime);
+		stm.stateUpdate(this, closeTime, lastIdleStartTime);
 	}
 
 	public double getStandbyTime(double accessTime) {

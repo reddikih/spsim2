@@ -52,12 +52,16 @@ public class CacheDisk extends HardDiskDrive implements Cache {
 
 	private double actualRead(Block[] blocks) {
 		double arrivalTime = blocks[0].getAccessTime();
-		double latency = stm.stateUpdate(arrivalTime, lastIdleStartTime);
+		double latency = stm.stateUpdate(this, arrivalTime, lastIdleStartTime);
 		double responseTime = super.read(blocks);
 
 		arrivalTime += latency;
 
-		stm.postStateUpdate(DiskState.ACTIVE, arrivalTime, responseTime);
+		stm.postStateUpdate(
+				this,
+				DiskState.ACTIVE,
+				arrivalTime,
+				arrivalTime + responseTime);
 		return responseTime;
 	}
 
@@ -94,12 +98,16 @@ public class CacheDisk extends HardDiskDrive implements Cache {
 
 	private double actualWrite(Block[] blocks) {
 		double arrivalTime = blocks[0].getAccessTime();
-		double latency = stm.stateUpdate(arrivalTime, lastIdleStartTime);
+		double latency = stm.stateUpdate(this, arrivalTime, lastIdleStartTime);
 		double responseTime = super.write(blocks);
 
 		arrivalTime += latency;
 
-		stm.postStateUpdate(DiskState.ACTIVE, arrivalTime, responseTime);
+		stm.postStateUpdate(
+				this,
+				DiskState.ACTIVE,
+				arrivalTime,
+				arrivalTime + responseTime);
 		return responseTime;
 	}
 
@@ -117,7 +125,7 @@ public class CacheDisk extends HardDiskDrive implements Cache {
 	}
 
 	public void close(double closeTime) {
-		stm.stateUpdate(closeTime, lastIdleStartTime);
+		stm.stateUpdate(this, closeTime, lastIdleStartTime);
 	}
 
 }

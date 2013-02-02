@@ -1,5 +1,6 @@
 package sim.storage.state;
 
+import sim.storage.HardDiskDrive;
 import sim.storage.util.DiskState;
 
 public abstract class StateManager {
@@ -12,6 +13,8 @@ public abstract class StateManager {
 
 	protected double calcEnergy(DiskState state, double time) {
 		double result = 0.0;
+
+		assert time >= 0;
 
 		switch (state) {
 		case ACTIVE :
@@ -33,13 +36,10 @@ public abstract class StateManager {
 		return result;
 	}
 
-	public void postStateUpdate(DiskState state, double start, double end) {
-		double energy = calcEnergy(state, end - start);
-		// TODO log energy
-	}
+	public abstract void postStateUpdate(HardDiskDrive disk, DiskState state, double start, double end);
 
 	public abstract DiskState getState(double arrivalTime, double lastActiveTime);
 
-	public abstract double stateUpdate(double updateTime, double lastIdleStartTime);
+	public abstract double stateUpdate(HardDiskDrive disk, double updateTime, double lastIdleStartTime);
 
 }

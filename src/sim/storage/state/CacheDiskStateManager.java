@@ -1,8 +1,11 @@
 package sim.storage.state;
 
+import sim.storage.HardDiskDrive;
 import sim.storage.util.DiskState;
 
 public class CacheDiskStateManager extends StateManager {
+
+	private static String format = "CacheDisk[%d] State:%s Energy:%.2f time:%.3f start:%.4f end:%.4f\n";
 
 	public CacheDiskStateManager(DiskStateParameter parameter) {
 		super(parameter);
@@ -29,6 +32,7 @@ public class CacheDiskStateManager extends StateManager {
 
 	@Override
 	public double stateUpdate(
+			HardDiskDrive cd,
 			double updateTime,
 			double lastIdleStartTime) {
 
@@ -47,7 +51,15 @@ public class CacheDiskStateManager extends StateManager {
 			end = updateTime;
 			energy = calcEnergy(DiskState.IDLE, end - start);
 			if (energy > 0) {
-				// TODO log energy
+				// TODO to be replaced with logging library
+				System.out.printf(
+						CacheDiskStateManager.format,
+						cd.getId(),
+						DiskState.IDLE,
+						energy,
+						end - start,
+						start,
+						end);
 			}
 			break;
 		default:
@@ -55,6 +67,25 @@ public class CacheDiskStateManager extends StateManager {
 					"In this case, the disk state should be ACTIVE or IDLE");
 		}
 		return latency;
+	}
+
+	@Override
+	public void postStateUpdate(
+			HardDiskDrive disk, DiskState state, double start, double end) {
+		if (end < start)
+			throw new IllegalArgumentException(
+					"start time should be less than equal end time");
+
+		double energy = calcEnergy(state, end - start);
+		// TODO to be replaced with logging library
+		System.out.printf(
+				CacheDiskStateManager.format,
+				disk.getId(),
+				state,
+				energy,
+				end - start,
+				start,
+				end);
 	}
 
 }
