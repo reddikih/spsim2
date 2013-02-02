@@ -116,4 +116,8 @@ public class CacheDisk extends HardDiskDrive implements Cache {
 		return removed;
 	}
 
+	public void close(double closeTime) {
+		stm.stateUpdate(closeTime, lastIdleStartTime);
+	}
+
 }

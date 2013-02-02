@@ -141,7 +141,7 @@ public class Simulator {
 	}
 
 	private void close(double closeTime, RAPoSDAStorageManager sm) {
-
+		sm.close(closeTime);
 	}
 
 	public static void main(String[] args) {

@@ -2,6 +2,7 @@ package sim.storage.manager.cdm;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -90,6 +91,13 @@ public class RAPoSDACacheDiskManager {
 		assert 0 <= lastAssignedId && lastAssignedId <= numberOfCacheDisks;
 		lastAssignedId = lastAssignedId % numberOfCacheDisks;
 		return lastAssignedId++;
+	}
+
+	public void close(double closeTime) {
+		Collection<CacheDisk> cds = cacheDisks.values();
+		for (CacheDisk cd : cds) {
+			cd.close(closeTime);
+		}
 	}
 
 }

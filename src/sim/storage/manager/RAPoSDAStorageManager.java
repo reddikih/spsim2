@@ -283,4 +283,9 @@ public class RAPoSDAStorageManager {
 			block.setAccessTime(arrivalTime);
 		}
 	}
+
+	public void close(double closeTime) {
+		cdm.close(closeTime);
+		ddm.close(closeTime);
+	}
 }

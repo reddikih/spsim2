@@ -1,6 +1,7 @@
 package sim.storage.manager.ddm;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -116,6 +117,13 @@ public class RAPoSDADataDiskManager {
 			}
 		}
 		return longestSleeper;
+	}
+
+	public void close(double closeTime) {
+		Collection<DataDisk> dds = dataDiskMap.values();
+		for (DataDisk dd : dds) {
+			dd.close(closeTime);
+		}
 	}
 
 }

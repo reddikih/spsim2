@@ -56,6 +56,10 @@ public class DataDisk extends HardDiskDrive {
 		return stm.spinUp(accessTime, lastIdleStartTime);
 	}
 
+	public void close(double closeTime) {
+		stm.stateUpdate(closeTime, lastIdleStartTime);
+	}
+
 	public double getStandbyTime(double accessTime) {
 		// It is assumed that this method is called only when
 		// the disk is in the standby state. Thus
