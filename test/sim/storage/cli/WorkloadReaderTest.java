@@ -36,6 +36,9 @@ public class WorkloadReaderTest {
 
 		requests = wReader.getRequests(5);
 		assertThat(requests.length, is(2));
+		
+		requests = wReader.getRequests(5);
+		assertThat(requests.length, is(0));
 	}
 
 }

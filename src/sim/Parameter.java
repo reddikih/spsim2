@@ -14,6 +14,8 @@ public class Parameter {
 	public static final int BLOCK_SIZE = 1;
 
 	public static final int NUMBER_OF_REPLICA = 2;
+	
+	public static final String WORKLOAD_FILE_PATH = "config/workload/workload";
 
 
 	///--- Cache memory parameters. ---///

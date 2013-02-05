@@ -134,10 +134,11 @@ public class Simulator {
 	}
 
 	private Client getClient() {
-		return new Client();
+		return new Client(Parameter.WORKLOAD_FILE_PATH);
 	}
 
 	private double run(Client client, RAPoSDAStorageManager sm) {
+		client.registerInitialData(sm);
 		return client.run(sm);
 	}
 

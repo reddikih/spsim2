@@ -22,17 +22,17 @@ public class RAPoSDAStorageManager {
 
 	/**
 	 * TODO
-	 * データディスクは，それぞれ担当するBlockIDの範囲を持っていること．
-	 * そうしないと，新しい書き込みは常にラウンドロビンでディスクに割り当てられ，
-	 * キャッシュメモリのキューの増え方は， 各メモリで常に同一となってしまう．
+	 * 繝��繧ｿ繝�ぅ繧ｹ繧ｯ縺ｯ�後◎繧後◇繧梧球蠖薙☆繧毅lockID縺ｮ遽�峇繧呈戟縺｣縺ｦ縺�ｋ縺薙→��
+	 * 縺昴≧縺励↑縺�→�梧眠縺励＞譖ｸ縺崎ｾｼ縺ｿ縺ｯ蟶ｸ縺ｫ繝ｩ繧ｦ繝ｳ繝峨Ο繝薙Φ縺ｧ繝�ぅ繧ｹ繧ｯ縺ｫ蜑ｲ繧雁ｽ薙※繧峨ｌ��
+	 * 繧ｭ繝｣繝�す繝･繝｡繝｢繝ｪ縺ｮ繧ｭ繝･繝ｼ縺ｮ蠅励∴譁ｹ縺ｯ��蜷�Γ繝｢繝ｪ縺ｧ蟶ｸ縺ｫ蜷御ｸ�→縺ｪ縺｣縺ｦ縺励∪縺�ｼ�
 	 */
 
 	private RAPoSDACacheMemoryManager cmm;
 	private RAPoSDACacheDiskManager cdm;
 	private RAPoSDADataDiskManager ddm;
 
-	private final int blockSize;
-	private final int numReplica;
+	protected final int blockSize;
+	protected final int numReplica;
 
 	private BigInteger blockNumber = new BigInteger("0");
 
@@ -41,7 +41,7 @@ public class RAPoSDAStorageManager {
 	 * key; request key
 	 * value: corresponding blocks
 	 */
-	private HashMap<Long, Block[]> requestMap;
+	protected HashMap<Long, Block[]> requestMap;
 
 	public RAPoSDAStorageManager(
 			RAPoSDACacheMemoryManager cmm,
@@ -264,7 +264,7 @@ public class RAPoSDAStorageManager {
 		BigInteger numDataDisk =
 			new BigInteger(String.valueOf(ddm.getNumberOfDataDisks()));
 		// TODO try to separate assignor class.
-		// There is not only roundrobin favor assgin algorithm.
+		// There is not only roundrobin favor assign algorithm.
 		return (blockId.mod(numDataDisk)).intValue();
 	}
 
@@ -272,7 +272,7 @@ public class RAPoSDAStorageManager {
 		return primaryDiskId + repLevel.getValue() % ddm.getNumberOfDataDisks();
 	}
 
-	private BigInteger nextBlockId() {
+	protected BigInteger nextBlockId() {
 		BigInteger next = new BigInteger(blockNumber.toString());
 		blockNumber.add(BigInteger.ONE);
 		return next;
@@ -284,8 +284,25 @@ public class RAPoSDAStorageManager {
 		}
 	}
 
+	public void register(long requestId, int size) {
+		// TODO refactoring. integrate with divideRequest method
+		Block[] blocks = null;
+		int numBlocks = (int)Math.ceil(size / blockSize);
+		assert numBlocks > 0;
+		blocks = new Block[numBlocks];
+		for (int i=0; i < numBlocks; i++) {
+			BigInteger blockId = nextBlockId();
+			blocks[i] = new Block(
+					blockId,
+					0.0,
+					assignPrimaryDiskId(blockId));
+		}
+		requestMap.put(requestId, blocks);
+	}
+	
 	public void close(double closeTime) {
 		cdm.close(closeTime);
 		ddm.close(closeTime);
 	}
+
 }
