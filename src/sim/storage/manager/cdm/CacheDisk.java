@@ -55,12 +55,12 @@ public class CacheDisk extends HardDiskDrive implements Cache {
 		double latency = stm.stateUpdate(this, arrivalTime, lastIdleStartTime);
 		double responseTime = super.read(blocks);
 
-		arrivalTime += latency;
+//		arrivalTime += latency;
 
 		stm.postStateUpdate(
 				this,
 				DiskState.ACTIVE,
-				arrivalTime,
+				arrivalTime + latency,
 				arrivalTime + responseTime);
 		return responseTime;
 	}
@@ -101,12 +101,12 @@ public class CacheDisk extends HardDiskDrive implements Cache {
 		double latency = stm.stateUpdate(this, arrivalTime, lastIdleStartTime);
 		double responseTime = super.write(blocks);
 
-		arrivalTime += latency;
+//		arrivalTime += latency;
 
 		stm.postStateUpdate(
 				this,
 				DiskState.ACTIVE,
-				arrivalTime,
+				arrivalTime + latency,
 				arrivalTime + responseTime);
 		return responseTime;
 	}

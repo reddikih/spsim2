@@ -10,12 +10,12 @@ public class Parameter {
 	/** Spindown threshold time represents by second. */
 	public static final double SPINDOWN_THRESHOLD = 10.0;
 
-//	public static final int BLOCK_SIZE = 4 * 1024;
-	public static final int BLOCK_SIZE = 1;
+	public static final int BLOCK_SIZE = 4 * 1024;
+//	public static final int BLOCK_SIZE = 1;
 
 	public static final int NUMBER_OF_REPLICA = 2;
-	
-	public static final String WORKLOAD_FILE_PATH = "config/workload/workload";
+
+	public static final String WORKLOAD_FILE_PATH = "config/workload/workload.1h";
 
 
 	///--- Cache memory parameters. ---///
@@ -23,8 +23,8 @@ public class Parameter {
 	public static final double CACHE_MEMORY_THRESHOLD = 1.0;
 
 	/** Cache memory size. 4GB by default. */
-//	public static final long CACHE_MEMORY_SIZE = 4 * 1024 * 1024 * 1024;
-	public static final long CACHE_MEMORY_SIZE = 0;
+	public static final long CACHE_MEMORY_SIZE = 4 * 1024 * 1024 * 1024;
+//	public static final long CACHE_MEMORY_SIZE = 0;
 
 	/** Memory access latency represents by second. */
 	public static final double CACHE_MEMORY_LATENCY = 0.00001;
