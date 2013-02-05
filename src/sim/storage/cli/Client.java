@@ -3,6 +3,7 @@ package sim.storage.cli;
 import sim.Request;
 import sim.Response;
 import sim.storage.manager.RAPoSDAStorageManager;
+import sim.storage.util.RequestType;
 
 public class Client {
 
@@ -13,7 +14,7 @@ public class Client {
 	public double run(RAPoSDAStorageManager sm) {
 		double lastResponse = Double.MIN_VALUE;
 		for (int i=0; i < NUM_REQUEST; i++) {
-			Request req = new Request(i, REQ_SIZE, arrival++);
+			Request req = new Request(i, REQ_SIZE, arrival++, RequestType.WRITE);
 			Response res = sm.write(req);
 			double tempTime = req.getArrvalTime() + res.getResponseTime();
 			lastResponse = lastResponse < tempTime ? tempTime : lastResponse;
