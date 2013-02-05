@@ -82,7 +82,7 @@ public class WorkloadReader {
 		List<Request> requests = new ArrayList<Request>();
 		try {
 			String line = "";
-			while ((line = this.reader.readLine()) != null || require > 0) {
+			while (require > 0 && (line = this.reader.readLine()) != null) {
 				if ((line = line.trim()).length() == 0) continue;
 				if (line.startsWith("#")) continue;
 

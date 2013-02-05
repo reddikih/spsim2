@@ -24,14 +24,18 @@ public class WorkloadReaderTest {
 
 	@Test
 	public void workloadReadTest() {
-		int require = 3;
-
 		String filePath = "test/sim/storage/cli/workload";
 		WorkloadReader wReader = new WorkloadReader(filePath);
 		wReader.getInitialDataInfo();
 
-		Request[] requests = wReader.getRequests(require);
-		assertThat(requests.length, is(require));
+		Request[] requests = wReader.getRequests(1);
+		assertThat(requests.length, is(1));
+
+		requests = wReader.getRequests(0);
+		assertThat(requests.length, is(0));
+
+		requests = wReader.getRequests(5);
+		assertThat(requests.length, is(2));
 	}
 
 }
