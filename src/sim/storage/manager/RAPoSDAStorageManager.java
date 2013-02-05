@@ -269,12 +269,12 @@ public class RAPoSDAStorageManager {
 	}
 
 	private int assignOwnerDiskId(int primaryDiskId, ReplicaLevel repLevel) {
-		return primaryDiskId + repLevel.getValue() % ddm.getNumberOfDataDisks();
+		return (primaryDiskId + repLevel.getValue()) % ddm.getNumberOfDataDisks();
 	}
 
 	protected BigInteger nextBlockId() {
 		BigInteger next = new BigInteger(blockNumber.toString());
-		blockNumber.add(BigInteger.ONE);
+		blockNumber = blockNumber.add(BigInteger.ONE);
 		return next;
 	}
 
@@ -299,7 +299,7 @@ public class RAPoSDAStorageManager {
 		}
 		requestMap.put(requestId, blocks);
 	}
-	
+
 	public void close(double closeTime) {
 		cdm.close(closeTime);
 		ddm.close(closeTime);
