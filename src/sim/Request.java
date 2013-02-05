@@ -1,15 +1,19 @@
 package sim;
 
+import sim.storage.util.RequestType;
+
 public class Request {
 
 	private long key;
 	private int size;
 	private double arrvalTime;
+	private RequestType type;
 
-	public Request(long key, int size, double arrivalTime) {
+	public Request(long key, int size, double arrivalTime, RequestType type) {
 		this.key = key;
 		this.size = size;
 		this.arrvalTime = arrivalTime;
+		this.type = type;
 	}
 
 	public long getKey() {
@@ -22,5 +26,9 @@ public class Request {
 
 	public double getArrvalTime() {
 		return arrvalTime;
+	}
+
+	public RequestType getType() {
+		return type;
 	}
 }

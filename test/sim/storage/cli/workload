@@ -1,0 +1,10 @@
+# this is a comment line.
+[header]
+numfiles 10
+lower 1
+upper 5
+
+# key, size, arrival, action
+0,1,0.01,read
+1,2,0.02,write
+2,5,0.022,read

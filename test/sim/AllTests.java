@@ -5,6 +5,7 @@ import org.junit.runners.Suite;
 
 import sim.storage.DiskCacheTest;
 import sim.storage.HardDiskDriveTest;
+import sim.storage.cli.WorkloadReaderTest;
 import sim.storage.manager.cdm.CacheDiskTest;
 import sim.storage.manager.cdm.RAPoSDACacheDiskManagerTest;
 import sim.storage.manager.cmm.RAPoSDACacheMemoryManagerTest;
@@ -21,7 +22,8 @@ import sim.storage.manager.ddm.RAPoSDADataDiskManagerTest;
 	RAPoSDADataDiskManagerTest.class,
 	DataDiskTest.class,
 	CacheDiskTest.class,
-	RAPoSDACacheDiskManagerTest.class
+	RAPoSDACacheDiskManagerTest.class,
+	WorkloadReaderTest.class
 })
 
 public class AllTests {}
