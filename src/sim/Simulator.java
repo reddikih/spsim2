@@ -2,6 +2,7 @@ package sim;
 
 import java.util.HashMap;
 
+import sim.statistics.RAPoSDAStats;
 import sim.storage.CacheParameter;
 import sim.storage.HDDParameter;
 import sim.storage.cli.Client;
@@ -142,6 +143,14 @@ public class Simulator {
 
 	private void close(double closeTime, RAPoSDAStorageManager sm) {
 		sm.close(closeTime);
+		showStats(closeTime);
+	}
+
+	private void showStats(double closeTime) {
+		System.out.println("------------------");
+		System.out.printf("Simulation Time: %.3f\n", closeTime);
+		System.out.printf("Total Energy: %.4f\n", RAPoSDAStats.getTotalEnergyConsumption());
+		System.out.printf("Avg. Response Time: %.6f\n", RAPoSDAStats.getAverageResponseTime());
 	}
 
 	public static void main(String[] args) {

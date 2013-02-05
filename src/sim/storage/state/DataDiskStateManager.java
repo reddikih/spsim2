@@ -1,5 +1,6 @@
 package sim.storage.state;
 
+import sim.statistics.RAPoSDAStats;
 import sim.storage.HardDiskDrive;
 import sim.storage.manager.ddm.DataDisk;
 import sim.storage.util.DiskState;
@@ -64,6 +65,7 @@ public class DataDiskStateManager extends StateManager {
 			end = updateTime;
 			energy = calcEnergy(DiskState.IDLE, end - start);
 			if (energy > 0) {
+				RAPoSDAStats.addEnergy(energy, DiskState.IDLE);
 				// TODO to be replaced with logging library
 				System.out.printf(
 						DataDiskStateManager.format,
@@ -80,6 +82,7 @@ public class DataDiskStateManager extends StateManager {
 			end = start + spindownThreshold;
 			energy = calcEnergy(DiskState.IDLE, end - start);
 			if (energy > 0) {
+				RAPoSDAStats.addEnergy(energy, DiskState.IDLE);
 				// TODO to be replaced with logging library
 				System.out.printf(
 						DataDiskStateManager.format,
@@ -95,6 +98,7 @@ public class DataDiskStateManager extends StateManager {
 			end = updateTime;
 			energy = calcEnergy(DiskState.SPINDOWN, end - start);
 			if (energy > 0) {
+				RAPoSDAStats.addEnergy(energy, DiskState.SPINDOWN);
 				// TODO to be replaced with logging library
 				System.out.printf(
 						DataDiskStateManager.format,
@@ -111,6 +115,7 @@ public class DataDiskStateManager extends StateManager {
 			end = start + spindownThreshold;
 			energy = calcEnergy(DiskState.IDLE, end - start);
 			if (energy > 0) {
+				RAPoSDAStats.addEnergy(energy, DiskState.IDLE);
 				// TODO to be replaced with logging library
 				System.out.printf(
 						DataDiskStateManager.format,
@@ -126,6 +131,7 @@ public class DataDiskStateManager extends StateManager {
 			end = start + parameter.getSpindownTime();
 			energy = calcEnergy(DiskState.SPINDOWN, end - start);
 			if (energy > 0) {
+				RAPoSDAStats.addEnergy(energy, DiskState.SPINDOWN);
 				// TODO to be replaced with logging library
 				System.out.printf(
 						DataDiskStateManager.format,
@@ -141,6 +147,7 @@ public class DataDiskStateManager extends StateManager {
 			end = updateTime;
 			energy = calcEnergy(DiskState.STANDBY, end - start);
 			if (energy > 0) {
+				RAPoSDAStats.addEnergy(energy, DiskState.STANDBY);
 				// TODO to be replaced with logging library
 				System.out.printf(
 						DataDiskStateManager.format,
@@ -172,6 +179,8 @@ public class DataDiskStateManager extends StateManager {
 			start = lastIdleStartTime;
 			end = start + spindownThreshold;
 			energy = calcEnergy(DiskState.IDLE, end - start);
+
+			RAPoSDAStats.addEnergy(energy, DiskState.IDLE);
 			// TODO to be replaced with logging library
 			System.out.printf(
 					DataDiskStateManager.format,
@@ -186,6 +195,8 @@ public class DataDiskStateManager extends StateManager {
 			start = end;
 			end = accessTime;
 			energy = calcEnergy(DiskState.SPINDOWN, end - start);
+
+			RAPoSDAStats.addEnergy(energy, DiskState.SPINDOWN);
 			// TODO to be replaced with logging library
 			System.out.printf(
 					DataDiskStateManager.format,
@@ -202,6 +213,8 @@ public class DataDiskStateManager extends StateManager {
 			start = lastIdleStartTime;
 			end = start + spindownThreshold;
 			energy = calcEnergy(DiskState.IDLE, end - start);
+
+			RAPoSDAStats.addEnergy(energy, DiskState.IDLE);
 			// TODO to be replaced with logging library
 			System.out.printf(
 					DataDiskStateManager.format,
@@ -216,6 +229,8 @@ public class DataDiskStateManager extends StateManager {
 			start = end;
 			end = start + parameter.getSpindownTime();
 			energy = calcEnergy(DiskState.SPINDOWN, end - start);
+
+			RAPoSDAStats.addEnergy(energy, DiskState.SPINDOWN);
 			// TODO to be replaced with logging library
 			System.out.printf(
 					DataDiskStateManager.format,
@@ -230,6 +245,9 @@ public class DataDiskStateManager extends StateManager {
 			start = end;
 			end = accessTime;
 			energy = calcEnergy(DiskState.STANDBY, end - start);
+
+			RAPoSDAStats.addEnergy(energy, DiskState.STANDBY);
+
 			// TODO to be replaced with logging library
 			System.out.printf(
 					DataDiskStateManager.format,
@@ -251,6 +269,8 @@ public class DataDiskStateManager extends StateManager {
 		start = end;
 		end = start + parameter.getSpinupTime();
 		energy = calcEnergy(DiskState.SPINUP, end - start);
+
+		RAPoSDAStats.addEnergy(energy, DiskState.SPINUP);
 		// TODO to be replaced with logging library
 		System.out.printf(
 				DataDiskStateManager.format,
@@ -268,6 +288,7 @@ public class DataDiskStateManager extends StateManager {
 	public void postStateUpdate(
 			HardDiskDrive disk, DiskState state, double start, double end) {
 		double energy = calcEnergy(state, end - start);
+		RAPoSDAStats.addEnergy(energy, state);
 		// TODO to be replaced with logging library
 		System.out.printf(
 				DataDiskStateManager.format,

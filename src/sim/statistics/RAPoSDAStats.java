@@ -1,15 +1,8 @@
 package sim.statistics;
 
-public class RAPoSDAStats {
+import sim.storage.util.DiskState;
 
-	public static enum STAT_TYPE {
-		ACTIVE_ENERGY,
-		IDLE_ENERGY,
-		STANDBY_ENERGY,
-		SPINDOWN_ENERGY,
-		SPINUP_ENERGY,
-		RESPONSE_TIME,
-	}
+public class RAPoSDAStats {
 
 	private static double totalActiveEnergy;
 	private static double totalIdleEnergy;
@@ -20,20 +13,25 @@ public class RAPoSDAStats {
 	private static double totalResponseTime;
 	private static double totalRequests;
 
-	public static void addEnergy(double added, STAT_TYPE type) {
+	public static void addEnergy(double added, DiskState type) {
 		switch(type) {
-		case ACTIVE_ENERGY:
+		case ACTIVE:
 			totalActiveEnergy += added;
-		case IDLE_ENERGY:
+			break;
+		case IDLE:
 			totalIdleEnergy += added;
-		case STANDBY_ENERGY:
+			break;
+		case STANDBY:
 			totalStandbyEnergy += added;
-		case SPINUP_ENERGY:
+			break;
+		case SPINUP:
 			totalSpinupEnergy += added;
-		case SPINDOWN_ENERGY:
+			break;
+		case SPINDOWN:
 			totalSpindownEnergy += added;
+			break;
 		default:
-			throw new IllegalArgumentException("STAT_TYPE is invalid.");
+			throw new IllegalArgumentException("state is invalid." + type);
 		}
 	}
 

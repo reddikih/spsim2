@@ -1,5 +1,6 @@
 package sim.storage.state;
 
+import sim.statistics.RAPoSDAStats;
 import sim.storage.HardDiskDrive;
 import sim.storage.util.DiskState;
 
@@ -51,6 +52,7 @@ public class CacheDiskStateManager extends StateManager {
 			end = updateTime;
 			energy = calcEnergy(DiskState.IDLE, end - start);
 			if (energy > 0) {
+				RAPoSDAStats.addEnergy(energy, DiskState.IDLE);
 				// TODO to be replaced with logging library
 				System.out.printf(
 						CacheDiskStateManager.format,
@@ -77,6 +79,7 @@ public class CacheDiskStateManager extends StateManager {
 					"start time should be less than equal end time");
 
 		double energy = calcEnergy(state, end - start);
+		RAPoSDAStats.addEnergy(energy, state);
 		// TODO to be replaced with logging library
 		System.out.printf(
 				CacheDiskStateManager.format,
