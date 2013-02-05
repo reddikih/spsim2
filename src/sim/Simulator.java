@@ -1,5 +1,6 @@
 package sim;
 
+import java.util.Date;
 import java.util.HashMap;
 
 import sim.statistics.RAPoSDAStats;
@@ -147,6 +148,16 @@ public class Simulator {
 		showStats(closeTime);
 	}
 
+	public void displayStartMessage() {
+		System.out.println("Storage Simulator Version 2.");
+		System.out.println("Starting time at: " + new Date().toString());
+	}
+
+	public void displayTerminateMessage(long elapsedTime) {
+		System.out.println("End time at: " + new Date().toString());
+		System.out.printf("Elapsed Time: %,d[s]\n", elapsedTime / 1000);
+	}
+
 	private void showStats(double closeTime) {
 		System.out.println("------------------");
 		System.out.printf("Simulation Time: %.3f\n", closeTime);
@@ -156,7 +167,11 @@ public class Simulator {
 
 	public static void main(String[] args) {
 		// TODO parse command line options
+
+		long simStart = System.currentTimeMillis();
+
 		Simulator sim = new Simulator();
+		sim.displayStartMessage();
 
 		Client client = sim.getClient();
 		RAPoSDAStorageManager sm = sim.getSM();
@@ -164,5 +179,8 @@ public class Simulator {
 		double exeTime = sim.run(client, sm);
 
 		sim.close(exeTime, sm);
+
+		long simEnd = System.currentTimeMillis();
+		sim.displayTerminateMessage(simEnd - simStart);
 	}
 }
