@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="build" name="spsim2">
+    <property environment="env"/>
+    <property name="ECLIPSE_HOME" value="C:/pleiades-e3.6-ultimate-jre_20110326/eclipse"/>
+    <property name="junit.output.dir" value="junit"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.6"/>
+    <property name="source" value="1.6"/>
+    <path id="spsim2.classpath">
+        <pathelement location="bin"/>
+        <pathelement location="lib/junit-4.10.jar"/>
+        <pathelement location="lib/logback-classic-1.0.9.jar"/>
+        <pathelement location="lib/logback-core-1.0.9.jar"/>
+        <pathelement location="lib/slf4j-api-1.7.2.jar"/>
+    </path>
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="test">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="spsim2.classpath"/>
+        </javac>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
+            <src path="test"/>
+            <classpath refid="spsim2.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
+    </target>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
+    </target>
+    <target name="AllTests (1)">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="sim.AllTests" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="spsim2.classpath"/>
+        </junit>
+    </target>
+    <target name="BalancedAssignor">
+        <java classname="sim.storage.manager.cmm.assignor.BalancedAssignor" failonerror="true" fork="yes">
+            <classpath refid="spsim2.classpath"/>
+        </java>
+    </target>
+    <target name="CacheDiskTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="sim.storage.manager.cdm.CacheDiskTest" todir="${junit.output.dir}"/>
+            <classpath refid="spsim2.classpath"/>
+        </junit>
+    </target>
+    <target name="DataDiskTest.checkSpinningState">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="sim.storage.manager.ddm.DataDiskTest" todir="${junit.output.dir}"/>
+            <classpath refid="spsim2.classpath"/>
+        </junit>
+    </target>
+    <target name="DataDiskTest.delayCheck">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="sim.storage.manager.ddm.DataDiskTest" todir="${junit.output.dir}"/>
+            <classpath refid="spsim2.classpath"/>
+        </junit>
+    </target>
+    <target name="DataDiskTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="sim.storage.manager.ddm.DataDiskTest" todir="${junit.output.dir}"/>
+            <classpath refid="spsim2.classpath"/>
+        </junit>
+    </target>
+    <target name="DataDiskTest.spinUpTest1">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="sim.storage.manager.ddm.DataDiskTest" todir="${junit.output.dir}"/>
+            <classpath refid="spsim2.classpath"/>
+        </junit>
+    </target>
+    <target name="DataDiskTest.spinUpTest2">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="sim.storage.manager.ddm.DataDiskTest" todir="${junit.output.dir}"/>
+            <classpath refid="spsim2.classpath"/>
+        </junit>
+    </target>
+    <target name="DiskCacheTest (1)">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="sim.storage.DiskCacheTest" todir="${junit.output.dir}"/>
+            <classpath refid="spsim2.classpath"/>
+        </junit>
+    </target>
+    <target name="DiskCacheTest.blockEquality">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="sim.storage.DiskCacheTest" todir="${junit.output.dir}"/>
+            <classpath refid="spsim2.classpath"/>
+        </junit>
+    </target>
+    <target name="DiskCacheTest.readTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="sim.storage.DiskCacheTest" todir="${junit.output.dir}"/>
+            <classpath refid="spsim2.classpath"/>
+        </junit>
+    </target>
+    <target name="DiskCacheTest.writeTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="sim.storage.DiskCacheTest" todir="${junit.output.dir}"/>
+            <classpath refid="spsim2.classpath"/>
+        </junit>
+    </target>
+    <target name="DiskCacheTest.writeTheSameBlock">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="sim.storage.DiskCacheTest" todir="${junit.output.dir}"/>
+            <classpath refid="spsim2.classpath"/>
+        </junit>
+    </target>
+    <target name="HardDiskDriveTest (1)">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="sim.storage.HardDiskDriveTest" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="spsim2.classpath"/>
+        </junit>
+    </target>
+    <target name="HardDiskDriveTest.assertionErrorOccurenceInWrite">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="sim.storage.HardDiskDriveTest" todir="${junit.output.dir}"/>
+            <classpath refid="spsim2.classpath"/>
+        </junit>
+    </target>
+    <target name="HardDiskDriveTest.readWithoutDiskCache">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="sim.storage.HardDiskDriveTest" todir="${junit.output.dir}"/>
+            <classpath refid="spsim2.classpath"/>
+        </junit>
+    </target>
+    <target name="HardDiskDriveTest.sequencialWriteWithoutDiskCache">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="sim.storage.HardDiskDriveTest" todir="${junit.output.dir}"/>
+            <classpath refid="spsim2.classpath"/>
+        </junit>
+    </target>
+    <target name="HardDiskDriveTest.simultaneousWriteWithoutDiskCache">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="sim.storage.HardDiskDriveTest" todir="${junit.output.dir}"/>
+            <classpath refid="spsim2.classpath"/>
+        </junit>
+    </target>
+    <target name="HardDiskDriveTest.writeWithoutDiskCache">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="sim.storage.HardDiskDriveTest" todir="${junit.output.dir}"/>
+            <classpath refid="spsim2.classpath"/>
+        </junit>
+    </target>
+    <target name="RAPoSDACacheDiskManagerTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="sim.storage.manager.cdm.RAPoSDACacheDiskManagerTest" todir="${junit.output.dir}"/>
+            <classpath refid="spsim2.classpath"/>
+        </junit>
+    </target>
+    <target name="RAPoSDACacheMemoryManagerTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="sim.storage.manager.cmm.RAPoSDACacheMemoryManagerTest" todir="${junit.output.dir}"/>
+            <classpath refid="spsim2.classpath"/>
+        </junit>
+    </target>
+    <target name="RAPoSDADataDiskManagerTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="sim.storage.manager.ddm.RAPoSDADataDiskManagerTest" todir="${junit.output.dir}"/>
+            <classpath refid="spsim2.classpath"/>
+        </junit>
+    </target>
+    <target name="RAPoSDADataDiskManagerTest.writeABlockToDDM">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="sim.storage.manager.ddm.RAPoSDADataDiskManagerTest" todir="${junit.output.dir}"/>
+            <classpath refid="spsim2.classpath"/>
+        </junit>
+    </target>
+    <target name="RAPoSDADataDiskManagerTest.writeSomeBlocks">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="sim.storage.manager.ddm.RAPoSDADataDiskManagerTest" todir="${junit.output.dir}"/>
+            <classpath refid="spsim2.classpath"/>
+        </junit>
+    </target>
+    <target name="RAPoSDADataDiskManagerTest.writeTheSameDiskWithDifferentReplicaLevelBlock">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="sim.storage.manager.ddm.RAPoSDADataDiskManagerTest" todir="${junit.output.dir}"/>
+            <classpath refid="spsim2.classpath"/>
+        </junit>
+    </target>
+    <target name="RegionTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="sim.storage.manager.cmm.RegionTest" todir="${junit.output.dir}"/>
+            <classpath refid="spsim2.classpath"/>
+        </junit>
+    </target>
+    <target name="SimpleAssignor">
+        <java classname="sim.storage.manager.cmm.assignor.SimpleAssignor" failonerror="true" fork="yes">
+            <jvmarg line="-ea"/>
+            <classpath refid="spsim2.classpath"/>
+        </java>
+    </target>
+    <target name="Simulator">
+        <java classname="sim.Simulator" failonerror="true" fork="yes">
+            <jvmarg line="-ea -Xms4096m -Xmx5120m"/>
+            <classpath refid="spsim2.classpath"/>
+        </java>
+    </target>
+    <target name="WorkloadReaderTest.getInitialDataTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="sim.storage.cli.WorkloadReaderTest" todir="${junit.output.dir}"/>
+            <classpath refid="spsim2.classpath"/>
+        </junit>
+    </target>
+    <target name="WorkloadReaderTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="sim.storage.cli.WorkloadReaderTest" todir="${junit.output.dir}"/>
+            <classpath refid="spsim2.classpath"/>
+        </junit>
+    </target>
+    <target name="WorkloadReaderTest.workloadReadTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="sim.storage.cli.WorkloadReaderTest" todir="${junit.output.dir}"/>
+            <classpath refid="spsim2.classpath"/>
+        </junit>
+    </target>
+    <target name="junitreport">
+        <junitreport todir="${junit.output.dir}">
+            <fileset dir="${junit.output.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${junit.output.dir}"/>
+        </junitreport>
+    </target>
+</project>
