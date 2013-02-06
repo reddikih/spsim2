@@ -10,8 +10,17 @@ public class RAPoSDAStats {
 	private static double totalSpindownEnergy;
 	private static double totalSpinupEnergy;
 
+	private static int spindownCount;
+	private static int spinupCount;
+
 	private static double totalResponseTime;
-	private static double totalRequests;
+	private static int totalRequests;
+
+	private static double totalDataDiskResponseTime;
+	private static int totalDataDiskAccesses;
+
+	private static double totalCacheDiskResponseTime;
+	private static int totalCacheDiskAccesses;
 
 	public static void addEnergy(double added, DiskState type) {
 		switch(type) {
@@ -40,6 +49,33 @@ public class RAPoSDAStats {
 		totalRequests++;
 	}
 
+	// ignoring seek count.
+	public static void addDataDiskResponseTime(double added) {
+		totalDataDiskResponseTime += added;
+		totalDataDiskAccesses++;
+	}
+
+	public static void addCacheDiskResponseTime(double added) {
+		totalCacheDiskResponseTime += added;
+		totalCacheDiskAccesses++;
+	}
+
+	public static void incrementSpindownCount() {
+		spindownCount++;
+	}
+
+	public static void incrementSpinupCount() {
+		spinupCount++;
+	}
+
+	public static int getSpindownCount() {
+		return spindownCount;
+	}
+
+	public static int getSpinupCount() {
+		return spinupCount;
+	}
+
 	public static double getTotalEnergyConsumption() {
 		return
 		totalActiveEnergy +
@@ -52,6 +88,28 @@ public class RAPoSDAStats {
 	public static double getAverageResponseTime() {
 		if (totalRequests == 0) return 0.0;
 		return totalResponseTime / totalRequests;
+	}
+
+	public static int getNumberOfRequests() {
+		return totalRequests;
+	}
+
+	public static double getAverageDataDiskResponseTime() {
+		if (totalDataDiskAccesses == 0) return 0.0;
+		return totalDataDiskResponseTime / totalDataDiskAccesses;
+	}
+
+	public static int getNumberOfDataDiskAccesses() {
+		return totalDataDiskAccesses;
+	}
+
+	public static double getAverageCacheDiskResponseTime() {
+		if (totalCacheDiskAccesses == 0) return 0.0;
+		return totalCacheDiskResponseTime / totalCacheDiskAccesses;
+	}
+
+	public static int getNumberOfCacheDiskAccesses() {
+		return totalCacheDiskAccesses;
 	}
 
 }

@@ -160,6 +160,11 @@ public class DataDiskStateManager extends StateManager {
 			}
 			break;
 		}
+
+		// log spindown count
+		if (state.equals(DiskState.SPINDOWN) || state.equals(DiskState.STANDBY))
+			RAPoSDAStats.incrementSpindownCount();
+
 		return latency;
 	}
 
@@ -280,6 +285,9 @@ public class DataDiskStateManager extends StateManager {
 				end - start,
 				start,
 				end);
+
+		// log spinup count
+		RAPoSDAStats.incrementSpinupCount();
 
 		return tempDelay + parameter.getSpinupTime();
 	}

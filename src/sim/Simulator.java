@@ -163,6 +163,12 @@ public class Simulator {
 		System.out.printf("Simulation Time: %.3f\n", closeTime);
 		System.out.printf("Total Energy: %.4f\n", RAPoSDAStats.getTotalEnergyConsumption());
 		System.out.printf("Avg. Response Time: %.6f\n", RAPoSDAStats.getAverageResponseTime());
+		System.out.printf("Spindown count: %d\n", RAPoSDAStats.getSpindownCount());
+		System.out.printf("Spinup   count: %d\n", RAPoSDAStats.getSpinupCount());
+		System.out.printf("Avg. data disk response time: %.6f\n", RAPoSDAStats.getAverageDataDiskResponseTime());
+		System.out.printf("data disk access count : %,d\n", RAPoSDAStats.getNumberOfDataDiskAccesses());
+		System.out.printf("Avg. cache disk response time: %.6f\n", RAPoSDAStats.getAverageCacheDiskResponseTime());
+		System.out.printf("cache disk access count : %,d\n", RAPoSDAStats.getNumberOfCacheDiskAccesses());
 	}
 
 	public static void main(String[] args) {

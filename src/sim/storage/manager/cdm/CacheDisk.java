@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import sim.Block;
+import sim.statistics.RAPoSDAStats;
 import sim.storage.Cache;
 import sim.storage.CacheResponse;
 import sim.storage.HDDParameter;
@@ -62,6 +63,10 @@ public class CacheDisk extends HardDiskDrive implements Cache {
 				DiskState.ACTIVE,
 				arrivalTime + latency,
 				arrivalTime + responseTime);
+
+		// log access count
+		RAPoSDAStats.addCacheDiskResponseTime(responseTime);
+
 		return responseTime;
 	}
 
@@ -108,6 +113,10 @@ public class CacheDisk extends HardDiskDrive implements Cache {
 				DiskState.ACTIVE,
 				arrivalTime + latency,
 				arrivalTime + responseTime);
+
+		// log access count
+		RAPoSDAStats.addCacheDiskResponseTime(responseTime);
+
 		return responseTime;
 	}
 

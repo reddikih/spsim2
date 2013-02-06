@@ -1,6 +1,7 @@
 package sim.storage.manager.ddm;
 
 import sim.Block;
+import sim.statistics.RAPoSDAStats;
 import sim.storage.HDDParameter;
 import sim.storage.HardDiskDrive;
 import sim.storage.state.DataDiskStateManager;
@@ -32,6 +33,10 @@ public class DataDisk extends HardDiskDrive {
 				DiskState.ACTIVE,
 				arrivalTime + latency,
 				arrivalTime + responseTime);
+
+		// log access count
+		RAPoSDAStats.addDataDiskResponseTime(responseTime);
+
 		return responseTime;
 	}
 
@@ -48,6 +53,10 @@ public class DataDisk extends HardDiskDrive {
 				DiskState.ACTIVE,
 				arrivalTime + latency,
 				arrivalTime + responseTime);
+
+		// log access count
+		RAPoSDAStats.addDataDiskResponseTime(responseTime);
+
 		return responseTime;
 	}
 
