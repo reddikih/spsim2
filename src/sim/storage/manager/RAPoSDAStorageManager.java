@@ -288,7 +288,7 @@ public class RAPoSDAStorageManager {
 		// TODO refactoring. integrate with divideRequest method
 		Block[] blocks = null;
 		int numBlocks = (int)Math.ceil(size / blockSize);
-		assert numBlocks > 0;
+		if (numBlocks <= 0) numBlocks = 1;
 		blocks = new Block[numBlocks];
 		for (int i=0; i < numBlocks; i++) {
 			BigInteger blockId = nextBlockId();

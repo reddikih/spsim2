@@ -1,11 +1,15 @@
 package sim.storage.state;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import sim.statistics.RAPoSDAStats;
 import sim.storage.HardDiskDrive;
 import sim.storage.util.DiskState;
 
 public class CacheDiskStateManager extends StateManager {
 
+	private static Logger logger = LoggerFactory.getLogger(CacheDiskStateManager.class);
 	private static String format = "CacheDisk[%d] State:%s Energy:%.2f time:%.3f start:%.4f end:%.4f\n";
 
 	public CacheDiskStateManager(DiskStateParameter parameter) {
@@ -54,7 +58,7 @@ public class CacheDiskStateManager extends StateManager {
 			if (energy > 0) {
 				RAPoSDAStats.addEnergy(energy, DiskState.IDLE);
 				// TODO to be replaced with logging library
-				System.out.printf(
+				logger.trace(
 						CacheDiskStateManager.format,
 						cd.getId(),
 						DiskState.IDLE,
@@ -81,7 +85,7 @@ public class CacheDiskStateManager extends StateManager {
 		double energy = calcEnergy(state, end - start);
 		RAPoSDAStats.addEnergy(energy, state);
 		// TODO to be replaced with logging library
-		System.out.printf(
+		logger.trace(
 				CacheDiskStateManager.format,
 				disk.getId(),
 				state,

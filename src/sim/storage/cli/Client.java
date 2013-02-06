@@ -2,6 +2,9 @@ package sim.storage.cli;
 
 import java.util.Random;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import sim.Request;
 import sim.Response;
 import sim.statistics.RAPoSDAStats;
@@ -11,6 +14,7 @@ public class Client {
 
 	private static final int READ_BUFFER = 1024;
 	private WorkloadReader wlReader;
+	private static Logger logger = LoggerFactory.getLogger(Client.class);
 
 	public Client(String workloadPath) {
 		this.wlReader = new WorkloadReader(workloadPath);
@@ -43,6 +47,13 @@ public class Client {
 				lastResponse = lastResponse < tempTime ? tempTime : lastResponse;
 
 				RAPoSDAStats.addResponseTime(response.getResponseTime());
+				logger.trace(
+						String.format(
+								"id:%d arrival:%.5f response:%.5f RTT:%.5f",
+								response.getKey(),
+								request.getArrvalTime(),
+								tempTime,
+								response.getResponseTime()));
 			}
 		}
 		return lastResponse;

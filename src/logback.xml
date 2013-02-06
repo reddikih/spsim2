@@ -1,0 +1,36 @@
+<configuration>
+
+  <property name="OUT_DIR" value="out" />
+
+  <appender name="ENERGY_FILE" class="ch.qos.logback.core.FileAppender">
+    <file>${OUT_DIR}/energy.log</file>
+    <encoder>
+      <pattern>%msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="CLIENT_RESPONSE_FILE" class="ch.qos.logback.core.FileAppender">
+    <file>${OUT_DIR}/clientResponse.log</file>
+    <encoder>
+      <pattern>%msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="sim.storage.state" additivity="false">
+    <appender-ref ref="ENERGY_FILE" />
+  </logger>
+
+  <logger name="sim.storage.cli.Client" additivity="false">
+    <appender-ref ref="CLIENT_RESPONSE_FILE" />
+  </logger>
+
+  <root level="${root-level:-debug}">
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>
