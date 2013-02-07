@@ -10,7 +10,7 @@ import sim.storage.util.DiskState;
 public class CacheDiskStateManager extends StateManager {
 
 	private static Logger logger = LoggerFactory.getLogger(CacheDiskStateManager.class);
-	private static String format = "CacheDisk[%d] State:%s Energy:%.2f time:%.3f start:%.4f end:%.4f\n";
+	private static String format = "CacheDisk[%d] State:%s Energy:%.2f time:%.3f start:%.4f end:%.4f";
 
 	public CacheDiskStateManager(DiskStateParameter parameter) {
 		super(parameter);
@@ -59,13 +59,14 @@ public class CacheDiskStateManager extends StateManager {
 				RAPoSDAStats.addEnergy(energy, DiskState.IDLE);
 				// TODO to be replaced with logging library
 				logger.trace(
-						CacheDiskStateManager.format,
-						cd.getId(),
-						DiskState.IDLE,
-						energy,
-						end - start,
-						start,
-						end);
+						String.format(
+								CacheDiskStateManager.format,
+								cd.getId(),
+								DiskState.IDLE,
+								energy,
+								end - start,
+								start,
+								end));
 			}
 			break;
 		default:
@@ -84,15 +85,15 @@ public class CacheDiskStateManager extends StateManager {
 
 		double energy = calcEnergy(state, end - start);
 		RAPoSDAStats.addEnergy(energy, state);
-		// TODO to be replaced with logging library
 		logger.trace(
-				CacheDiskStateManager.format,
-				disk.getId(),
-				state,
-				energy,
-				end - start,
-				start,
-				end);
+				String.format(
+						CacheDiskStateManager.format,
+						disk.getId(),
+						state,
+						energy,
+						end - start,
+						start,
+						end));
 	}
 
 }

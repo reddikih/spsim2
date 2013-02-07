@@ -35,6 +35,7 @@
     </target>
     <target name="clean">
         <delete dir="bin"/>
+        <delete dir="out"/>
     </target>
     <target depends="clean" name="cleanall"/>
     <target depends="build-subprojects,build-project" name="build"/>
@@ -279,7 +280,7 @@
     </target>
     <target name="Simulator">
         <java classname="sim.Simulator" failonerror="true" fork="yes">
-            <jvmarg line="-ea -Xms4096m -Xmx5120m"/>
+            <jvmarg line="-ea -Xms4096m -Xmx5120m -Droot-level=trace"/>
             <classpath refid="spsim2.classpath"/>
         </java>
     </target>

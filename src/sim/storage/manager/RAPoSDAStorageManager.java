@@ -20,13 +20,6 @@ import sim.storage.util.ReplicaLevel;
 
 public class RAPoSDAStorageManager {
 
-	/**
-	 * TODO
-	 * 繝��繧ｿ繝�ぅ繧ｹ繧ｯ縺ｯ�後◎繧後◇繧梧球蠖薙☆繧毅lockID縺ｮ遽�峇繧呈戟縺｣縺ｦ縺�ｋ縺薙→��
-	 * 縺昴≧縺励↑縺�→�梧眠縺励＞譖ｸ縺崎ｾｼ縺ｿ縺ｯ蟶ｸ縺ｫ繝ｩ繧ｦ繝ｳ繝峨Ο繝薙Φ縺ｧ繝�ぅ繧ｹ繧ｯ縺ｫ蜑ｲ繧雁ｽ薙※繧峨ｌ��
-	 * 繧ｭ繝｣繝�す繝･繝｡繝｢繝ｪ縺ｮ繧ｭ繝･繝ｼ縺ｮ蠅励∴譁ｹ縺ｯ��蜷�Γ繝｢繝ｪ縺ｧ蟶ｸ縺ｫ蜷御ｸ�→縺ｪ縺｣縺ｦ縺励∪縺�ｼ�
-	 */
-
 	private RAPoSDACacheMemoryManager cmm;
 	private RAPoSDACacheDiskManager cdm;
 	private RAPoSDADataDiskManager ddm;
