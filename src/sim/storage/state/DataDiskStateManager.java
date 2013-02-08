@@ -68,100 +68,88 @@ public class DataDiskStateManager extends StateManager {
 			start = lastIdleStartTime;
 			end = updateTime;
 			energy = calcEnergy(DiskState.IDLE, end - start);
-			if (energy > 0) {
-				RAPoSDAStats.addEnergy(energy, DiskState.IDLE);
-				logger.trace(
-						String.format(
-								DataDiskStateManager.format,
-								dd.getId(),
-								DiskState.IDLE,
-								energy,
-								end - start,
-								start,
-								end));
-			}
+			RAPoSDAStats.addEnergy(energy, DiskState.IDLE);
+			logger.trace(
+					String.format(
+							DataDiskStateManager.format,
+							dd.getId(),
+							DiskState.IDLE,
+							energy,
+							end - start,
+							start,
+							end));
 			break;
 		case SPINDOWN :
 			start = lastIdleStartTime;
 			end = start + spindownThreshold;
 			energy = calcEnergy(DiskState.IDLE, end - start);
-			if (energy > 0) {
-				RAPoSDAStats.addEnergy(energy, DiskState.IDLE);
-				logger.trace(
-						String.format(
-								DataDiskStateManager.format,
-								dd.getId(),
-								DiskState.IDLE,
-								energy,
-								end - start,
-								start,
-								end));
-			}
+			RAPoSDAStats.addEnergy(energy, DiskState.IDLE);
+			logger.trace(
+					String.format(
+							DataDiskStateManager.format,
+							dd.getId(),
+							DiskState.IDLE,
+							energy,
+							end - start,
+							start,
+							end));
 
 			start = end;
 			end = updateTime;
 			energy = calcEnergy(DiskState.SPINDOWN, end - start);
-			if (energy > 0) {
-				RAPoSDAStats.addEnergy(energy, DiskState.SPINDOWN);
-				logger.trace(
-						String.format(
-								DataDiskStateManager.format,
-								dd.getId(),
-								DiskState.SPINDOWN,
-								energy,
-								end - start,
-								start,
-								end));
-			}
+			RAPoSDAStats.addEnergy(energy, DiskState.SPINDOWN);
+			logger.trace(
+					String.format(
+							DataDiskStateManager.format,
+							dd.getId(),
+							DiskState.SPINDOWN,
+							energy,
+							end - start,
+							start,
+							end));
 			break;
 		case STANDBY :
 			start = lastIdleStartTime;
 			end = start + spindownThreshold;
 			energy = calcEnergy(DiskState.IDLE, end - start);
-			if (energy > 0) {
-				RAPoSDAStats.addEnergy(energy, DiskState.IDLE);
-				logger.trace(
-						String.format(
-								DataDiskStateManager.format,
-								dd.getId(),
-								DiskState.IDLE,
-								energy,
-								end - start,
-								start,
-								end));
-			}
+			RAPoSDAStats.addEnergy(energy, DiskState.IDLE);
+			logger.trace(
+					String.format(
+							DataDiskStateManager.format,
+							dd.getId(),
+							DiskState.IDLE,
+							energy,
+							end - start,
+							start,
+							end));
 
 			start = end;
 			end = start + parameter.getSpindownTime();
 			energy = calcEnergy(DiskState.SPINDOWN, end - start);
-			if (energy > 0) {
-				RAPoSDAStats.addEnergy(energy, DiskState.SPINDOWN);
-				logger.trace(
-						String.format(
-								DataDiskStateManager.format,
-								dd.getId(),
-								DiskState.SPINDOWN,
-								energy,
-								end - start,
-								start,
-								end));
-			}
+			RAPoSDAStats.addEnergy(energy, DiskState.SPINDOWN);
+			logger.trace(
+					String.format(
+							DataDiskStateManager.format,
+							dd.getId(),
+							DiskState.SPINDOWN,
+							energy,
+							end - start,
+							start,
+							end));
 
 			start = end;
 			end = updateTime;
 			energy = calcEnergy(DiskState.STANDBY, end - start);
-			if (energy > 0) {
-				RAPoSDAStats.addEnergy(energy, DiskState.STANDBY);
-				logger.trace(
-						String.format(
-								DataDiskStateManager.format,
-								dd.getId(),
-								DiskState.STANDBY,
-								energy,
-								end - start,
-								start,
-								end));
-			}
+			RAPoSDAStats.addEnergy(energy, DiskState.STANDBY);
+			logger.trace(
+					String.format(
+							DataDiskStateManager.format,
+							dd.getId(),
+							DiskState.STANDBY,
+							energy,
+							end - start,
+							start,
+							end));
 			break;
 		}
 
@@ -174,12 +162,12 @@ public class DataDiskStateManager extends StateManager {
 
 	public double spinUp(DataDisk dd, double accessTime, double lastIdleStartTime) {
 		DiskState current = getState(accessTime, lastIdleStartTime);
-		double tempDelay = 0.0;
+		double spindownWait = 0.0;
 		double start, end, energy;
 
 		switch(current) {
 		case SPINDOWN:
-			tempDelay =
+			spindownWait =
 				(lastIdleStartTime +
 				spindownThreshold +
 				parameter.getSpindownTime()) - accessTime;
@@ -188,7 +176,6 @@ public class DataDiskStateManager extends StateManager {
 			start = lastIdleStartTime;
 			end = start + spindownThreshold;
 			energy = calcEnergy(DiskState.IDLE, end - start);
-
 			RAPoSDAStats.addEnergy(energy, DiskState.IDLE);
 			logger.trace(
 					String.format(
@@ -204,7 +191,6 @@ public class DataDiskStateManager extends StateManager {
 			start = end;
 			end = accessTime;
 			energy = calcEnergy(DiskState.SPINDOWN, end - start);
-
 			RAPoSDAStats.addEnergy(energy, DiskState.SPINDOWN);
 			logger.trace(
 					String.format(
@@ -222,7 +208,6 @@ public class DataDiskStateManager extends StateManager {
 			start = lastIdleStartTime;
 			end = start + spindownThreshold;
 			energy = calcEnergy(DiskState.IDLE, end - start);
-
 			RAPoSDAStats.addEnergy(energy, DiskState.IDLE);
 			logger.trace(
 					String.format(
@@ -238,7 +223,6 @@ public class DataDiskStateManager extends StateManager {
 			start = end;
 			end = start + parameter.getSpindownTime();
 			energy = calcEnergy(DiskState.SPINDOWN, end - start);
-
 			RAPoSDAStats.addEnergy(energy, DiskState.SPINDOWN);
 			logger.trace(
 					String.format(
@@ -254,9 +238,7 @@ public class DataDiskStateManager extends StateManager {
 			start = end;
 			end = accessTime;
 			energy = calcEnergy(DiskState.STANDBY, end - start);
-
 			RAPoSDAStats.addEnergy(energy, DiskState.STANDBY);
-
 			logger.trace(
 					String.format(
 							DataDiskStateManager.format,
@@ -278,7 +260,6 @@ public class DataDiskStateManager extends StateManager {
 		start = end;
 		end = start + parameter.getSpinupTime();
 		energy = calcEnergy(DiskState.SPINUP, end - start);
-
 		RAPoSDAStats.addEnergy(energy, DiskState.SPINUP);
 		logger.trace(
 				String.format(
@@ -293,7 +274,7 @@ public class DataDiskStateManager extends StateManager {
 		// log spinup count
 		RAPoSDAStats.incrementSpinupCount();
 
-		return tempDelay + parameter.getSpinupTime();
+		return spindownWait + parameter.getSpinupTime();
 	}
 
 	@Override

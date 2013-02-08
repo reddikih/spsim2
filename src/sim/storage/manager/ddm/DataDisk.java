@@ -46,8 +46,6 @@ public class DataDisk extends HardDiskDrive {
 		double latency = stm.stateUpdate(this, arrivalTime, lastIdleStartTime);
 		double responseTime = super.write(blocks);
 
-//		arrivalTime += latency;
-
 		stm.postStateUpdate(
 				this,
 				DiskState.ACTIVE,
