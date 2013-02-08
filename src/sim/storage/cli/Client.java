@@ -47,8 +47,14 @@ public class Client {
 
 				if (RequestType.READ.equals(request.getType())) {
 					response = sm.read(request);
+
+					// read request statistics
+					RAPoSDAStats.incrementRequest(request.getType());
 				} else if (RequestType.WRITE.equals(request.getType())) {
 					response = sm.write(request);
+
+					// write request statistics
+					RAPoSDAStats.incrementRequest(request.getType());
 				}
 
 				assert response != null;
@@ -59,8 +65,9 @@ public class Client {
 				RAPoSDAStats.addResponseTime(response.getResponseTime());
 				logger.trace(
 						String.format(
-								"id:%d arrival:%.5f response:%.5f RTT:%.5f",
+								"id:%d %s arrival:%.5f response:%.5f RTT:%.5f",
 								response.getKey(),
+								request.getType(),
 								request.getArrvalTime(),
 								tempTime,
 								response.getResponseTime()));

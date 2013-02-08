@@ -1,8 +1,12 @@
 package sim.statistics;
 
 import sim.storage.util.DiskState;
+import sim.storage.util.RequestType;
 
 public class RAPoSDAStats {
+
+	private static long readRequestCount;
+	private static long writeRequestCount;
 
 	private static double totalActiveEnergy;
 	private static double totalIdleEnergy;
@@ -12,6 +16,8 @@ public class RAPoSDAStats {
 
 	private static int spindownCount;
 	private static int spinupCount;
+
+	private static int overflowCount;
 
 	private static double totalResponseTime;
 	private static int totalRequests;
@@ -44,6 +50,20 @@ public class RAPoSDAStats {
 		}
 	}
 
+	public static void incrementRequest(RequestType reqType) {
+		switch (reqType) {
+		case READ:
+			readRequestCount++; break;
+		case WRITE:
+			writeRequestCount++; break;
+		}
+	}
+
+	public static long getRequestCount(RequestType reqType) {
+		return RequestType.READ.equals(reqType)
+		? readRequestCount : writeRequestCount;
+	}
+
 	public static void addResponseTime(double added) {
 		totalResponseTime += added;
 		totalRequests++;
@@ -74,6 +94,14 @@ public class RAPoSDAStats {
 
 	public static int getSpinupCount() {
 		return spinupCount;
+	}
+
+	public static void incrementOverflowCount() {
+		overflowCount++;
+	}
+
+	public static int getOverflowCount() {
+		return overflowCount;
 	}
 
 	public static double getTotalEnergyConsumption() {

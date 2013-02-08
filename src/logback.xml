@@ -9,6 +9,13 @@
     </encoder>
   </appender>
 
+  <appender name="CACHE_MEMORY_FILE" class="ch.qos.logback.core.FileAppender">
+    <file>${OUT_DIR}/cacheMemory.log</file>
+    <encoder>
+      <pattern>%msg%n</pattern>
+    </encoder>
+  </appender>
+
   <appender name="CLIENT_RESPONSE_FILE" class="ch.qos.logback.core.FileAppender">
     <file>${OUT_DIR}/clientResponse.log</file>
     <encoder>
@@ -24,6 +31,10 @@
 
   <logger name="sim.storage.state" additivity="false">
     <appender-ref ref="ENERGY_FILE" />
+  </logger>
+
+  <logger name="sim.storage.manager.cmm.CacheMemory" additivity="false">
+    <appender-ref ref="CACHE_MEMORY_FILE" />
   </logger>
 
   <logger name="sim.storage.cli.Client" additivity="false">

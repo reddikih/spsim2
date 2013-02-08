@@ -8,6 +8,7 @@ import java.util.List;
 import sim.Block;
 import sim.Request;
 import sim.Response;
+import sim.statistics.RAPoSDAStats;
 import sim.storage.CacheResponse;
 import sim.storage.DiskResponse;
 import sim.storage.manager.cdm.RAPoSDACacheDiskManager;
@@ -160,6 +161,10 @@ public class RAPoSDAStorageManager {
 						response.getResponseTime() > respTime
 						? response.getResponseTime() : respTime;
 				} else { // cache overflow
+
+					// overflow statistics
+					RAPoSDAStats.incrementOverflowCount();
+
 					double arrivalTime =
 						request.getArrvalTime() + response.getResponseTime();
 

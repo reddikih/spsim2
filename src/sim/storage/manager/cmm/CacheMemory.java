@@ -2,6 +2,9 @@ package sim.storage.manager.cmm;
 
 import java.util.HashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import sim.Block;
 import sim.storage.CacheParameter;
 import sim.storage.CacheResponse;
@@ -12,6 +15,8 @@ public class CacheMemory {
 	private int id;
 	private CacheParameter parameter;
 	private HashMap<ReplicaLevel, Region> regions;
+
+	private static Logger logger = LoggerFactory.getLogger(CacheMemory.class);
 
 
 	public CacheMemory(int id, int numReplica, CacheParameter parameter, int blockSize) {
@@ -40,6 +45,16 @@ public class CacheMemory {
 		CacheResponse response =
 			new CacheResponse(parameter.getLatency(), result);
 
+		// cache memory read log.
+		logger.trace(
+				String.format(
+						"CM[%d] Regin:%d read blockId:%d hit:%d",
+						this.id,
+						block.getRepLevel().getValue(),
+						block.getId(),
+						result.equals(Block.NULL) ? 0 : 1
+						));
+
 		return response;
 	}
 
@@ -55,12 +70,22 @@ public class CacheMemory {
 							parameter.getLatency(),
 							region.getMaxBufferLenghtDiskId(),
 							region.getBlocks());
+
 		} else {
 			response = new RAPoSDACacheWriteResponse(
 							parameter.getLatency(),
 							region.getMaxBufferLenghtDiskId(),
 							region.getEmptyBlocks());
 		}
+
+		// cache memory write log.
+		logger.trace(
+				String.format(
+						"CM[%d] Regin:%d write blockId:%d overflowLength:%d",
+						this.id,
+						block.getRepLevel().getValue(),
+						block.getId(),
+						response.getOverflows().length));
 
 		return response;
 	}
