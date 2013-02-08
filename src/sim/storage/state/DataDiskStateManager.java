@@ -26,7 +26,6 @@ public class DataDiskStateManager extends StateManager {
 		// if disk access is the first, then the disk state is IDLE.
 		boolean isFirst = false;
 		if (lastIdleStartTime == 0)
-//			return DiskState.IDLE;
 			isFirst = true;
 
 		DiskState result;
@@ -95,6 +94,7 @@ public class DataDiskStateManager extends StateManager {
 							end));
 
 			start = end;
+			assert start <= updateTime;
 			end = updateTime;
 			energy = calcEnergy(DiskState.SPINDOWN, end - start);
 			RAPoSDAStats.addEnergy(energy, DiskState.SPINDOWN);
@@ -107,6 +107,7 @@ public class DataDiskStateManager extends StateManager {
 							end - start,
 							start,
 							end));
+			latency = (start + parameter.getSpindownTime()) - updateTime;
 			break;
 		case STANDBY :
 			start = lastIdleStartTime;
@@ -161,103 +162,13 @@ public class DataDiskStateManager extends StateManager {
 	}
 
 	public double spinUp(DataDisk dd, double accessTime, double lastIdleStartTime) {
-		DiskState current = getState(accessTime, lastIdleStartTime);
 		double spindownWait = 0.0;
 		double start, end, energy;
 
-		switch(current) {
-		case SPINDOWN:
-			spindownWait =
-				(lastIdleStartTime +
-				spindownThreshold +
-				parameter.getSpindownTime()) - accessTime;
-
-			// calculate idle energy
-			start = lastIdleStartTime;
-			end = start + spindownThreshold;
-			energy = calcEnergy(DiskState.IDLE, end - start);
-			RAPoSDAStats.addEnergy(energy, DiskState.IDLE);
-			logger.trace(
-					String.format(
-							DataDiskStateManager.format,
-							dd.getId(),
-							DiskState.IDLE,
-							energy,
-							end - start,
-							start,
-							end));
-
-			// calculate spindown energy
-			start = end;
-			end = accessTime;
-			energy = calcEnergy(DiskState.SPINDOWN, end - start);
-			RAPoSDAStats.addEnergy(energy, DiskState.SPINDOWN);
-			logger.trace(
-					String.format(
-							DataDiskStateManager.format,
-							dd.getId(),
-							DiskState.SPINDOWN,
-							energy,
-							end - start,
-							start,
-							end));
-
-			break;
-		case STANDBY:
-			// calculate idle energy
-			start = lastIdleStartTime;
-			end = start + spindownThreshold;
-			energy = calcEnergy(DiskState.IDLE, end - start);
-			RAPoSDAStats.addEnergy(energy, DiskState.IDLE);
-			logger.trace(
-					String.format(
-							DataDiskStateManager.format,
-							dd.getId(),
-							DiskState.IDLE,
-							energy,
-							end - start,
-							start,
-							end));
-
-			// calculate spindown energy
-			start = end;
-			end = start + parameter.getSpindownTime();
-			energy = calcEnergy(DiskState.SPINDOWN, end - start);
-			RAPoSDAStats.addEnergy(energy, DiskState.SPINDOWN);
-			logger.trace(
-					String.format(
-							DataDiskStateManager.format,
-							dd.getId(),
-							DiskState.SPINDOWN,
-							energy,
-							end - start,
-							start,
-							end));
-
-			// calculate standby energy
-			start = end;
-			end = accessTime;
-			energy = calcEnergy(DiskState.STANDBY, end - start);
-			RAPoSDAStats.addEnergy(energy, DiskState.STANDBY);
-			logger.trace(
-					String.format(
-							DataDiskStateManager.format,
-							dd.getId(),
-							DiskState.STANDBY,
-							energy,
-							end - start,
-							start,
-							end));
-
-			break;
-		default:
-			throw new IllegalDiskStateException(
-					"invalid disk state in Spinning up the current is " +
-					current);
-		}
+		spindownWait = stateUpdate(dd, accessTime, lastIdleStartTime);
 
 		// calculate spinup energy
-		start = end;
+		start = accessTime + spindownWait;
 		end = start + parameter.getSpinupTime();
 		energy = calcEnergy(DiskState.SPINUP, end - start);
 		RAPoSDAStats.addEnergy(energy, DiskState.SPINUP);

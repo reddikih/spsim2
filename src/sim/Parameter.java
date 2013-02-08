@@ -3,18 +3,18 @@ package sim;
 public class Parameter {
 
 	///--- System parameters. ---///
-	public static final int NUMBER_OF_CACHE_MEMORIES = 4;
-	public static final int NUMBER_OF_CACHE_DISKS = 7;
+	public static final int NUMBER_OF_CACHE_MEMORIES = 3;
+	public static final int NUMBER_OF_CACHE_DISKS = 3;
 	public static final int NUBER_OF_DISKS_PER_CACHE_GROUP = 10;
 
 	/** Spindown threshold time represents by second. */
 	public static final double SPINDOWN_THRESHOLD = 10.0;
 
-	public static final int BLOCK_SIZE = 32 * 1024;
+	public static final int BLOCK_SIZE = 8 * 1024;
 
-	public static final int NUMBER_OF_REPLICA = 2;
+	public static final int NUMBER_OF_REPLICA = 3;
 
-	public static final String WORKLOAD_FILE_PATH = "config/workload/workload.5h";
+	public static final String WORKLOAD_FILE_PATH = "config/workload/workload.5h.rr7.lam25";
 
 
 	///--- Cache memory parameters. ---///
@@ -22,7 +22,7 @@ public class Parameter {
 	public static final double CACHE_MEMORY_THRESHOLD = 1.0;
 
 	/** Cache memory size. 4GB by default. */
-	public static final long CACHE_MEMORY_SIZE = 4 * 1024 * 1024 * 1024;
+	public static final long CACHE_MEMORY_SIZE = 16L * 1024 * 1024 * 1024;
 
 	/** Memory access latency represents by second. */
 	public static final double CACHE_MEMORY_LATENCY = 0.00001;
@@ -37,9 +37,9 @@ public class Parameter {
 	public static final int HDD_RPM = 7200;
 
 	/** HDD disk cache size. 32MB by spec. */
-	public static final long HDD_CACHE_SIZE = 32 * 1024 * 1024;
+	public static final long HDD_CACHE_SIZE = 32L * 1024 * 1024;
 
-	public static final long HDD_TRANSFER_RATE = 134 * 1024 * 1024;
+	public static final long HDD_TRANSFER_RATE = 134L * 1024 * 1024;
 
 	public static final int HDD_SECTORS_PER_TRACK = 63;
 

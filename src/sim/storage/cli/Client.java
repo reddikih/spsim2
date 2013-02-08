@@ -9,6 +9,7 @@ import sim.Request;
 import sim.Response;
 import sim.statistics.RAPoSDAStats;
 import sim.storage.manager.RAPoSDAStorageManager;
+import sim.storage.util.RequestType;
 
 public class Client {
 
@@ -42,7 +43,16 @@ public class Client {
 			assert requests != null;
 			if (requests.length == 0) break;
 			for (Request request : requests) {
-				Response response = sm.write(request);
+				Response response = null;
+
+				if (RequestType.READ.equals(request.getType())) {
+					response = sm.read(request);
+				} else if (RequestType.WRITE.equals(request.getType())) {
+					response = sm.write(request);
+				}
+
+				assert response != null;
+
 				double tempTime = request.getArrvalTime() + response.getResponseTime();
 				lastResponse = lastResponse < tempTime ? tempTime : lastResponse;
 
