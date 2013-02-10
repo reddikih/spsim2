@@ -18,6 +18,7 @@ import sim.storage.manager.ddm.RAPoSDADataDiskManager;
 import sim.storage.util.DiskInfo;
 import sim.storage.util.DiskState;
 import sim.storage.util.ReplicaLevel;
+import sim.storage.util.RequestType;
 
 public class RAPoSDAStorageManager {
 
@@ -62,6 +63,9 @@ public class RAPoSDAStorageManager {
 		double respTime = Double.MIN_VALUE;
 
 		for (Block b : blocks) {
+			// block access count log
+			RAPoSDAStats.incrementBlockAccessCount(RequestType.READ);
+
 			// retrieve from cache memory
 			CacheResponse cmResp = cmm.read(b);
 			if (!Block.NULL.equals(cmResp.getResult())) {
@@ -153,6 +157,9 @@ public class RAPoSDAStorageManager {
 		double respTime = Double.MIN_VALUE;
 
 		for (Block block : blocks) {
+			// block access count log
+			RAPoSDAStats.incrementBlockAccessCount(RequestType.WRITE);
+
 			Block[] replicas = createReplicas(block);
 			for (Block b : replicas) {
 				RAPoSDACacheWriteResponse response = cmm.write(b);

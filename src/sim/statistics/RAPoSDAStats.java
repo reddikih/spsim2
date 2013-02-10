@@ -8,6 +8,15 @@ public class RAPoSDAStats {
 	private static long readRequestCount;
 	private static long writeRequestCount;
 
+	private static long readBlockAccessCount;
+	private static long writeBlockAccessCount;
+
+	private static long cacheMemoryReadCount;
+	private static long cacheMemoryReadHitCount;
+	private static long cacheMemoryWriteCount;
+	private static long cacheMemoryWriteHitCount;
+
+
 	private static double totalActiveEnergy;
 	private static double totalIdleEnergy;
 	private static double totalStandbyEnergy;
@@ -23,10 +32,18 @@ public class RAPoSDAStats {
 	private static int totalRequests;
 
 	private static double totalDataDiskResponseTime;
-	private static int totalDataDiskAccesses;
+	private static long totalDataDiskBlockAccesses;
+
+	private static long dataDiskReadCount;
+	private static long dataDiskWriteCount;
 
 	private static double totalCacheDiskResponseTime;
-	private static int totalCacheDiskAccesses;
+	private static long actualCacheDiskBlockAccesseCount;
+
+	private static long cacheDiskReadCount;
+	private static long cacheDiskWriteCount;
+	private static long cacheDiskReadHitCount;
+	private static long cacheDiskWriteHitCount;
 
 	public static void addEnergy(double added, DiskState type) {
 		switch(type) {
@@ -64,6 +81,52 @@ public class RAPoSDAStats {
 		? readRequestCount : writeRequestCount;
 	}
 
+	public static void incrementBlockAccessCount(RequestType reqType) {
+		switch (reqType) {
+		case READ:
+			readBlockAccessCount++; break;
+		case WRITE:
+			writeBlockAccessCount++; break;
+		}
+	}
+
+	public static long getBlockAccessCount(RequestType reqType) {
+		return RequestType.READ.equals(reqType)
+		? readBlockAccessCount : writeBlockAccessCount;
+	}
+
+	public static void incrementCacheMemoryAccessCount(RequestType reqType, boolean isHit) {
+		switch (reqType) {
+		case READ:
+			cacheMemoryReadCount++;
+			if (isHit) cacheMemoryReadHitCount++;
+			break;
+		case WRITE:
+			cacheMemoryWriteCount++;
+			if (isHit) cacheMemoryWriteHitCount++;
+			break;
+		}
+	}
+
+	public static long getCacheMemoryAccessCount(RequestType reqType) {
+		return RequestType.READ.equals(reqType)
+		? cacheMemoryReadCount : cacheMemoryWriteCount;
+	}
+
+	public static double getCacheMemoryHitRatio(RequestType reqType) {
+		double result = -1.0;
+		if (RequestType.READ.equals(reqType)) {
+			result = cacheMemoryReadCount == 0
+			? 0.0 : (double)cacheMemoryReadHitCount / cacheMemoryReadCount;
+		} else if (RequestType.WRITE.equals(reqType)) {
+			result = cacheMemoryWriteCount == 0
+			? 0.0 : (double)cacheMemoryWriteHitCount / cacheMemoryWriteCount;
+		} else {
+			throw new IllegalArgumentException("request type is invalid.");
+		}
+		return result;
+	}
+
 	public static void addResponseTime(double added) {
 		totalResponseTime += added;
 		totalRequests++;
@@ -72,12 +135,40 @@ public class RAPoSDAStats {
 	// ignoring seek count.
 	public static void addDataDiskResponseTime(double added) {
 		totalDataDiskResponseTime += added;
-		totalDataDiskAccesses++;
+		totalDataDiskBlockAccesses++;
+	}
+
+	public static void incrementDataDiskAccessCount(RequestType reqType) {
+		switch (reqType) {
+		case READ:
+			dataDiskReadCount++; break;
+		case WRITE:
+			dataDiskWriteCount++; break;
+		}
+	}
+
+	public static long getDataDiskAccessCount(RequestType reqType) {
+		long result = -1;
+		if (RequestType.READ.equals(reqType)) result = dataDiskReadCount;
+		else if (RequestType.WRITE.equals(reqType)) result = dataDiskWriteCount;
+		return result;
 	}
 
 	public static void addCacheDiskResponseTime(double added) {
 		totalCacheDiskResponseTime += added;
-		totalCacheDiskAccesses++;
+		actualCacheDiskBlockAccesseCount++;
+	}
+
+
+	public static void incrementCacheDiskAccessCount(
+			RequestType reqType, boolean isHit) {
+		if (RequestType.READ.equals(reqType)) {
+			cacheDiskReadCount++;
+			if (isHit) cacheDiskReadHitCount++;
+		} else if (RequestType.WRITE.equals(reqType)){
+			cacheDiskWriteCount++;
+			if (isHit) cacheDiskWriteHitCount++;
+		}
 	}
 
 	public static void incrementSpindownCount() {
@@ -113,6 +204,16 @@ public class RAPoSDAStats {
 		totalSpindownEnergy;
 	}
 
+	public static double getTotalEnergyConsumptionByState(DiskState state) {
+		double result = -1.0;
+		if (DiskState.ACTIVE.equals(state)) result = totalActiveEnergy;
+		else if (DiskState.IDLE.equals(state)) result = totalIdleEnergy;
+		else if (DiskState.STANDBY.equals(state)) result = totalStandbyEnergy;
+		else if (DiskState.SPINUP.equals(state)) result = totalSpinupEnergy;
+		else if (DiskState.SPINDOWN.equals(state)) result = totalSpindownEnergy;
+		return result;
+	}
+
 	public static double getAverageResponseTime() {
 		if (totalRequests == 0) return 0.0;
 		return totalResponseTime / totalRequests;
@@ -123,21 +224,67 @@ public class RAPoSDAStats {
 	}
 
 	public static double getAverageDataDiskResponseTime() {
-		if (totalDataDiskAccesses == 0) return 0.0;
-		return totalDataDiskResponseTime / totalDataDiskAccesses;
+		if (totalDataDiskBlockAccesses == 0) return 0.0;
+		return totalDataDiskResponseTime / totalDataDiskBlockAccesses;
 	}
 
-	public static int getNumberOfDataDiskAccesses() {
-		return totalDataDiskAccesses;
+	public static long getNumberOfDataDiskBlockAccesses() {
+		return totalDataDiskBlockAccesses;
 	}
 
 	public static double getAverageCacheDiskResponseTime() {
-		if (totalCacheDiskAccesses == 0) return 0.0;
-		return totalCacheDiskResponseTime / totalCacheDiskAccesses;
+		if (actualCacheDiskBlockAccesseCount == 0) return 0.0;
+		return totalCacheDiskResponseTime / actualCacheDiskBlockAccesseCount;
 	}
 
-	public static int getNumberOfCacheDiskAccesses() {
-		return totalCacheDiskAccesses;
+	public static long getActualCacheDiskBlockAccesseCount() {
+		return actualCacheDiskBlockAccesseCount;
+	}
+
+	public static long getCacheDiskAccessCount(RequestType reqType) {
+		return RequestType.READ.equals(reqType)
+		? cacheDiskReadCount : cacheDiskWriteCount;
+	}
+
+	public static double getCacheDiskHitRatio(RequestType reqType) {
+		double result = -1.0;
+		if (RequestType.READ.equals(reqType)) {
+			result = cacheDiskReadCount == 0
+			? 0.0 : (double)cacheDiskReadHitCount / cacheDiskReadCount;
+		} else if (RequestType.WRITE.equals(reqType)) {
+			result = cacheDiskWriteCount == 0
+			? 0.0 : (double)cacheDiskWriteHitCount / cacheDiskWriteCount;
+		}
+		return result;
+	}
+
+
+	public static void showStatistics(double closeTime) {
+		System.out.println("------------------");
+		System.out.printf("Simulation Time: %.3f\n", closeTime);
+		System.out.printf("Total Energy: %,.4f\n", getTotalEnergyConsumption());
+		System.out.printf("  ACTIVE    : %,.4f\n", getTotalEnergyConsumptionByState(DiskState.ACTIVE));
+		System.out.printf("  IDLE      : %,.4f\n", getTotalEnergyConsumptionByState(DiskState.IDLE));
+		System.out.printf("  STANDBY   : %,.4f\n", getTotalEnergyConsumptionByState(DiskState.STANDBY));
+		System.out.printf("  SPINDOWN  : %,.4f\n", getTotalEnergyConsumptionByState(DiskState.SPINDOWN));
+		System.out.printf("  SPINUP    : %,.4f\n", getTotalEnergyConsumptionByState(DiskState.SPINUP));
+		System.out.printf("Avg. Response Time: %.6f\n", getAverageResponseTime());
+		System.out.printf("Total Request count  : %,d\n", getRequestCount(RequestType.READ) + getRequestCount(RequestType.WRITE));
+		System.out.printf("  Read Request count : %,d(%,d)\n", getRequestCount(RequestType.READ), getBlockAccessCount(RequestType.READ));
+		System.out.printf("  Write Request count: %,d(%,d)\n", getRequestCount(RequestType.WRITE), getBlockAccessCount(RequestType.WRITE));
+		System.out.printf("Cache memory read count (hit ratio): %,d(%.4f)\n", getCacheMemoryAccessCount(RequestType.READ), getCacheMemoryHitRatio(RequestType.READ));
+		System.out.printf("Cache memory write count(hit ratio): %,d(%.4f)\n", getCacheMemoryAccessCount(RequestType.WRITE), getCacheMemoryHitRatio(RequestType.WRITE));
+		System.out.printf("Avg. data disk response time : %.6f\n", getAverageDataDiskResponseTime());
+		System.out.printf("data disk access count         : %,d\n", getDataDiskAccessCount(RequestType.READ) + getDataDiskAccessCount(RequestType.WRITE));
+		System.out.printf("  data disk read access count  : %,d\n", getDataDiskAccessCount(RequestType.READ));
+		System.out.printf("  data disk write access count : %,d\n", getDataDiskAccessCount(RequestType.WRITE));
+		System.out.printf("Avg. cache disk response time: %.6f\n", getAverageCacheDiskResponseTime());
+		System.out.printf("cache disk access count(actual)         : %,d(%,d)\n", getCacheDiskAccessCount(RequestType.READ) + getCacheDiskAccessCount(RequestType.WRITE), getActualCacheDiskBlockAccesseCount());
+		System.out.printf("  cache disk read access count(hit ratio) : %,d(%.4f)\n", getCacheDiskAccessCount(RequestType.READ), getCacheDiskHitRatio(RequestType.READ));
+		System.out.printf("  cache disk write access count(hit ratio): %,d(%.4f)\n", getCacheDiskAccessCount(RequestType.WRITE), getCacheDiskHitRatio(RequestType.WRITE));
+		System.out.printf("Spindown count: %,d\n", getSpindownCount());
+		System.out.printf("Spinup   count: %,d\n", getSpinupCount());
+		System.out.printf("Buffer overflow count: %,d\n", getOverflowCount());
 	}
 
 }

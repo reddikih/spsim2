@@ -7,8 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 
 import sim.Block;
+import sim.statistics.RAPoSDAStats;
 import sim.storage.CacheResponse;
 import sim.storage.DiskResponse;
+import sim.storage.util.RequestType;
 
 public class RAPoSDACacheDiskManager {
 
@@ -78,8 +80,11 @@ public class RAPoSDACacheDiskManager {
 		if (block == null)
 			throw new IllegalArgumentException("block should not be null.");
 
-		if (!block2cdMap.containsKey(block.getId()))
+		if (!block2cdMap.containsKey(block.getId())) {
+			// record statistics cache disk read
+			RAPoSDAStats.incrementCacheDiskAccessCount(RequestType.READ, false);
 			return new CacheResponse(Double.MAX_VALUE, Block.NULL);
+		}
 
 		CacheDisk cd = cacheDisks.get(block2cdMap.get(block.getId()));
 		assert cd != null;

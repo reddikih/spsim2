@@ -6,6 +6,7 @@ import sim.storage.HDDParameter;
 import sim.storage.HardDiskDrive;
 import sim.storage.state.DataDiskStateManager;
 import sim.storage.util.DiskState;
+import sim.storage.util.RequestType;
 
 public class DataDisk extends HardDiskDrive {
 
@@ -37,6 +38,9 @@ public class DataDisk extends HardDiskDrive {
 		// log access count
 		RAPoSDAStats.addDataDiskResponseTime(responseTime);
 
+		// record read count statistics
+		RAPoSDAStats.incrementDataDiskAccessCount(RequestType.READ);
+
 		return responseTime;
 	}
 
@@ -54,6 +58,9 @@ public class DataDisk extends HardDiskDrive {
 
 		// log access count
 		RAPoSDAStats.addDataDiskResponseTime(responseTime);
+
+		// record write count statistics
+		RAPoSDAStats.incrementDataDiskAccessCount(RequestType.WRITE);
 
 		return responseTime;
 	}

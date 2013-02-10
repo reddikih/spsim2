@@ -6,9 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import sim.Block;
+import sim.statistics.RAPoSDAStats;
 import sim.storage.CacheParameter;
 import sim.storage.CacheResponse;
 import sim.storage.util.ReplicaLevel;
+import sim.storage.util.RequestType;
 
 public class CacheMemory {
 
@@ -48,12 +50,17 @@ public class CacheMemory {
 		// cache memory read log.
 		logger.trace(
 				String.format(
-						"CM[%d] Regin:%d read blockId:%d hit:%d",
+						"CM[%d] Regin:%d time:%.5f read blockId:%d hit:%d",
 						this.id,
 						block.getRepLevel().getValue(),
+						block.getAccessTime(),
 						block.getId(),
 						result.equals(Block.NULL) ? 0 : 1
 						));
+
+		// cache memory read statistics
+		RAPoSDAStats.incrementCacheMemoryAccessCount(
+				RequestType.READ, !(result.equals(Block.NULL)));
 
 		return response;
 	}
@@ -81,11 +88,18 @@ public class CacheMemory {
 		// cache memory write log.
 		logger.trace(
 				String.format(
-						"CM[%d] Regin:%d write blockId:%d overflowLength:%d",
+						"CM[%d] Regin:%d time:%.5f write blockId:%d overflow:%d ofLength:%d",
 						this.id,
 						block.getRepLevel().getValue(),
+						block.getAccessTime(),
 						block.getId(),
+						response.getOverflows().length == 0 ? 0 : 1,
 						response.getOverflows().length));
+
+		// TODO should be refactoring with read logging and statistics code.
+		// cache memory read statistics
+		RAPoSDAStats.incrementCacheMemoryAccessCount(
+				RequestType.WRITE, response.getOverflows().length == 0);
 
 		return response;
 	}

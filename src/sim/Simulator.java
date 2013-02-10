@@ -19,7 +19,6 @@ import sim.storage.manager.ddm.RAPoSDADataDiskManager;
 import sim.storage.state.CacheDiskStateManager;
 import sim.storage.state.DataDiskStateManager;
 import sim.storage.state.DiskStateParameter;
-import sim.storage.util.RequestType;
 
 public class Simulator {
 
@@ -160,20 +159,7 @@ public class Simulator {
 	}
 
 	private void showStats(double closeTime) {
-		System.out.println("------------------");
-		System.out.printf("Simulation Time: %.3f\n", closeTime);
-		System.out.printf("Total Energy: %.4f\n", RAPoSDAStats.getTotalEnergyConsumption());
-		System.out.printf("Avg. Response Time: %.6f\n", RAPoSDAStats.getAverageResponseTime());
-		System.out.printf("Total Request count: %d\n", RAPoSDAStats.getRequestCount(RequestType.READ) + RAPoSDAStats.getRequestCount(RequestType.WRITE));
-		System.out.printf("Read  Request count: %d\n", RAPoSDAStats.getRequestCount(RequestType.READ));
-		System.out.printf("Write Request count: %d\n", RAPoSDAStats.getRequestCount(RequestType.WRITE));
-		System.out.printf("Spindown count: %d\n", RAPoSDAStats.getSpindownCount());
-		System.out.printf("Spinup   count: %d\n", RAPoSDAStats.getSpinupCount());
-		System.out.printf("Avg. data disk response time : %.6f\n", RAPoSDAStats.getAverageDataDiskResponseTime());
-		System.out.printf("data disk access count       : %,d\n", RAPoSDAStats.getNumberOfDataDiskAccesses());
-		System.out.printf("Avg. cache disk response time: %.6f\n", RAPoSDAStats.getAverageCacheDiskResponseTime());
-		System.out.printf("cache disk access count      : %,d\n", RAPoSDAStats.getNumberOfCacheDiskAccesses());
-		System.out.printf("Buffer overflow count: %d\n", RAPoSDAStats.getOverflowCount());
+		RAPoSDAStats.showStatistics(closeTime);
 	}
 
 	public static void main(String[] args) {
