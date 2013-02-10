@@ -1,11 +1,11 @@
 package sim.storage.manager.cmm.assignor;
 
-public class SimpleAssignor implements IAssignor {
+public class DGAAssignor implements IAssignor {
 
 	private int numCacheMemory;
 	private int numDisksPerGroup;
 
-	public SimpleAssignor(int numCacheMemory, int numDisksPerGroup) {
+	public DGAAssignor(int numCacheMemory, int numDisksPerGroup) {
 		this.numCacheMemory = numCacheMemory;
 		this.numDisksPerGroup = numDisksPerGroup;
 	}

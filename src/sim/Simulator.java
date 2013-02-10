@@ -12,7 +12,8 @@ import sim.storage.manager.cdm.CacheDisk;
 import sim.storage.manager.cdm.RAPoSDACacheDiskManager;
 import sim.storage.manager.cmm.CacheMemory;
 import sim.storage.manager.cmm.RAPoSDACacheMemoryManager;
-import sim.storage.manager.cmm.assignor.BalancedAssignor;
+import sim.storage.manager.cmm.assignor.CacheStripingAssignor;
+import sim.storage.manager.cmm.assignor.DGAAssignor;
 import sim.storage.manager.cmm.assignor.IAssignor;
 import sim.storage.manager.ddm.DataDisk;
 import sim.storage.manager.ddm.RAPoSDADataDiskManager;
@@ -50,11 +51,24 @@ public class Simulator {
 			cacheMemories.put(i, cm);
 		}
 
-		IAssignor assignor =
-			new BalancedAssignor(numcm);
+		IAssignor assignor = getAssignor(Parameter.CACHE_MEMORY_ASSIGNOR);
 
 		return new RAPoSDACacheMemoryManager(
 				cacheMemories, assignor, Parameter.NUMBER_OF_REPLICA);
+	}
+
+	private IAssignor getAssignor(String assignorName) {
+		IAssignor assignor = null;
+		if (assignorName == null)
+			throw new IllegalArgumentException("Assignor name is null.");
+		if (assignorName.equals("dga"))
+			assignor = new DGAAssignor(
+					Parameter.NUMBER_OF_CACHE_MEMORIES,
+					Parameter.NUBER_OF_DISKS_PER_CACHE_GROUP);
+		else if (assignorName.equals("cs"))
+			assignor = new CacheStripingAssignor(
+					Parameter.NUMBER_OF_CACHE_MEMORIES);
+		return assignor;
 	}
 
 	private RAPoSDACacheDiskManager getCDM() {

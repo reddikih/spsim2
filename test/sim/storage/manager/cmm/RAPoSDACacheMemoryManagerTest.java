@@ -16,7 +16,7 @@ import sim.Block;
 import sim.Parameter;
 import sim.storage.CacheParameter;
 import sim.storage.CacheResponse;
-import sim.storage.manager.cmm.assignor.BalancedAssignor;
+import sim.storage.manager.cmm.assignor.CacheStripingAssignor;
 import sim.storage.manager.cmm.assignor.IAssignor;
 import sim.storage.util.DiskInfo;
 import sim.storage.util.DiskState;
@@ -30,7 +30,7 @@ public class RAPoSDACacheMemoryManagerTest {
 	private CacheParameter cmParam;
 
 	private void init(int numReplica, int numCacheMemory, int cacheSize, int blockSize) {
-		this.assignor = new BalancedAssignor(numCacheMemory);
+		this.assignor = new CacheStripingAssignor(numCacheMemory);
 		this.cmParam = new CacheParameter(1.0, cacheSize, Parameter.CACHE_MEMORY_LATENCY);
 		HashMap<Integer, CacheMemory> cacheMemories = new HashMap<Integer, CacheMemory>();
 		for (int i=0; i < numCacheMemory; i++) {

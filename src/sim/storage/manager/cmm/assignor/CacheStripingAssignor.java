@@ -1,10 +1,10 @@
 package sim.storage.manager.cmm.assignor;
 
-public class BalancedAssignor implements IAssignor {
+public class CacheStripingAssignor implements IAssignor {
 
 	private int numCacheMemory;
 
-	public BalancedAssignor(int numCacheMemory) {
+	public CacheStripingAssignor(int numCacheMemory) {
 		this.numCacheMemory = numCacheMemory;
 	}
 

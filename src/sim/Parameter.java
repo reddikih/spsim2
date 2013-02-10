@@ -14,7 +14,10 @@ public class Parameter {
 
 	public static final int NUMBER_OF_REPLICA = 3;
 
-	public static final String WORKLOAD_FILE_PATH = "config/workload/workload.5h.rr7.lam25";
+	public static final String WORKLOAD_FILE_PATH = "config/workload/workload.5h.rr7.lam25.ds32GB";
+
+	public static final String CACHE_MEMORY_ASSIGNOR = "cs";
+//	public static final String CACHE_MEMORY_ASSIGNOR = "dga";
 
 
 	///--- Cache memory parameters. ---///
@@ -22,7 +25,7 @@ public class Parameter {
 	public static final double CACHE_MEMORY_THRESHOLD = 1.0;
 
 	/** Cache memory size. 4GB by default. */
-	public static final long CACHE_MEMORY_SIZE = 16L * 1024 * 1024 * 1024;
+	public static final long CACHE_MEMORY_SIZE = 2L * 1024 * 1024 * 1024;
 
 	/** Memory access latency represents by second. */
 	public static final double CACHE_MEMORY_LATENCY = 0.00001;
