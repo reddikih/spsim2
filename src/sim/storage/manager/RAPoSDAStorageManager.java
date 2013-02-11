@@ -1,6 +1,5 @@
 package sim.storage.manager;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,26 +16,13 @@ import sim.storage.manager.cmm.RAPoSDACacheWriteResponse;
 import sim.storage.manager.ddm.RAPoSDADataDiskManager;
 import sim.storage.util.DiskInfo;
 import sim.storage.util.DiskState;
-import sim.storage.util.ReplicaLevel;
 import sim.storage.util.RequestType;
 
-public class RAPoSDAStorageManager {
+public class RAPoSDAStorageManager extends StorageManager {
 
-	private RAPoSDACacheMemoryManager cmm;
-	private RAPoSDACacheDiskManager cdm;
-	private RAPoSDADataDiskManager ddm;
-
-	protected final int blockSize;
-	protected final int numReplica;
-
-	private BigInteger blockNumber = new BigInteger("0");
-
-	/**
-	 * A map between client request and corresponding blocks.
-	 * key; request key
-	 * value: corresponding blocks
-	 */
-	protected HashMap<Long, Block[]> requestMap;
+	protected RAPoSDACacheMemoryManager cmm;
+	protected RAPoSDACacheDiskManager cdm;
+	protected RAPoSDADataDiskManager ddm;
 
 	public RAPoSDAStorageManager(
 			RAPoSDACacheMemoryManager cmm,
@@ -44,6 +30,7 @@ public class RAPoSDAStorageManager {
 			RAPoSDADataDiskManager ddm,
 			int blockSize,
 			int numReplica) {
+		super(ddm);
 
 		this.cmm = cmm;
 		this.cdm = cdm;
@@ -54,6 +41,7 @@ public class RAPoSDAStorageManager {
 		this.requestMap = new HashMap<Long, Block[]>();
 	}
 
+	@Override
 	public Response read(Request request) {
 		Block[] blocks = requestMap.get(request.getKey());
 		if (blocks == null) throw new IllegalArgumentException();
@@ -143,6 +131,7 @@ public class RAPoSDAStorageManager {
 		return result;
 	}
 
+	@Override
 	public Response write(Request request) {
 		Block[] blocks = requestMap.get(request.getKey());
 		if (blocks == null) {
@@ -228,85 +217,7 @@ public class RAPoSDAStorageManager {
 		return cdm.write(blocks);
 	}
 
-	private Block[] createReplicas(Block block) {
-		Block[] replicas = new Block[numReplica];
-		block.setRepLevel(ReplicaLevel.ZERO);
-		block.setOwnerDiskId(block.getPrimaryDiskId());
-		replicas[0] = block;
-		int repCounter = numReplica;
-		for (ReplicaLevel repLevel : ReplicaLevel.values()) {
-			repCounter--;
-			if (repLevel.equals(ReplicaLevel.ZERO)) continue;
-			if (repCounter < 0) break;
-			Block replica = new Block(
-					nextBlockId(),
-					block.getAccessTime(),
-					block.getPrimaryDiskId());
-			replica.setRepLevel(repLevel);
-			replica.setOwnerDiskId(
-					assignOwnerDiskId(
-							replica.getPrimaryDiskId(),
-							replica.getRepLevel()));
-			replicas[repLevel.getValue()] = replica;
-		}
-		return replicas;
-	}
-
-	private Block[] divideRequest(Request request) {
-		Block[] blocks = null;
-		int numBlocks = (int)Math.ceil(request.getSize() / blockSize);
-		assert numBlocks > 0;
-		blocks = new Block[numBlocks];
-		for (int i=0; i < numBlocks; i++) {
-			BigInteger blockId = nextBlockId();
-			blocks[i] = new Block(
-					blockId,
-					request.getArrvalTime(),
-					assignPrimaryDiskId(blockId));
-		}
-		return blocks;
-	}
-
-	private int assignPrimaryDiskId(BigInteger blockId) {
-		BigInteger numDataDisk =
-			new BigInteger(String.valueOf(ddm.getNumberOfDataDisks()));
-		// TODO try to separate assignor class.
-		// There is not only roundrobin favor assign algorithm.
-		return (blockId.mod(numDataDisk)).intValue();
-	}
-
-	private int assignOwnerDiskId(int primaryDiskId, ReplicaLevel repLevel) {
-		return (primaryDiskId + repLevel.getValue()) % ddm.getNumberOfDataDisks();
-	}
-
-	protected BigInteger nextBlockId() {
-		BigInteger next = new BigInteger(blockNumber.toString());
-		blockNumber = blockNumber.add(BigInteger.ONE);
-		return next;
-	}
-
-	private void updateArrivalTimeOfBlocks(Block[] blocks, double arrivalTime) {
-		for (Block block : blocks) {
-			block.setAccessTime(arrivalTime);
-		}
-	}
-
-	public void register(long requestId, int size) {
-		// TODO refactoring. integrate with divideRequest method
-		Block[] blocks = null;
-		int numBlocks = (int)Math.ceil(size / blockSize);
-		if (numBlocks <= 0) numBlocks = 1;
-		blocks = new Block[numBlocks];
-		for (int i=0; i < numBlocks; i++) {
-			BigInteger blockId = nextBlockId();
-			blocks[i] = new Block(
-					blockId,
-					0.0,
-					assignPrimaryDiskId(blockId));
-		}
-		requestMap.put(requestId, blocks);
-	}
-
+	@Override
 	public void close(double closeTime) {
 		cdm.close(closeTime);
 		ddm.close(closeTime);

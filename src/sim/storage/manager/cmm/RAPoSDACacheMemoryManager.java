@@ -9,7 +9,7 @@ import sim.storage.manager.cmm.assignor.IAssignor;
 import sim.storage.util.DiskInfo;
 import sim.storage.util.ReplicaLevel;
 
-public class RAPoSDACacheMemoryManager {
+public class RAPoSDACacheMemoryManager implements ICacheMemoryManager {
 
 	private HashMap<Integer, CacheMemory> cacheMemories;
 	private IAssignor assignor;
@@ -24,6 +24,7 @@ public class RAPoSDACacheMemoryManager {
 		this.numReplica = numReplica;
 	}
 
+	@Override
 	public CacheResponse read(Block block) {
 		CacheResponse result = null;
 		int primDiskId = block.getPrimaryDiskId();
@@ -46,6 +47,7 @@ public class RAPoSDACacheMemoryManager {
 		return result;
 	}
 
+	@Override
 	public RAPoSDACacheWriteResponse write(Block block) {
 		RAPoSDACacheWriteResponse response;
 		int assignedMemory = assignor.assign(
@@ -59,6 +61,7 @@ public class RAPoSDACacheMemoryManager {
 		return response;
 	}
 
+	@Override
 	public CacheResponse remove(Block toRemove) {
 		int assignedMemory = assignor.assign(
 				toRemove.getPrimaryDiskId(),

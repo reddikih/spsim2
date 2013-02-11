@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import sim.Request;
 import sim.Response;
 import sim.statistics.RAPoSDAStats;
-import sim.storage.manager.RAPoSDAStorageManager;
+import sim.storage.manager.StorageManager;
 import sim.storage.util.RequestType;
 
 public class Client {
@@ -21,7 +21,7 @@ public class Client {
 		this.wlReader = new WorkloadReader(workloadPath);
 	}
 
-	public void registerInitialData(RAPoSDAStorageManager sm) {
+	public void registerInitialData(StorageManager sm) {
 		InitialDataInfo initInfo = this.wlReader.getInitialDataInfo();
 
 		int baseSize = initInfo.getLowerBound();
@@ -36,7 +36,7 @@ public class Client {
 		}
 	}
 
-	public double run(RAPoSDAStorageManager sm) {
+	public double run(StorageManager sm) {
 		double lastResponse = Double.MIN_VALUE;
 		while (true) {
 			Request[] requests = wlReader.getRequests(READ_BUFFER);

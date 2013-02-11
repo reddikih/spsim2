@@ -12,7 +12,7 @@ import sim.storage.CacheResponse;
 import sim.storage.DiskResponse;
 import sim.storage.util.RequestType;
 
-public class RAPoSDACacheDiskManager {
+public class RAPoSDACacheDiskManager implements ICacheDiskManager {
 
 	private int numberOfCacheDisks;
 	/**
@@ -36,6 +36,7 @@ public class RAPoSDACacheDiskManager {
 		this.block2cdMap = new HashMap<BigInteger, Integer>();
 	}
 
+	@Override
 	public DiskResponse write(Block[] blocks) {
 		if (blocks == null)
 			throw new IllegalArgumentException("blocks should not be null.");
@@ -76,6 +77,7 @@ public class RAPoSDACacheDiskManager {
 		block2cdMap.remove(block.getId());
 	}
 
+	@Override
 	public CacheResponse read(Block block) {
 		if (block == null)
 			throw new IllegalArgumentException("block should not be null.");
@@ -98,6 +100,7 @@ public class RAPoSDACacheDiskManager {
 		return lastAssignedId++;
 	}
 
+	@Override
 	public void close(double closeTime) {
 		Collection<CacheDisk> cds = cacheDisks.values();
 		for (CacheDisk cd : cds) {

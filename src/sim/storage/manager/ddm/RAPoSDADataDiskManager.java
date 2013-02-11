@@ -10,7 +10,7 @@ import sim.storage.DiskResponse;
 import sim.storage.util.DiskInfo;
 import sim.storage.util.ReplicaLevel;
 
-public class RAPoSDADataDiskManager {
+public class RAPoSDADataDiskManager implements IDataDiskManager {
 
 	private final int numberOfDataDisks;
 	private final int numberOfReplica;
@@ -30,6 +30,7 @@ public class RAPoSDADataDiskManager {
 		this.dataDiskMap = dataDiskMap;
 	}
 
+	@Override
 	public DiskResponse write(Block[] blocks) {
 		List<Block> writtenBlocks = new ArrayList<Block>();
 		double arrivalTime = blocks[0].getAccessTime();
@@ -47,6 +48,7 @@ public class RAPoSDADataDiskManager {
 		return new DiskResponse(respTime, writtenBlocks.toArray(new Block[0]));
 	}
 
+	@Override
 	public DiskResponse read(Block[] blocks) {
 		double arrivalTime = blocks[0].getAccessTime();
 		double respTime = Double.MIN_VALUE;
@@ -79,10 +81,12 @@ public class RAPoSDADataDiskManager {
 		return dd.spinUp(accessTime);
 	}
 
+	@Override
 	public int getNumberOfDataDisks() {
 		return numberOfDataDisks;
 	}
 
+	@Override
 	public List<DiskInfo> getRelatedDisksInfo(Block block) {
 		List<DiskInfo> diskInfos = new ArrayList<DiskInfo>();
 
@@ -119,6 +123,7 @@ public class RAPoSDADataDiskManager {
 		return longestSleeper;
 	}
 
+	@Override
 	public void close(double closeTime) {
 		Collection<DataDisk> dds = dataDiskMap.values();
 		for (DataDisk dd : dds) {

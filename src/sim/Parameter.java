@@ -16,6 +16,11 @@ public class Parameter {
 
 	public static final String WORKLOAD_FILE_PATH = "config/workload/workload";
 
+	///--- Factory names of storage manager ---///
+//	public static final String STORAGE_MANAGER_FACTORY = "sim.storage.manager.RAPoSDAStorageManagerFactory";
+	public static final String STORAGE_MANAGER_FACTORY = "sim.storage.manager.NormalStorageManagerFactory";
+
+	///--- Factory names about cache memory ---///
 	public static final String CACHE_MEMORY_ASSIGNOR = "cs";
 //	public static final String CACHE_MEMORY_ASSIGNOR = "dga";
 
