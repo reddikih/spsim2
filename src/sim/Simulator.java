@@ -11,6 +11,7 @@ import sim.storage.manager.RAPoSDAStorageManager;
 import sim.storage.manager.cdm.CacheDisk;
 import sim.storage.manager.cdm.RAPoSDACacheDiskManager;
 import sim.storage.manager.cmm.CacheMemory;
+import sim.storage.manager.cmm.CacheMemoryFactory;
 import sim.storage.manager.cmm.RAPoSDACacheMemoryManager;
 import sim.storage.manager.cmm.assignor.CacheStripingAssignor;
 import sim.storage.manager.cmm.assignor.DGAAssignor;
@@ -26,6 +27,8 @@ public class Simulator {
 	private RAPoSDAStorageManager getSM() {
 		int blockSize = Parameter.BLOCK_SIZE;
 		int numRep = Parameter.NUMBER_OF_REPLICA;
+
+		assert numRep > 0 : "number of replica parameter should greater than 0";
 
 		RAPoSDACacheMemoryManager cmm = getCMM();
 		RAPoSDACacheDiskManager cdm = getCDM();
@@ -45,10 +48,22 @@ public class Simulator {
 				Parameter.CACHE_MEMORY_LATENCY
 		);
 
-		for (int i=0; i < numcm; i++) {
-			CacheMemory cm = new CacheMemory(
-					i, Parameter.NUMBER_OF_REPLICA, param, Parameter.BLOCK_SIZE);
-			cacheMemories.put(i, cm);
+		try {
+			CacheMemoryFactory factory =
+				(CacheMemoryFactory)Class.forName(
+						Parameter.CACHE_MEMORY_FACTORY).newInstance();
+			for (int i=0; i < numcm; i++) {
+				CacheMemory cm =
+					factory.getCacheMemory(
+							i,
+							Parameter.NUMBER_OF_REPLICA,
+							param,
+							Parameter.BLOCK_SIZE);
+				cacheMemories.put(i, cm);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
 		}
 
 		IAssignor assignor = getAssignor(Parameter.CACHE_MEMORY_ASSIGNOR);
@@ -57,6 +72,8 @@ public class Simulator {
 				cacheMemories, assignor, Parameter.NUMBER_OF_REPLICA);
 	}
 
+
+	// TODO Apply fatory method pattern or related patterns to this method.
 	private IAssignor getAssignor(String assignorName) {
 		IAssignor assignor = null;
 		if (assignorName == null)

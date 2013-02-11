@@ -14,10 +14,15 @@ public class Parameter {
 
 	public static final int NUMBER_OF_REPLICA = 3;
 
-	public static final String WORKLOAD_FILE_PATH = "config/workload/workload.5h.rr7.lam25.ds32GB";
+	public static final String WORKLOAD_FILE_PATH = "config/workload/workload";
 
 	public static final String CACHE_MEMORY_ASSIGNOR = "cs";
 //	public static final String CACHE_MEMORY_ASSIGNOR = "dga";
+
+//	public static final String CACHE_MEMORY_FACTORY = "sim.storage.manager.cmm.FixedRegionSizeCacheMemoryFactory";
+	public static final String CACHE_MEMORY_FACTORY = "sim.storage.manager.cmm.VariableRegionSizeCacheMemoryFactory";
+
+	public static final double CACHE_MEMORY_BUFFER_COEFFICIENT = 0.2;
 
 
 	///--- Cache memory parameters. ---///

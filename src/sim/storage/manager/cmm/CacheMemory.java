@@ -12,11 +12,11 @@ import sim.storage.CacheResponse;
 import sim.storage.util.ReplicaLevel;
 import sim.storage.util.RequestType;
 
-public class CacheMemory {
+public abstract class CacheMemory {
 
-	private int id;
-	private CacheParameter parameter;
-	private HashMap<ReplicaLevel, Region> regions;
+	protected int id;
+	protected CacheParameter parameter;
+	protected HashMap<ReplicaLevel, Region> regions;
 
 	private static Logger logger = LoggerFactory.getLogger(CacheMemory.class);
 
@@ -26,18 +26,10 @@ public class CacheMemory {
 		this.parameter = parameter;
 		this.regions = new HashMap<ReplicaLevel, Region>();
 
-		setUpRegions(numReplica, blockSize);
+//		setUpRegions(numReplica, blockSize);
 	}
 
-	private void setUpRegions(int numReplica, int blockSize) {
-		// cache memory capacity(number of blocks) per region
-		int maxEntries = (int)Math.ceil(this.parameter.getCapacity() / blockSize / numReplica);
-		for (ReplicaLevel repLevel : ReplicaLevel.values()) {
-			if (numReplica <= 0) break;
-			regions.put(repLevel, new Region(maxEntries));
-			numReplica--;
-		}
-	}
+	protected abstract void setUpRegions(int numReplica, int blockSize);
 
 	public CacheResponse read(Block block) {
 		Region region = regions.get(block.getRepLevel());

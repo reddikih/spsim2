@@ -34,7 +34,10 @@ public class RAPoSDACacheMemoryManagerTest {
 		this.cmParam = new CacheParameter(1.0, cacheSize, Parameter.CACHE_MEMORY_LATENCY);
 		HashMap<Integer, CacheMemory> cacheMemories = new HashMap<Integer, CacheMemory>();
 		for (int i=0; i < numCacheMemory; i++) {
-			CacheMemory cm = new CacheMemory(i, numReplica, cmParam, blockSize);
+			CacheMemory cm =
+				new FixedRegionSizeCacheMemoryFactory().getCacheMemory(
+						i, numReplica, cmParam, blockSize);
+			cm.setUpRegions(numReplica, blockSize);
 			cacheMemories.put(i, cm);
 		}
 		cmm = new RAPoSDACacheMemoryManager(cacheMemories, assignor, numReplica);
@@ -338,7 +341,7 @@ public class RAPoSDACacheMemoryManagerTest {
 
 	@Test
 	public void serchFromAllRelatedCacheMemories() {
-		int primaryDiskId = 0, numdd = 10;
+		int primaryDiskId = 0;
 		int numReplica = 3, numCacheMemory = 3, cacheSize = 6, blockSize = 1;
 		init(numReplica, numCacheMemory, cacheSize, blockSize);
 

@@ -2,6 +2,13 @@
 
   <property name="OUT_DIR" value="out" />
 
+  <appender name="SIMULATOR_FILE" class="ch.qos.logback.core.FileAppender">
+    <file>${OUT_DIR}/simulator.log</file>
+    <encoder>
+      <pattern>%msg%n</pattern>
+    </encoder>
+  </appender>
+
   <appender name="ENERGY_FILE" class="ch.qos.logback.core.FileAppender">
     <file>${OUT_DIR}/energy.log</file>
     <encoder>
@@ -35,6 +42,14 @@
 
   <logger name="sim.storage.manager.cmm.CacheMemory" additivity="false">
     <appender-ref ref="CACHE_MEMORY_FILE" />
+  </logger>
+
+  <logger name="sim.storage.manager.cmm.FixedRegionSizeCacheMemory" additivity="false">
+    <appender-ref ref="SIMULATOR_FILE" />
+  </logger>
+
+  <logger name="sim.storage.manager.cmm.VariableRegionSizeCacheMemory" additivity="false">
+    <appender-ref ref="SIMULATOR_FILE" />
   </logger>
 
   <logger name="sim.storage.cli.Client" additivity="false">

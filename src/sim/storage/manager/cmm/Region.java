@@ -116,4 +116,8 @@ public class Region {
 		return blocks.size();
 	}
 
+	public int getMaxEntries() {
+		return this.maxEntries;
+	}
+
 }
