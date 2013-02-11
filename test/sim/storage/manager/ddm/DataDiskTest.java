@@ -142,25 +142,25 @@ public class DataDiskTest {
 		assertThat(delay, is((Parameter.HDD_SPINDOWN_TIME / 2) + Parameter.HDD_SPINUP_TIME));
 	}
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
-	@Test
-	public void invalidSpinUpTest() {
-		DataDisk dd = new DataDisk(0, diskParam, getStm(Parameter.SPINDOWN_THRESHOLD));
-		Block[] blocks = null;
-		double result;
-
-		Block b0 = new Block(new BigInteger("0"), 0.0, 0);
-		blocks = new Block[]{b0};
-
-		result = dd.write(blocks);
-		double accessTime = result + Parameter.SPINDOWN_THRESHOLD - 0.1;
-		assertThat(dd.isSpinning(accessTime), is(true));
-
-		thrown.expect(IllegalDiskStateException.class);
-		dd.spinUp(accessTime);
-	}
+//	@Rule
+//	public ExpectedException thrown = ExpectedException.none();
+//
+//	@Test
+//	public void invalidSpinUpTest() {
+//		DataDisk dd = new DataDisk(0, diskParam, getStm(Parameter.SPINDOWN_THRESHOLD));
+//		Block[] blocks = null;
+//		double result;
+//
+//		Block b0 = new Block(new BigInteger("0"), 0.0, 0);
+//		blocks = new Block[]{b0};
+//
+//		result = dd.write(blocks);
+//		double accessTime = result + Parameter.SPINDOWN_THRESHOLD - 0.1;
+//		assertThat(dd.isSpinning(accessTime), is(true));
+//
+//		thrown.expect(IllegalDiskStateException.class);
+//		dd.spinUp(accessTime);
+//	}
 
 	@Test
 	public void delayCheck() {
