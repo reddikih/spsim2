@@ -17,7 +17,7 @@ import sim.storage.CacheResponse;
 import sim.storage.DiskResponse;
 import sim.storage.HDDParameter;
 import sim.storage.HardDiskDrive;
-import sim.storage.state.CacheDiskStateManager;
+import sim.storage.state.WithoutSleepDiskStateManager;
 import sim.storage.state.DiskStateParameter;
 
 @RunWith(JUnit4.class)
@@ -67,8 +67,8 @@ public class RAPoSDACacheDiskManagerTest {
 		return result;
 	}
 
-	private CacheDiskStateManager getCDStm() {
-		return new CacheDiskStateManager(dstParam);
+	private WithoutSleepDiskStateManager getCDStm() {
+		return new WithoutSleepDiskStateManager(dstParam);
 	}
 
 	@Test

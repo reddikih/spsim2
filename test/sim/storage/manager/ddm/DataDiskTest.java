@@ -15,7 +15,7 @@ import sim.Block;
 import sim.Parameter;
 import sim.storage.HDDParameter;
 import sim.storage.HardDiskDrive;
-import sim.storage.state.DataDiskStateManager;
+import sim.storage.state.WithSleepDiskStateManager;
 import sim.storage.state.DiskStateParameter;
 import sim.storage.state.IllegalDiskStateException;
 import sim.storage.util.DiskState;
@@ -43,7 +43,7 @@ public class DataDiskTest {
 				new Block[]{new Block(new BigInteger("0"), 0.0, 0)});
 	}
 
-	private DataDiskStateManager getStm(double spdown_th) {
+	private WithSleepDiskStateManager getStm(double spdown_th) {
 		DiskStateParameter stmParam =
 			new DiskStateParameter(
 					Parameter.HDD_ACTIVE_POWER,
@@ -54,7 +54,7 @@ public class DataDiskTest {
 					Parameter.HDD_SPINDOWN_TIME,
 					Parameter.HDD_SPINUP_TIME
 			);
-		return new DataDiskStateManager(spdown_th, stmParam);
+		return new WithSleepDiskStateManager(spdown_th, stmParam);
 	}
 
 	@Test

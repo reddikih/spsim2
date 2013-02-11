@@ -4,18 +4,18 @@ import sim.Block;
 import sim.statistics.RAPoSDAStats;
 import sim.storage.HDDParameter;
 import sim.storage.HardDiskDrive;
-import sim.storage.state.DataDiskStateManager;
+import sim.storage.state.WithSleepDiskStateManager;
 import sim.storage.util.DiskState;
 import sim.storage.util.RequestType;
 
 public class DataDisk extends HardDiskDrive {
 
-	private DataDiskStateManager stm;
+	private WithSleepDiskStateManager stm;
 
 	public DataDisk(
 			int id,
 			HDDParameter parameter,
-			DataDiskStateManager stm) {
+			WithSleepDiskStateManager stm) {
 
 		super(id, parameter);
 		this.stm = stm;

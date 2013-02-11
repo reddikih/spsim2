@@ -11,13 +11,13 @@ import sim.storage.Cache;
 import sim.storage.CacheResponse;
 import sim.storage.HDDParameter;
 import sim.storage.HardDiskDrive;
-import sim.storage.state.CacheDiskStateManager;
+import sim.storage.state.WithoutSleepDiskStateManager;
 import sim.storage.util.DiskState;
 import sim.storage.util.RequestType;
 
 public class CacheDisk extends HardDiskDrive implements Cache {
 
-	private CacheDiskStateManager stm;
+	private WithoutSleepDiskStateManager stm;
 	private long maxEntries;
 
 	private HashMap<BigInteger, Block> caches;
@@ -28,12 +28,12 @@ public class CacheDisk extends HardDiskDrive implements Cache {
 			int id,
 			int blockSize,
 			HDDParameter parameter,
-			CacheDiskStateManager stm) {
+			WithoutSleepDiskStateManager stm) {
 		super(id, parameter);
 		init(blockSize, stm);
 	}
 
-	private void init(int blockSize, CacheDiskStateManager stm) {
+	private void init(int blockSize, WithoutSleepDiskStateManager stm) {
 		assert stm != null;
 		this.stm = stm;
 		this.maxEntries =

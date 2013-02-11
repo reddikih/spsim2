@@ -15,7 +15,7 @@ import sim.Parameter;
 import sim.storage.CacheResponse;
 import sim.storage.HDDParameter;
 import sim.storage.HardDiskDrive;
-import sim.storage.state.CacheDiskStateManager;
+import sim.storage.state.WithoutSleepDiskStateManager;
 import sim.storage.state.DiskStateParameter;
 
 @RunWith(JUnit4.class)
@@ -44,8 +44,8 @@ public class CacheDiskTest {
 				Parameter.HDD_COMMAND_OVERHEAD);
 	}
 
-	private static CacheDiskStateManager getStateManager() {
-		return new CacheDiskStateManager(
+	private static WithoutSleepDiskStateManager getStateManager() {
+		return new WithoutSleepDiskStateManager(
 				 new DiskStateParameter(
 							Parameter.HDD_ACTIVE_POWER,
 							Parameter.HDD_IDLE_POWER,

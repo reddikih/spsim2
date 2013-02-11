@@ -19,7 +19,7 @@ import sim.storage.DiskResponse;
 import sim.storage.HDDParameter;
 import sim.storage.HardDiskDrive;
 import sim.storage.state.DiskStateParameter;
-import sim.storage.state.DataDiskStateManager;
+import sim.storage.state.WithSleepDiskStateManager;
 import sim.storage.util.DiskInfo;
 import sim.storage.util.DiskState;
 import sim.storage.util.ReplicaLevel;
@@ -64,19 +64,19 @@ public class RAPoSDADataDiskManagerTest {
 		HashMap<Integer, DataDisk> ddMap =
 				new HashMap<Integer, DataDisk>();
 		for (int i=0; i < numDD; i++) {
-			DataDiskStateManager stm = getSTM(threshold);
+			WithSleepDiskStateManager stm = getSTM(threshold);
 			DataDisk dd = getDataDisk(i, stm);
 			ddMap.put(i, dd);
 		}
 		ddm = new RAPoSDADataDiskManager(numDD, numRep, ddMap);
 	}
 
-	private DataDisk getDataDisk(int id, DataDiskStateManager stm) {
+	private DataDisk getDataDisk(int id, WithSleepDiskStateManager stm) {
 		return new DataDisk(id, dParam, stm);
 	}
 
-	private DataDiskStateManager getSTM(double threshold) {
-		return 	new DataDiskStateManager(threshold, dstParam);
+	private WithSleepDiskStateManager getSTM(double threshold) {
+		return 	new WithSleepDiskStateManager(threshold, dstParam);
 	}
 
 	private void initiationWrite(Block[] blocks) {

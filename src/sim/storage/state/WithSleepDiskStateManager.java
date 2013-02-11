@@ -8,13 +8,13 @@ import sim.storage.HardDiskDrive;
 import sim.storage.manager.ddm.DataDisk;
 import sim.storage.util.DiskState;
 
-public class DataDiskStateManager extends StateManager {
+public class WithSleepDiskStateManager extends StateManager {
 
 	private double spindownThreshold;
-	private static Logger logger = LoggerFactory.getLogger(DataDiskStateManager.class);
+	private static Logger logger = LoggerFactory.getLogger(WithSleepDiskStateManager.class);
 	private static String format = "DataDisk[%d] State:%s Energy:%.2f time:%.3f start:%.4f end:%.4f";
 
-	public DataDiskStateManager(
+	public WithSleepDiskStateManager(
 			double spindownThreshold, DiskStateParameter parameter) {
 		super(parameter);
 
@@ -70,7 +70,7 @@ public class DataDiskStateManager extends StateManager {
 			RAPoSDAStats.addEnergy(energy, DiskState.IDLE);
 			logger.trace(
 					String.format(
-							DataDiskStateManager.format,
+							WithSleepDiskStateManager.format,
 							dd.getId(),
 							DiskState.IDLE,
 							energy,
@@ -85,7 +85,7 @@ public class DataDiskStateManager extends StateManager {
 			RAPoSDAStats.addEnergy(energy, DiskState.IDLE);
 			logger.trace(
 					String.format(
-							DataDiskStateManager.format,
+							WithSleepDiskStateManager.format,
 							dd.getId(),
 							DiskState.IDLE,
 							energy,
@@ -100,7 +100,7 @@ public class DataDiskStateManager extends StateManager {
 			RAPoSDAStats.addEnergy(energy, DiskState.SPINDOWN);
 			logger.trace(
 					String.format(
-							DataDiskStateManager.format,
+							WithSleepDiskStateManager.format,
 							dd.getId(),
 							DiskState.SPINDOWN,
 							energy,
@@ -116,7 +116,7 @@ public class DataDiskStateManager extends StateManager {
 			RAPoSDAStats.addEnergy(energy, DiskState.IDLE);
 			logger.trace(
 					String.format(
-							DataDiskStateManager.format,
+							WithSleepDiskStateManager.format,
 							dd.getId(),
 							DiskState.IDLE,
 							energy,
@@ -130,7 +130,7 @@ public class DataDiskStateManager extends StateManager {
 			RAPoSDAStats.addEnergy(energy, DiskState.SPINDOWN);
 			logger.trace(
 					String.format(
-							DataDiskStateManager.format,
+							WithSleepDiskStateManager.format,
 							dd.getId(),
 							DiskState.SPINDOWN,
 							energy,
@@ -144,7 +144,7 @@ public class DataDiskStateManager extends StateManager {
 			RAPoSDAStats.addEnergy(energy, DiskState.STANDBY);
 			logger.trace(
 					String.format(
-							DataDiskStateManager.format,
+							WithSleepDiskStateManager.format,
 							dd.getId(),
 							DiskState.STANDBY,
 							energy,
@@ -174,7 +174,7 @@ public class DataDiskStateManager extends StateManager {
 		RAPoSDAStats.addEnergy(energy, DiskState.SPINUP);
 		logger.trace(
 				String.format(
-						DataDiskStateManager.format,
+						WithSleepDiskStateManager.format,
 						dd.getId(),
 						DiskState.SPINUP,
 						energy,
@@ -195,7 +195,7 @@ public class DataDiskStateManager extends StateManager {
 		RAPoSDAStats.addEnergy(energy, state);
 		logger.trace(
 				String.format(
-						DataDiskStateManager.format,
+						WithSleepDiskStateManager.format,
 						disk.getId(),
 						state,
 						energy,

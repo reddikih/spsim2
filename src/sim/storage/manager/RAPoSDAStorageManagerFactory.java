@@ -18,8 +18,8 @@ import sim.storage.manager.cmm.assignor.IAssignor;
 import sim.storage.manager.ddm.DataDisk;
 import sim.storage.manager.ddm.IDataDiskManager;
 import sim.storage.manager.ddm.RAPoSDADataDiskManager;
-import sim.storage.state.CacheDiskStateManager;
-import sim.storage.state.DataDiskStateManager;
+import sim.storage.state.WithoutSleepDiskStateManager;
+import sim.storage.state.WithSleepDiskStateManager;
 import sim.storage.state.DiskStateParameter;
 
 public class RAPoSDAStorageManagerFactory extends StorageManagerFactory {
@@ -92,8 +92,8 @@ public class RAPoSDAStorageManagerFactory extends StorageManagerFactory {
 				Parameter.HDD_COMMAND_OVERHEAD
 		);
 
-		CacheDiskStateManager cdstm =
-			new CacheDiskStateManager(
+		WithoutSleepDiskStateManager cdstm =
+			new WithoutSleepDiskStateManager(
 					new DiskStateParameter(
 							Parameter.HDD_ACTIVE_POWER,
 							Parameter.HDD_IDLE_POWER,
@@ -133,8 +133,8 @@ public class RAPoSDAStorageManagerFactory extends StorageManagerFactory {
 				Parameter.HDD_COMMAND_OVERHEAD
 		);
 
-		DataDiskStateManager ddstm =
-			new DataDiskStateManager(
+		WithSleepDiskStateManager ddstm =
+			new WithSleepDiskStateManager(
 					Parameter.SPINDOWN_THRESHOLD,
 					new DiskStateParameter(
 							Parameter.HDD_ACTIVE_POWER,

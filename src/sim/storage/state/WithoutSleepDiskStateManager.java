@@ -7,12 +7,12 @@ import sim.statistics.RAPoSDAStats;
 import sim.storage.HardDiskDrive;
 import sim.storage.util.DiskState;
 
-public class CacheDiskStateManager extends StateManager {
+public class WithoutSleepDiskStateManager extends StateManager {
 
-	private static Logger logger = LoggerFactory.getLogger(CacheDiskStateManager.class);
+	private static Logger logger = LoggerFactory.getLogger(WithoutSleepDiskStateManager.class);
 	private static String format = "CacheDisk[%d] State:%s Energy:%.2f time:%.3f start:%.4f end:%.4f";
 
-	public CacheDiskStateManager(DiskStateParameter parameter) {
+	public WithoutSleepDiskStateManager(DiskStateParameter parameter) {
 		super(parameter);
 	}
 
@@ -60,7 +60,7 @@ public class CacheDiskStateManager extends StateManager {
 				// TODO to be replaced with logging library
 				logger.trace(
 						String.format(
-								CacheDiskStateManager.format,
+								WithoutSleepDiskStateManager.format,
 								cd.getId(),
 								DiskState.IDLE,
 								energy,
@@ -87,7 +87,7 @@ public class CacheDiskStateManager extends StateManager {
 		RAPoSDAStats.addEnergy(energy, state);
 		logger.trace(
 				String.format(
-						CacheDiskStateManager.format,
+						WithoutSleepDiskStateManager.format,
 						disk.getId(),
 						state,
 						energy,
