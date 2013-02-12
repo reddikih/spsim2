@@ -27,8 +27,6 @@ public class DataDisk extends HardDiskDrive {
 		double latency = stm.stateUpdate(this, arrivalTime, lastIdleStartTime);
 		double responseTime = super.read(blocks);
 
-//		arrivalTime += latency;
-
 		stm.postStateUpdate(
 				this,
 				DiskState.ACTIVE,
@@ -84,10 +82,16 @@ public class DataDisk extends HardDiskDrive {
 		stm.stateUpdate(this, closeTime, lastIdleStartTime);
 	}
 
+	/**
+	 * This method assumed that this method is called only when
+	 * the disk is in the standby state. Thus we can only calculate
+	 * the time between last idle start timestamp to current access
+	 * timestamp.
+	 *
+	 * @param accessTime
+	 * @return standby state time as double value.
+	 */
 	public double getStandbyTime(double accessTime) {
-		// It is assumed that this method is called only when
-		// the disk is in the standby state. Thus
-		// we can only calculate the following value.
 		double result = accessTime - lastIdleStartTime;
 		return result < 0 ? 0 : result;
 	}
