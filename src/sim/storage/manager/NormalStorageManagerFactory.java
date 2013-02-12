@@ -10,11 +10,10 @@ import sim.storage.manager.cmm.CacheMemory;
 import sim.storage.manager.cmm.CacheMemoryFactory;
 import sim.storage.manager.cmm.ICacheMemoryManager;
 import sim.storage.manager.cmm.NormalCacheMemoryManager;
-import sim.storage.manager.ddm.DataDisk;
 import sim.storage.manager.ddm.IDataDiskManager;
-import sim.storage.manager.ddm.RAPoSDADataDiskManager;
+import sim.storage.manager.ddm.NormalDataDisk;
+import sim.storage.manager.ddm.NormalDataDiskManager;
 import sim.storage.state.DiskStateParameter;
-import sim.storage.state.WithSleepDiskStateManager;
 import sim.storage.state.WithoutSleepDiskStateManager;
 
 public class NormalStorageManagerFactory extends StorageManagerFactory {
@@ -54,7 +53,7 @@ public class NormalStorageManagerFactory extends StorageManagerFactory {
 			Parameter.NUMBER_OF_CACHE_MEMORIES
 			* Parameter.NUBER_OF_DISKS_PER_CACHE_GROUP;
 		int numRep = Parameter.NUMBER_OF_REPLICA;
-		HashMap<Integer, DataDisk> dataDisks = new HashMap<Integer, DataDisk>();
+		HashMap<Integer, NormalDataDisk> dataDisks = new HashMap<Integer, NormalDataDisk>();
 
 		HDDParameter param = new HDDParameter(
 				Parameter.HDD_SIZE,
@@ -81,18 +80,26 @@ public class NormalStorageManagerFactory extends StorageManagerFactory {
 					)
 			);
 
-//		for (int i=0; i < numdd; i++) {
-//			DataDisk dd = new DataDisk(i, param, ddstm);
-//			dataDisks.put(i, dd);
-//		}
-		return new RAPoSDADataDiskManager(numdd, numRep, dataDisks);
+		for (int i=0; i < numdd; i++) {
+			NormalDataDisk dd = new NormalDataDisk(i, param, ddstm);
+			dataDisks.put(i, dd);
+		}
+		return new NormalDataDiskManager(numdd, numRep, dataDisks);
 	}
 
 	@Override
 	protected StorageManager createStorageManager(ICacheMemoryManager cmm,
 			ICacheDiskManager cdm, IDataDiskManager ddm) {
-		// TODO Auto-generated method stub
-		return null;
+
+		int blockSize = Parameter.BLOCK_SIZE;
+		int numRep = Parameter.NUMBER_OF_REPLICA;
+
+		assert numRep > 0 : "number of replica parameter should greater than 0";
+
+		return new NormalStorageManager(
+				(NormalCacheMemoryManager)cmm,
+				(NormalDataDiskManager)ddm,
+				blockSize, numRep);
 	}
 
 }

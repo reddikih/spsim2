@@ -5,8 +5,11 @@ import java.util.HashMap;
 import sim.Block;
 import sim.Request;
 import sim.Response;
+import sim.statistics.RAPoSDAStats;
+import sim.storage.DiskResponse;
 import sim.storage.manager.cmm.NormalCacheMemoryManager;
 import sim.storage.manager.ddm.NormalDataDiskManager;
+import sim.storage.util.RequestType;
 
 public class NormalStorageManager extends StorageManager {
 
@@ -30,19 +33,53 @@ public class NormalStorageManager extends StorageManager {
 
 	@Override
 	public Response read(Request request) {
-		// TODO Auto-generated method stub
-		return null;
+		Block[] blocks = requestMap.get(request.getKey());
+		if (blocks == null) throw new IllegalArgumentException();
+
+		updateArrivalTimeOfBlocks(blocks, request.getArrvalTime());
+
+		double respTime = Double.MIN_VALUE;
+		for (Block b : blocks) {
+			// TODO chenge to normal statistics.
+			// block access count log
+			RAPoSDAStats.incrementBlockAccessCount(RequestType.READ);
+
+			DiskResponse dResp = ddm.read(new Block[]{b});
+			respTime = respTime >= dResp.getResponseTime()
+			? respTime : dResp.getResponseTime();
+		}
+		return new Response(request.getKey(), respTime);
 	}
 
 	@Override
 	public Response write(Request request) {
-		// TODO Auto-generated method stub
-		return null;
+		Block[] blocks = requestMap.get(request.getKey());
+		if (blocks == null) {
+			// new request
+			blocks = divideRequest(request);
+			requestMap.put(request.getKey(), blocks);
+		} else {
+			// update(override) request
+			updateArrivalTimeOfBlocks(blocks, request.getArrvalTime());
+		}
+
+		double respTime = Double.MIN_VALUE;
+
+		for (Block block : blocks) {
+			// block access count log
+			RAPoSDAStats.incrementBlockAccessCount(RequestType.WRITE);
+
+			Block[] replicas = createReplicas(block);
+
+			DiskResponse dResp = ddm.write(replicas);
+			respTime = respTime >= dResp.getResponseTime()
+			? respTime : dResp.getResponseTime();
+		}
+		return new Response(request.getKey(), respTime);
 	}
 
 	@Override
 	public void close(double closeTime) {
-		// TODO Auto-generated method stub
-
+		ddm.close(closeTime);
 	}
 }
