@@ -3,11 +3,11 @@ package sim.storage.state;
 import sim.storage.HardDiskDrive;
 import sim.storage.util.DiskState;
 
-public abstract class StateManager {
+public abstract class DiskStateManager {
 
 	protected DiskStateParameter parameter;
 
-	public StateManager(DiskStateParameter parameter) {
+	public DiskStateManager(DiskStateParameter parameter) {
 		this.parameter = parameter;
 	}
 

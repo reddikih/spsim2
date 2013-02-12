@@ -8,7 +8,7 @@ import sim.storage.HardDiskDrive;
 import sim.storage.manager.ddm.DataDisk;
 import sim.storage.util.DiskState;
 
-public class WithSleepDiskStateManager extends StateManager {
+public class WithSleepDiskStateManager extends DiskStateManager {
 
 	private double spindownThreshold;
 	private static Logger logger = LoggerFactory.getLogger(WithSleepDiskStateManager.class);
