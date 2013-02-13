@@ -1,9 +1,8 @@
 package sim.storage.manager.ddm;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -57,7 +56,7 @@ public class RAPoSDADataDiskManagerTest {
 
 		HardDiskDrive hdd = new HardDiskDrive(0, dParam);
 		aBlockResp = hdd.write(
-				new Block[]{new Block(new BigInteger("0"), 0.0, 0)});
+				new Block[]{new Block(0, 0.0, 0)});
 	}
 
 	private void init(int numDD, int numRep, double threshold) {
@@ -103,7 +102,7 @@ public class RAPoSDADataDiskManagerTest {
 		int numdd = 4, numRep = 3;
 		init(numdd, numRep, Double.MAX_VALUE);
 
-		Block block0 = new Block(new BigInteger("0"), 0.0, 0);
+		Block block0 = new Block(0, 0.0, 0);
 
 		DiskResponse ddresp = ddm.write(new Block[]{block0});
 		assertThat(ddresp.getResponseTime(), is(aBlockResp));
@@ -117,13 +116,13 @@ public class RAPoSDADataDiskManagerTest {
 		DiskResponse ddresp;
 		Block[] blocks;
 
-		Block block00 = new Block(new BigInteger("0"), 0.0, 0);
+		Block block00 = new Block(0, 0.0, 0);
 		setOwnerDiskAndRepLevel(block00, ReplicaLevel.ZERO, numdd);
-		Block block10 = new Block(new BigInteger("1"), 0.0, 1);
+		Block block10 = new Block(1, 0.0, 1);
 		setOwnerDiskAndRepLevel(block10, ReplicaLevel.ZERO, numdd);
-		Block block20 = new Block(new BigInteger("2"), 0.0, 2);
+		Block block20 = new Block(2, 0.0, 2);
 		setOwnerDiskAndRepLevel(block20, ReplicaLevel.ZERO, numdd);
-		Block block30 = new Block(new BigInteger("3"), 0.0, 3);
+		Block block30 = new Block(3, 0.0, 3);
 		setOwnerDiskAndRepLevel(block30, ReplicaLevel.ZERO, numdd);
 
 		blocks = new Block[]{block00,block10,block20,block30};
@@ -131,16 +130,16 @@ public class RAPoSDADataDiskManagerTest {
 		assertThat(ddresp.getResponseTime(), is(aBlockResp));
 		assertThat(Arrays.equals(ddresp.getResults(), blocks), is(true));
 
-		Block block01 = new Block(new BigInteger("4"), 0.0, 0);
+		Block block01 = new Block(4, 0.0, 0);
 		setOwnerDiskAndRepLevel(block01, ReplicaLevel.ZERO, numdd);
 		blocks = new Block[]{block01};
 		ddresp = ddm.write(blocks);
 		assertThat(ddresp.getResponseTime(), is(aBlockResp*2));
 		assertThat(Arrays.equals(ddresp.getResults(), blocks), is(true));
 
-		Block block11 = new Block(new BigInteger("5"), 1.0, 1);
+		Block block11 = new Block(5, 1.0, 1);
 		setOwnerDiskAndRepLevel(block11, ReplicaLevel.ZERO, numdd);
-		Block block12 = new Block(new BigInteger("6"), 1.0, 1);
+		Block block12 = new Block(6, 1.0, 1);
 		setOwnerDiskAndRepLevel(block12, ReplicaLevel.ZERO, numdd);
 
 		blocks = new Block[]{block11,block12};
@@ -148,7 +147,7 @@ public class RAPoSDADataDiskManagerTest {
 		assertThat(d2l(ddresp.getResponseTime()), is(d2l(aBlockResp*2)));
 		assertThat(Arrays.equals(ddresp.getResults(), blocks), is(true));
 
-		Block block13 = new Block(new BigInteger("7"), 1.0 + (aBlockResp / 2), 1);
+		Block block13 = new Block(7, 1.0 + (aBlockResp / 2), 1);
 		setOwnerDiskAndRepLevel(block13, ReplicaLevel.ZERO, numdd);
 		blocks = new Block[]{block13};
 		ddresp = ddm.write(blocks);
@@ -164,9 +163,9 @@ public class RAPoSDADataDiskManagerTest {
 		DiskResponse ddresp;
 		Block[] blocks;
 
-		Block block00R0 = new Block(new BigInteger("0"), 1.0, 0);
+		Block block00R0 = new Block(0, 1.0, 0);
 		setOwnerDiskAndRepLevel(block00R0, ReplicaLevel.ZERO, numdd);
-		Block block20R2 = new Block(new BigInteger("1"), 1.0, 2);
+		Block block20R2 = new Block(1, 1.0, 2);
 		setOwnerDiskAndRepLevel(block20R2, ReplicaLevel.TWO, numdd);
 
 		blocks = new Block[]{block00R0,block20R2};
@@ -183,13 +182,13 @@ public class RAPoSDADataDiskManagerTest {
 		DiskResponse ddresp;
 		Block[] blocks;
 
-		Block block00 = new Block(new BigInteger("0"), 0.0, 0);
+		Block block00 = new Block(0, 0.0, 0);
 		setOwnerDiskAndRepLevel(block00, ReplicaLevel.ZERO, numdd);
-		Block block10 = new Block(new BigInteger("1"), 0.0, 1);
+		Block block10 = new Block(1, 0.0, 1);
 		setOwnerDiskAndRepLevel(block10, ReplicaLevel.ZERO, numdd);
-		Block block20 = new Block(new BigInteger("2"), 0.0, 2);
+		Block block20 = new Block(2, 0.0, 2);
 		setOwnerDiskAndRepLevel(block20, ReplicaLevel.ZERO, numdd);
-		Block block30 = new Block(new BigInteger("3"), 0.0, 3);
+		Block block30 = new Block(3, 0.0, 3);
 		setOwnerDiskAndRepLevel(block30, ReplicaLevel.ZERO, numdd);
 
 		blocks = new Block[]{block00,block10,block20,block30};
@@ -202,9 +201,9 @@ public class RAPoSDADataDiskManagerTest {
 		assertThat(Arrays.equals(ddresp.getResults(), blocks), is(true));
 
 		// read from the same disk hold different replica level blocks.
-		Block block31 = new Block(new BigInteger("4"), 1.0, 3);
+		Block block31 = new Block(4, 1.0, 3);
 		setOwnerDiskAndRepLevel(block31, ReplicaLevel.ZERO, numdd);
-		Block block20R1 = new Block(new BigInteger("2"), 1.0, 2);
+		Block block20R1 = new Block(2, 1.0, 2);
 		setOwnerDiskAndRepLevel(block20R1, ReplicaLevel.ONE, numdd);
 
 		blocks = new Block[]{block31,block20R1};
@@ -222,16 +221,16 @@ public class RAPoSDADataDiskManagerTest {
 		HashMap<Integer, ReplicaLevel> expected = new HashMap<Integer, ReplicaLevel>();
 		List<DiskInfo> dInfos;
 
-		Block block00 = new Block(new BigInteger("0"), 0.0, 0);
+		Block block00 = new Block(0, 0.0, 0);
 		setOwnerDiskAndRepLevel(block00, ReplicaLevel.ZERO, numdd);
 		ddm.write(new Block[]{block00});
-		Block block10 = new Block(new BigInteger("1"), 5.0, 1);
+		Block block10 = new Block(1, 5.0, 1);
 		setOwnerDiskAndRepLevel(block10, ReplicaLevel.TWO, numdd);
 		ddm.write(new Block[]{block10});
-		Block block20 = new Block(new BigInteger("2"), 10.0, 2);
+		Block block20 = new Block(2, 10.0, 2);
 		setOwnerDiskAndRepLevel(block20, ReplicaLevel.ONE, numdd);
 		ddm.write(new Block[]{block20});
-		Block block30 = new Block(new BigInteger("3"), 15.0, 3);
+		Block block30 = new Block(3, 15.0, 3);
 		setOwnerDiskAndRepLevel(block30, ReplicaLevel.ONE, numdd);
 		ddm.write(new Block[]{block30});
 
@@ -271,16 +270,16 @@ public class RAPoSDADataDiskManagerTest {
 		List<DiskInfo> dInfos;
 		DiskInfo sleepest;
 
-		Block block00 = new Block(new BigInteger("0"), 0.0, 0);
+		Block block00 = new Block(0, 0.0, 0);
 		setOwnerDiskAndRepLevel(block00, ReplicaLevel.ZERO, numdd);
 		ddm.write(new Block[]{block00});
-		Block block10 = new Block(new BigInteger("1"), 1.0, 1);
+		Block block10 = new Block(1, 1.0, 1);
 		setOwnerDiskAndRepLevel(block10, ReplicaLevel.ZERO, numdd);
 		ddm.write(new Block[]{block10});
-		Block block20 = new Block(new BigInteger("2"), 2.0, 2);
+		Block block20 = new Block(2, 2.0, 2);
 		setOwnerDiskAndRepLevel(block20, ReplicaLevel.ZERO, numdd);
 		ddm.write(new Block[]{block20});
-		Block block30 = new Block(new BigInteger("3"), 3.0, 3);
+		Block block30 = new Block(3, 3.0, 3);
 		setOwnerDiskAndRepLevel(block30, ReplicaLevel.ZERO, numdd);
 		ddm.write(new Block[]{block30});
 
@@ -297,7 +296,7 @@ public class RAPoSDADataDiskManagerTest {
 
 		// following test should be consider disk spinup.
 		// update last access time of disk 0.
-		Block block40 = new Block(new BigInteger("4"), 4.0, 0);
+		Block block40 = new Block(4, 4.0, 0);
 		setOwnerDiskAndRepLevel(block40, ReplicaLevel.ZERO, numdd);
 		ddm.write(new Block[]{block40});
 
@@ -305,7 +304,7 @@ public class RAPoSDADataDiskManagerTest {
 		// repLevel0 is disk2 last access = 10.0
 		// repLevel1 is disk3 last access = 15.0
 		// repLevel2 is disk0 last access = 20.0
-		Block block50 = new Block(new BigInteger("5"), 50.0, 2);
+		Block block50 = new Block(5, 50.0, 2);
 		setOwnerDiskAndRepLevel(block50, ReplicaLevel.ONE, numdd);
 
 		dInfos = ddm.getRelatedDisksInfo(block50);

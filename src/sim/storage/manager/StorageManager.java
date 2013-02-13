@@ -1,6 +1,5 @@
 package sim.storage.manager;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 
 import sim.Block;
@@ -16,7 +15,8 @@ public abstract class StorageManager {
 	protected int blockSize;
 	protected int numReplica;
 
-	protected BigInteger blockNumber = new BigInteger("0");
+//	protected BigInteger blockNumber = new BigInteger("0");
+	protected long blockNumber = 0L;
 
 	public StorageManager(IDataDiskManager ddm) {
 		this.ddm = ddm;
@@ -65,7 +65,7 @@ public abstract class StorageManager {
 		assert numBlocks > 0;
 		blocks = new Block[numBlocks];
 		for (int i=0; i < numBlocks; i++) {
-			BigInteger blockId = nextBlockId();
+			long blockId = nextBlockId();
 			blocks[i] = new Block(
 					blockId,
 					request.getArrvalTime(),
@@ -74,12 +74,11 @@ public abstract class StorageManager {
 		return blocks;
 	}
 
-	protected int assignPrimaryDiskId(BigInteger blockId) {
-		BigInteger numDataDisk =
-			new BigInteger(String.valueOf(ddm.getNumberOfDataDisks()));
+	protected int assignPrimaryDiskId(long blockId) {
+		long numDataDisk = ddm.getNumberOfDataDisks();
 		// TODO try to separate assignor class.
 		// There is not only roundrobin favor assign algorithm.
-		return (blockId.mod(numDataDisk)).intValue();
+		return (int)(blockId % numDataDisk);
 	}
 
 	protected int assignOwnerDiskId(
@@ -87,10 +86,10 @@ public abstract class StorageManager {
 		return (primaryDiskId + repLevel.getValue()) % ddm.getNumberOfDataDisks();
 	}
 
-	protected BigInteger nextBlockId() {
-		BigInteger next = new BigInteger(blockNumber.toString());
-		blockNumber = blockNumber.add(BigInteger.ONE);
-		return next;
+	protected long nextBlockId() {
+//		BigInteger next = new BigInteger(blockNumber.toString());
+//		blockNumber = blockNumber.add(BigInteger.ONE);
+		return this.blockNumber++;
 	}
 
 	protected void updateArrivalTimeOfBlocks(Block[] blocks, double arrivalTime) {
@@ -106,7 +105,7 @@ public abstract class StorageManager {
 		if (numBlocks <= 0) numBlocks = 1;
 		blocks = new Block[numBlocks];
 		for (int i=0; i < numBlocks; i++) {
-			BigInteger blockId = nextBlockId();
+			long blockId = nextBlockId();
 			blocks[i] = new Block(
 					blockId,
 					0.0,

@@ -1,6 +1,5 @@
 package sim.storage.manager.cmm;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,7 +15,7 @@ public class Region {
 	 * key: block id
 	 * value: Block object
 	 */
-	private HashMap<BigInteger, Block> blocks;
+	private HashMap<Long, Block> blocks;
 
 	/**
 	 * Buffered block length(queue size) per disk.
@@ -27,12 +26,12 @@ public class Region {
 	private HashMap<Integer, Integer> bufferLengthCounter;
 
 	private final static Block[] emptyBlocks =
-		new HashMap<BigInteger, Block>().values().toArray(new Block[0]);
+		new HashMap<Long, Block>().values().toArray(new Block[0]);
 
 
 	public Region(int maxEntries) {
 		this.maxEntries = maxEntries;
-		this.blocks = new HashMap<BigInteger, Block>();
+		this.blocks = new HashMap<Long, Block>();
 		this.bufferLengthCounter = new HashMap<Integer, Integer>();
 	}
 

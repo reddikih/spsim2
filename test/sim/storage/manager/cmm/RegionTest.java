@@ -1,9 +1,8 @@
 package sim.storage.manager.cmm;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-
-import java.math.BigInteger;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,9 +19,9 @@ public class RegionTest {
 		Region region = new Region(2);
 		Block result = null;
 
-		Block block0 = new Block(new BigInteger("0"), ReplicaLevel.ZERO, 0.0, 0);
-		Block block1 = new Block(new BigInteger("1"), ReplicaLevel.ZERO, 0.1, 0);
-		Block block2 = new Block(new BigInteger("2"), ReplicaLevel.ZERO, 0.1, 0);
+		Block block0 = new Block(0, ReplicaLevel.ZERO, 0.0, 0);
+		Block block1 = new Block(1, ReplicaLevel.ZERO, 0.1, 0);
+		Block block2 = new Block(2, ReplicaLevel.ZERO, 0.1, 0);
 
 		result = region.write(block0);
 		assertThat(result, is(block0));
@@ -41,16 +40,16 @@ public class RegionTest {
 		Region region = new Region(10);
 		Block result = null;
 
-		Block block0 = new Block(new BigInteger("0"), ReplicaLevel.ZERO, 0.0, 0);
-		Block block1 = new Block(new BigInteger("1"), ReplicaLevel.ZERO, 0.1, 0);
-		Block block2 = new Block(new BigInteger("2"), ReplicaLevel.ZERO, 0.1, 1);
-		Block block3 = new Block(new BigInteger("3"), ReplicaLevel.ZERO, 0.1, 1);
-		Block block4 = new Block(new BigInteger("4"), ReplicaLevel.ZERO, 0.1, 1);
-		Block block5 = new Block(new BigInteger("5"), ReplicaLevel.ZERO, 0.1, 2);
-		Block block6 = new Block(new BigInteger("6"), ReplicaLevel.ZERO, 0.1, 2);
-		Block block7 = new Block(new BigInteger("7"), ReplicaLevel.ZERO, 0.1, 2);
-		Block block8 = new Block(new BigInteger("8"), ReplicaLevel.ZERO, 0.1, 2);
-		Block block9 = new Block(new BigInteger("9"), ReplicaLevel.ZERO, 0.1, 3);
+		Block block0 = new Block(0, ReplicaLevel.ZERO, 0.0, 0);
+		Block block1 = new Block(1, ReplicaLevel.ZERO, 0.1, 0);
+		Block block2 = new Block(2, ReplicaLevel.ZERO, 0.1, 1);
+		Block block3 = new Block(3, ReplicaLevel.ZERO, 0.1, 1);
+		Block block4 = new Block(4, ReplicaLevel.ZERO, 0.1, 1);
+		Block block5 = new Block(5, ReplicaLevel.ZERO, 0.1, 2);
+		Block block6 = new Block(6, ReplicaLevel.ZERO, 0.1, 2);
+		Block block7 = new Block(7, ReplicaLevel.ZERO, 0.1, 2);
+		Block block8 = new Block(8, ReplicaLevel.ZERO, 0.1, 2);
+		Block block9 = new Block(9, ReplicaLevel.ZERO, 0.1, 3);
 
 		result = region.write(block0);
 		result = region.write(block1);
@@ -76,10 +75,10 @@ public class RegionTest {
 		Region region = new Region(3);
 		Block result = null;
 
-		Block block0 = new Block(new BigInteger("0"), ReplicaLevel.ZERO, 0.0, 0);
-		Block block1 = new Block(new BigInteger("1"), ReplicaLevel.ZERO, 0.1, 0);
-		Block block2 = new Block(new BigInteger("2"), ReplicaLevel.ZERO, 0.1, 1);
-		Block block3 = new Block(new BigInteger("3"), ReplicaLevel.ZERO, 0.1, 1);
+		Block block0 = new Block(0, ReplicaLevel.ZERO, 0.0, 0);
+		Block block1 = new Block(1, ReplicaLevel.ZERO, 0.1, 0);
+		Block block2 = new Block(2, ReplicaLevel.ZERO, 0.1, 1);
+		Block block3 = new Block(3, ReplicaLevel.ZERO, 0.1, 1);
 
 		result = region.write(block0);
 		result = region.write(block1);
@@ -97,9 +96,9 @@ public class RegionTest {
 		Region region = new Region(3);
 		Block result = null;
 
-		Block block0 = new Block(new BigInteger("0"), ReplicaLevel.ZERO, 0.0, 0);
-		Block block1 = new Block(new BigInteger("1"), ReplicaLevel.ZERO, 0.1, 1);
-		Block block2 = new Block(new BigInteger("2"), ReplicaLevel.ZERO, 0.2, 2);
+		Block block0 = new Block(0, ReplicaLevel.ZERO, 0.0, 0);
+		Block block1 = new Block(1, ReplicaLevel.ZERO, 0.1, 1);
+		Block block2 = new Block(2, ReplicaLevel.ZERO, 0.2, 2);
 
 		result = region.write(block0);
 		result = region.write(block1);

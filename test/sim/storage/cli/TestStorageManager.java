@@ -1,7 +1,5 @@
 package sim.storage.cli;
 
-import java.math.BigInteger;
-
 import sim.Block;
 import sim.storage.manager.RAPoSDAStorageManager;
 import sim.storage.manager.cdm.RAPoSDACacheDiskManager;
@@ -27,7 +25,7 @@ public class TestStorageManager extends RAPoSDAStorageManager {
 		assert numBlocks > 0;
 		blocks = new Block[numBlocks];
 		for (int i=0; i < numBlocks; i++) {
-			BigInteger blockId = nextBlockId();
+			long blockId = nextBlockId();
 			blocks[i] = new Block(
 					blockId,
 					0.0,

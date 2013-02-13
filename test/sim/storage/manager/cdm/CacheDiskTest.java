@@ -1,9 +1,7 @@
 package sim.storage.manager.cdm;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-
-import java.math.BigInteger;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -15,8 +13,8 @@ import sim.Parameter;
 import sim.storage.CacheResponse;
 import sim.storage.HDDParameter;
 import sim.storage.HardDiskDrive;
-import sim.storage.state.WithoutSleepDiskStateManager;
 import sim.storage.state.DiskStateParameter;
+import sim.storage.state.WithoutSleepDiskStateManager;
 
 @RunWith(JUnit4.class)
 public class CacheDiskTest {
@@ -27,7 +25,7 @@ public class CacheDiskTest {
 	public static void setUp() {
 		HardDiskDrive hdd = new HardDiskDrive(0, getHDDParameter());
 		aBlockResp = hdd.write(
-				new Block[]{new Block(new BigInteger("0"), 0.0, 0)});
+				new Block[]{new Block(0, 0.0, 0)});
 	}
 
 
@@ -60,8 +58,8 @@ public class CacheDiskTest {
 	public void readABlockBeforeCached() {
 		CacheDisk cd = new CacheDisk(0, 1, getHDDParameter(), getStateManager());
 
-		Block block0 = new Block(new BigInteger("0"), 10.0, 0);
-		Block block1 = new Block(new BigInteger("0"), 5.0, 0);
+		Block block0 = new Block(0, 10.0, 0);
+		Block block1 = new Block(0, 5.0, 0);
 
 		CacheResponse response = null;
 

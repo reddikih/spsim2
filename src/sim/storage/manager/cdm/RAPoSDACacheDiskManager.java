@@ -1,6 +1,5 @@
 package sim.storage.manager.cdm;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,7 +24,7 @@ public class RAPoSDACacheDiskManager implements ICacheDiskManager {
 	 * key: block id
 	 * value: cache disk id
 	 */
-	private HashMap<BigInteger, Integer> block2cdMap;
+	private HashMap<Long, Integer> block2cdMap;
 
 	private int lastAssignedId;
 
@@ -33,7 +32,7 @@ public class RAPoSDACacheDiskManager implements ICacheDiskManager {
 			int numberOfCacheDisks, HashMap<Integer, CacheDisk> cacheDiskMap) {
 		this.numberOfCacheDisks = numberOfCacheDisks;
 		this.cacheDisks = cacheDiskMap;
-		this.block2cdMap = new HashMap<BigInteger, Integer>();
+		this.block2cdMap = new HashMap<Long, Integer>();
 	}
 
 	@Override

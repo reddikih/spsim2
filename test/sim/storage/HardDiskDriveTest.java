@@ -3,8 +3,6 @@ package sim.storage;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.math.BigInteger;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,7 +48,7 @@ public class HardDiskDriveTest {
 		);
 
 		HardDiskDrive hdd = new HardDiskDrive(0, withoutDiskCacheParam);
-		Block block = new Block(new BigInteger(String.valueOf(0)), ReplicaLevel.ZERO, 0.0, 0);
+		Block block = new Block(0, ReplicaLevel.ZERO, 0.0, 0);
 		Block[] blocks = {block};
 		oneBlockResponse = hdd.write(blocks);
 	}
@@ -59,7 +57,7 @@ public class HardDiskDriveTest {
 	public void writeWithoutDiskCache() {
 		HardDiskDrive hdd = new HardDiskDrive(0, withoutDiskCacheParam);
 
-		Block block0 = new Block(new BigInteger(String.valueOf(0)), ReplicaLevel.ZERO, 0.0, 0);
+		Block block0 = new Block(0, ReplicaLevel.ZERO, 0.0, 0);
 		Block[] blocks = {block0};
 		oneBlockResponse = hdd.write(blocks);
 		assertThat((oneBlockResponse < 0.01 && oneBlockResponse > 0.001), is(true));
@@ -76,8 +74,8 @@ public class HardDiskDriveTest {
 	public void assertionErrorOccurenceInWrite() {
 		HardDiskDrive hdd = new HardDiskDrive(0, withoutDiskCacheParam);
 
-		Block block1 = new Block(new BigInteger(String.valueOf(1)), ReplicaLevel.ZERO, 1.0, 0);
-		Block block2 = new Block(new BigInteger(String.valueOf(2)), ReplicaLevel.ZERO, 2.0, 0);
+		Block block1 = new Block(1, ReplicaLevel.ZERO, 1.0, 0);
+		Block block2 = new Block(2, ReplicaLevel.ZERO, 2.0, 0);
 		Block[] blocks = new Block[]{block1, block2};
 
 		thrown.expect(AssertionError.class);
@@ -91,9 +89,9 @@ public class HardDiskDriveTest {
 		Block[] blocks = null;
 
 		// sequencial write requests.
-		Block block0 = new Block(new BigInteger(String.valueOf(0)), ReplicaLevel.ZERO, 0.0, 0);
-		Block block1 = new Block(new BigInteger(String.valueOf(1)), ReplicaLevel.ZERO, 0.0 + oneBlockResponse, 0);
-		Block block2 = new Block(new BigInteger(String.valueOf(2)), ReplicaLevel.ZERO, 0.0 + oneBlockResponse * 2, 0);
+		Block block0 = new Block(0, ReplicaLevel.ZERO, 0.0, 0);
+		Block block1 = new Block(1, ReplicaLevel.ZERO, 0.0 + oneBlockResponse, 0);
+		Block block2 = new Block(2, ReplicaLevel.ZERO, 0.0 + oneBlockResponse * 2, 0);
 
 		blocks = new Block[]{block0};
 		response = hdd.write(blocks);
@@ -115,8 +113,8 @@ public class HardDiskDriveTest {
 		Block[] blocks = null;
 
 		// sequencial write requests.
-		Block block0 = new Block(new BigInteger(String.valueOf(0)), ReplicaLevel.ZERO, 0.0, 0);
-		Block block1 = new Block(new BigInteger(String.valueOf(1)), ReplicaLevel.ZERO, 0.0, 0);
+		Block block0 = new Block(0, ReplicaLevel.ZERO, 0.0, 0);
+		Block block1 = new Block(1, ReplicaLevel.ZERO, 0.0, 0);
 
 		blocks = new Block[]{block0, block1};
 		response = hdd.write(blocks);
@@ -129,7 +127,7 @@ public class HardDiskDriveTest {
 		double response = -1;
 		Block[] blocks = null;
 
-		Block block0 = new Block(new BigInteger(String.valueOf(0)), ReplicaLevel.ZERO, 0.0, 0);
+		Block block0 = new Block(0, ReplicaLevel.ZERO, 0.0, 0);
 		blocks = new Block[]{block0};
 		hdd.write(blocks);
 
@@ -138,8 +136,8 @@ public class HardDiskDriveTest {
 		assertThat(response, is(oneBlockResponse));
 
 		// sequencial read requests.
-		Block block1 = new Block(new BigInteger(String.valueOf(1)), ReplicaLevel.ZERO, 1.0, 0);
-		Block block2 = new Block(new BigInteger(String.valueOf(2)), ReplicaLevel.ZERO, 1.0, 0);
+		Block block1 = new Block(1, ReplicaLevel.ZERO, 1.0, 0);
+		Block block2 = new Block(2, ReplicaLevel.ZERO, 1.0, 0);
 
 		blocks = new Block[]{block1, block2};
 		int intRes = (int)(hdd.read(blocks) * 1000000000);

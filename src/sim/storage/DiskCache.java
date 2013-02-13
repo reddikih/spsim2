@@ -1,6 +1,5 @@
 package sim.storage;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -14,15 +13,15 @@ public class DiskCache implements Cache {
 
 	private CacheParameter parameter;
 
-	private HashMap<BigInteger, Block> caches;
-	private TreeMap<Double, BigInteger> usedKeys;
+	private HashMap<Long, Block> caches;
+	private TreeMap<Double, Long> usedKeys;
 
 	public DiskCache(int diskId, CacheParameter parameter, int blockSize) {
 		this.diskId = diskId;
 		this.parameter = parameter;
 		this.MAX_ENTRIES = (int)Math.floor((double)this.parameter.getCapacity() / blockSize);
-		this.caches = new HashMap<BigInteger, Block>();
-		this.usedKeys = new TreeMap<Double, BigInteger>();
+		this.caches = new HashMap<Long, Block>();
+		this.usedKeys = new TreeMap<Double, Long>();
 	}
 
 	@Override
@@ -46,7 +45,7 @@ public class DiskCache implements Cache {
 
 	private Block getEntry(Block block) {
 		Block result = Block.NULL;
-		BigInteger blockId = block.getId();
+		long blockId = block.getId();
 		if (caches.containsKey(blockId)) {
 			result = caches.get(blockId);
 			usedKeys.remove(result.getAccessTime());
@@ -63,7 +62,7 @@ public class DiskCache implements Cache {
 
 	private Block replaceEntry(Block block) {
 		Block removed = null;
-		Map.Entry<Double, BigInteger> lruEntry = usedKeys.pollFirstEntry();
+		Map.Entry<Double, Long> lruEntry = usedKeys.pollFirstEntry();
 		removed = caches.remove(lruEntry.getValue());
 		addEntry(block);
 		return removed;

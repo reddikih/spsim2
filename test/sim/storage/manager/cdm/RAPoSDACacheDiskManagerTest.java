@@ -1,9 +1,9 @@
 package sim.storage.manager.cdm;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertThat;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 
 import org.junit.BeforeClass;
@@ -17,8 +17,8 @@ import sim.storage.CacheResponse;
 import sim.storage.DiskResponse;
 import sim.storage.HDDParameter;
 import sim.storage.HardDiskDrive;
-import sim.storage.state.WithoutSleepDiskStateManager;
 import sim.storage.state.DiskStateParameter;
+import sim.storage.state.WithoutSleepDiskStateManager;
 
 @RunWith(JUnit4.class)
 public class RAPoSDACacheDiskManagerTest {
@@ -56,7 +56,7 @@ public class RAPoSDACacheDiskManagerTest {
 
 		HardDiskDrive hdd = new HardDiskDrive(0, dParam);
 		aBlockResp = hdd.write(
-				new Block[]{new Block(new BigInteger("0"), 0.0, 0)});
+				new Block[]{new Block(0, 0.0, 0)});
 	}
 
 	private HashMap<Integer, CacheDisk> getCacheDiskMap(int numcd) {
@@ -79,8 +79,8 @@ public class RAPoSDACacheDiskManagerTest {
 		Block[] blocks;
 		DiskResponse cdres;
 
-		Block b01 = new Block(new BigInteger("0"), 0.0, 0);
-		Block b02 = new Block(new BigInteger("1"), 0.0, 0);
+		Block b01 = new Block(0, 0.0, 0);
+		Block b02 = new Block(1, 0.0, 0);
 		blocks = new Block[]{b01};
 		cdres = cdm.write(blocks);
 		assertThat(cdres.getResults(), is(blocks));
@@ -95,27 +95,27 @@ public class RAPoSDACacheDiskManagerTest {
 		Block[] blocks;
 		DiskResponse cdres;
 
-		Block b00 = new Block(new BigInteger("0"), 0.0, 0);
-		Block b01 = new Block(new BigInteger("1"), 0.1, 0);
-		Block b02 = new Block(new BigInteger("2"), 0.2, 0);
-		Block b03 = new Block(new BigInteger("3"), 0.3, 0);
+		Block b00 = new Block(0, 0.0, 0);
+		Block b01 = new Block(1, 0.1, 0);
+		Block b02 = new Block(2, 0.2, 0);
+		Block b03 = new Block(3, 0.3, 0);
 		blocks = new Block[]{b00,b01,b02,b03};
 		cdres = cdm.write(blocks);
 		assertThat(cdres.getResults(), is(blocks));
 
 		// replace check.
-		Block b05 = new Block(new BigInteger("4"), 0.4, 0);
+		Block b05 = new Block(4, 0.4, 0);
 		blocks = new Block[]{b05};
 		cdres = cdm.write(blocks);
 		assertThat(cdres.getResults(), is(new Block[]{b00}));
 
 		// idempotent check.
-		Block b04 = new Block(new BigInteger("0"), 0.5, 0);
+		Block b04 = new Block(0, 0.5, 0);
 		blocks = new Block[]{b04};
 		cdres = cdm.write(blocks);
 		assertThat(cdres.getResults(), is(new Block[]{b01}));
 
-		Block b06 = new Block(new BigInteger("0"), 0.6, 0);
+		Block b06 = new Block(0, 0.6, 0);
 		blocks = new Block[]{b06};
 		cdres = cdm.write(blocks);
 		assertThat(cdres.getResults(), is(blocks));
@@ -129,23 +129,23 @@ public class RAPoSDACacheDiskManagerTest {
 		Block[] blocks;
 		CacheResponse rres;
 
-		Block b01 = new Block(new BigInteger("0"), 0.0, 0);
-		Block b02 = new Block(new BigInteger("1"), 1.0, 0);
+		Block b01 = new Block(0, 0.0, 0);
+		Block b02 = new Block(1, 1.0, 0);
 		blocks = new Block[]{b01,b02};
 		cdm.write(blocks);
 
-		Block rd01 = new Block(new BigInteger("0"), 2.0, 1);
+		Block rd01 = new Block(0, 2.0, 1);
 		rres = cdm.read(rd01);
 		assertThat(rres.getResponseTime(), is(aBlockResp));
 		assertThat(rres.getResult(), is(rd01));
 
 		// read a data before cached
-		Block rd02before = new Block(new BigInteger("1"), 0.5, 2);
+		Block rd02before = new Block(1, 0.5, 2);
 		rres = cdm.read(rd02before);
 		assertThat(rres.getResponseTime(), is(Double.MAX_VALUE));
 		assertThat(rres.getResult(), is(Block.NULL));
 
-		Block rd02 = new Block(new BigInteger("1"), 2.0, 2);
+		Block rd02 = new Block(1, 2.0, 2);
 		rres = cdm.read(rd02);
 		assertThat(rres.getResponseTime(), is(aBlockResp));
 		assertThat(rres.getResult(), is(rd02));
@@ -161,36 +161,36 @@ public class RAPoSDACacheDiskManagerTest {
 		CacheResponse rres;
 
 		// there are 6 blocks spaces in cache disks.
-		Block b00 = new Block(new BigInteger("0"), 0.0, 0);
-		Block b01 = new Block(new BigInteger("1"), 0.0, 0);
-		Block b02 = new Block(new BigInteger("2"), 0.0, 0);
-		Block b03 = new Block(new BigInteger("3"), 0.1, 0);
-		Block b04 = new Block(new BigInteger("4"), 0.0, 0);
-		Block b05 = new Block(new BigInteger("5"), 0.0, 0);
+		Block b00 = new Block(0, 0.0, 0);
+		Block b01 = new Block(1, 0.0, 0);
+		Block b02 = new Block(2, 0.0, 0);
+		Block b03 = new Block(3, 0.1, 0);
+		Block b04 = new Block(4, 0.0, 0);
+		Block b05 = new Block(5, 0.0, 0);
 
 		blocks = new Block[]{b00,b01,b02,b03,b04,b05};
 		wres = cdm.write(blocks);
 		assertThat(wres.getResponseTime(), is(aBlockResp * 2));
 		assertThat(wres.getResults(), is(blocks));
 
-		Block b06 = new Block(new BigInteger("6"), 1.0, 0);
+		Block b06 = new Block(6, 1.0, 0);
 		blocks = new Block[]{b06};
 		wres = cdm.write(blocks);
 		// replaced b00 on disk cd0
 		assertThat(wres.getResponseTime(), is(aBlockResp));
 		assertThat(wres.getResults()[0], is(b00));
 
-		Block rd00 = new Block(new BigInteger("0"), 2.0, 0);
+		Block rd00 = new Block(0, 2.0, 0);
 		rres = cdm.read(rd00);
 		assertThat(rres.getResponseTime(), is(Double.MAX_VALUE));
 		assertThat(rres.getResult(), is(Block.NULL));
 
-		Block rd03 = new Block(new BigInteger("3"), 2.5, 0);
+		Block rd03 = new Block(3, 2.5, 0);
 		rres = cdm.read(rd03);
 		assertThat(rres.getResponseTime(), is(aBlockResp));
 		assertThat(rres.getResult(), is(rd03));
 
-		Block rd06 = new Block(new BigInteger("6"), 3.0, 0);
+		Block rd06 = new Block(6, 3.0, 0);
 		rres = cdm.read(rd06);
 		assertThat(rres.getResponseTime(), is(aBlockResp));
 		assertThat(rres.getResult(), is(rd06));

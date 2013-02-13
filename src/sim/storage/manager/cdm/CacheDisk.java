@@ -1,6 +1,5 @@
 package sim.storage.manager.cdm;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -20,8 +19,8 @@ public class CacheDisk extends HardDiskDrive implements Cache {
 	private WithoutSleepDiskStateManager stm;
 	private long maxEntries;
 
-	private HashMap<BigInteger, Block> caches;
-	private TreeMap<Double, BigInteger> usedKeys;
+	private HashMap<Long, Block> caches;
+	private TreeMap<Double, Long> usedKeys;
 
 
 	public CacheDisk(
@@ -38,8 +37,8 @@ public class CacheDisk extends HardDiskDrive implements Cache {
 		this.stm = stm;
 		this.maxEntries =
 			(int)Math.floor((double)parameter.getHddSize() / blockSize);
-		this.caches = new HashMap<BigInteger, Block>();
-		this.usedKeys = new TreeMap<Double, BigInteger>();
+		this.caches = new HashMap<Long, Block>();
+		this.usedKeys = new TreeMap<Double, Long>();
 	}
 
 	@Override
@@ -76,7 +75,7 @@ public class CacheDisk extends HardDiskDrive implements Cache {
 
 	private Block getEntry(Block block) {
 		Block result = Block.NULL;
-		BigInteger blockId = block.getId();
+		long blockId = block.getId();
 		if (caches.containsKey(blockId)) {
 			Block temp = caches.get(blockId);
 			if (temp.getAccessTime() <= block.getAccessTime()) {
@@ -134,7 +133,7 @@ public class CacheDisk extends HardDiskDrive implements Cache {
 
 	private Block replaceEntry(Block block) {
 		Block removed = null;
-		Map.Entry<Double, BigInteger> lruEntry = usedKeys.pollFirstEntry();
+		Map.Entry<Double, Long> lruEntry = usedKeys.pollFirstEntry();
 		removed = caches.remove(lruEntry.getValue());
 		addEntry(block);
 		return removed;

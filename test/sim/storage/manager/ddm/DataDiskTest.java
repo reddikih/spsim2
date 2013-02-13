@@ -1,13 +1,9 @@
 package sim.storage.manager.ddm;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-import java.math.BigInteger;
-
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
@@ -15,9 +11,8 @@ import sim.Block;
 import sim.Parameter;
 import sim.storage.HDDParameter;
 import sim.storage.HardDiskDrive;
-import sim.storage.state.WithSleepDiskStateManager;
 import sim.storage.state.DiskStateParameter;
-import sim.storage.state.IllegalDiskStateException;
+import sim.storage.state.WithSleepDiskStateManager;
 import sim.storage.util.DiskState;
 
 @RunWith(JUnit4.class)
@@ -40,7 +35,7 @@ public class DataDiskTest {
 		);
 		HardDiskDrive hdd = new HardDiskDrive(0, diskParam);
 		aBlockResp = hdd.write(
-				new Block[]{new Block(new BigInteger("0"), 0.0, 0)});
+				new Block[]{new Block(0, 0.0, 0)});
 	}
 
 	private WithSleepDiskStateManager getStm(double spdown_th) {
@@ -65,7 +60,7 @@ public class DataDiskTest {
 
 		DataDisk dd = new DataDisk(0, diskParam, getStm(Parameter.SPINDOWN_THRESHOLD));
 
-		Block b0 = new Block(new BigInteger("0"), 0.1, 0);
+		Block b0 = new Block(0, 0.1, 0);
 		blocks = new Block[]{b0};
 
 		currentState = dd.getState(0.0);
@@ -95,7 +90,7 @@ public class DataDiskTest {
 		Block[] blocks = null;
 		double result;
 
-		Block b0 = new Block(new BigInteger("0"), 0.0, 0);
+		Block b0 = new Block(0, 0.0, 0);
 		blocks = new Block[]{b0};
 
 		result = dd.write(blocks);
@@ -114,7 +109,7 @@ public class DataDiskTest {
 		Block[] blocks = null;
 		double result;
 
-		Block b0 = new Block(new BigInteger("0"), 0.0, 0);
+		Block b0 = new Block(0, 0.0, 0);
 		blocks = new Block[]{b0};
 
 		result = dd.write(blocks);
@@ -131,7 +126,7 @@ public class DataDiskTest {
 		Block[] blocks = null;
 		double result;
 
-		Block b0 = new Block(new BigInteger("0"), 0.0, 0);
+		Block b0 = new Block(0, 0.0, 0);
 		blocks = new Block[]{b0};
 
 		result = dd.write(blocks);
@@ -169,7 +164,7 @@ public class DataDiskTest {
 		double result;
 
 		double firstAccess = Parameter.SPINDOWN_THRESHOLD + Parameter.HDD_SPINDOWN_TIME + 1.0;
-		Block b0 = new Block(new BigInteger("0"), firstAccess, 0);
+		Block b0 = new Block(0, firstAccess, 0);
 		blocks = new Block[]{b0};
 		assertThat(dd.isSpinning(firstAccess), is(false));
 		dd.spinUp(firstAccess);
@@ -178,7 +173,7 @@ public class DataDiskTest {
 
 		double secondAccess = firstAccess + 1.0;
 		double wait2nd = firstAccess + result - secondAccess;
-		Block b1 = new Block(new BigInteger("1"), secondAccess, 0);
+		Block b1 = new Block(1, secondAccess, 0);
 		blocks = new Block[]{b1};
 		result = dd.write(blocks);
 		assertThat(result, is(aBlockResp + wait2nd));
