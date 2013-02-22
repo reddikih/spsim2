@@ -4,7 +4,7 @@ import sim.storage.util.ReplicaLevel;
 
 public class Block {
 
-	public final static int BLOCK_SIZE = 4096;
+	public final static int BLOCK_SIZE = Parameter.BLOCK_SIZE;
 	public final static Block NULL = new Block(Long.MIN_VALUE, null, Double.MIN_VALUE, Integer.MIN_VALUE);
 
 	private long id;
