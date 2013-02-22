@@ -56,7 +56,8 @@ public class NormalDataDiskManager implements IDataDiskManager {
 		assert relatedDisks.size() > 0
 		: "there are no related disks with block id:" + block.getId();
 
-		return random.nextInt(relatedDisks.size());
+		int targetIndex = random.nextInt(relatedDisks.size());
+		return relatedDisks.get(targetIndex).getDiskId();
 	}
 
 	@Override

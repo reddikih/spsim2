@@ -68,7 +68,7 @@ public class RAPoSDAStorageManagerFactory extends StorageManagerFactory {
 		if (assignorName.equals("dga"))
 			assignor = new DGAAssignor(
 					Parameter.NUMBER_OF_CACHE_MEMORIES,
-					Parameter.NUBER_OF_DISKS_PER_CACHE_GROUP);
+					Parameter.NUMBER_OF_DISKS_PER_CACHE_GROUP);
 		else if (assignorName.equals("cs"))
 			assignor = new CacheStripingAssignor(
 					Parameter.NUMBER_OF_CACHE_MEMORIES);
@@ -117,7 +117,7 @@ public class RAPoSDAStorageManagerFactory extends StorageManagerFactory {
 	protected IDataDiskManager createDataDiskManager() {
 		int numdd =
 			Parameter.NUMBER_OF_CACHE_MEMORIES
-			* Parameter.NUBER_OF_DISKS_PER_CACHE_GROUP;
+			* Parameter.NUMBER_OF_DISKS_PER_CACHE_GROUP;
 		int numRep = Parameter.NUMBER_OF_REPLICA;
 		HashMap<Integer, DataDisk> dataDisks = new HashMap<Integer, DataDisk>();
 

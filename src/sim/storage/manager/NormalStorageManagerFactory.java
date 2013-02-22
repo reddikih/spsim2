@@ -51,7 +51,7 @@ public class NormalStorageManagerFactory extends StorageManagerFactory {
 	protected IDataDiskManager createDataDiskManager() {
 		int numdd =
 			Parameter.NUMBER_OF_CACHE_MEMORIES
-			* Parameter.NUBER_OF_DISKS_PER_CACHE_GROUP;
+			* Parameter.NUMBER_OF_DISKS_PER_CACHE_GROUP;
 		int numRep = Parameter.NUMBER_OF_REPLICA;
 		HashMap<Integer, NormalDataDisk> dataDisks = new HashMap<Integer, NormalDataDisk>();
 
