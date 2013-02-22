@@ -31,8 +31,10 @@ public class Simulator {
 	}
 
 	public void displayStartMessage() {
+		System.out.println("=========================================");
 		System.out.println("Storage Simulator Version 2.");
 		System.out.println("Starting time at: " + new Date().toString());
+		System.out.println("=========================================");
 	}
 
 	public void displayTerminateMessage(long elapsedTime) {
@@ -44,13 +46,49 @@ public class Simulator {
 		RAPoSDAStats.showStatistics(closeTime);
 	}
 
-	public static void main(String[] args) {
-		// TODO parse command line options
+	private static void cliParse(String... commands) {
+		String comVal = null;
+		for (String command : commands) {
+			if (command.startsWith("-DD=")) {
+				comVal = command.substring(4);
+				Parameter.NUMBER_OF_DISKS_PER_CACHE_GROUP = Integer.parseInt(comVal);
+				System.out.println("DataDisks=" + comVal);
+			} else if (command.startsWith("-CD=")) {
+				comVal = command.substring(4);
+				Parameter.NUMBER_OF_CACHE_DISKS = Integer.parseInt(comVal);
+				System.out.println("CacheDisks=" + comVal);
+			} else if (command.startsWith("-R=")) {
+				comVal = command.substring(3);
+				Parameter.NUMBER_OF_REPLICA = Integer.parseInt(comVal);
+				System.out.println("Replicas=" + comVal);
+			} else if (command.startsWith("-SM=")) {
+				comVal = command.substring(4);
+				Parameter.STORAGE_MANAGER_FACTORY = comVal;
+				System.out.println("StorageManagerFactory=" + comVal);
+			} else if (command.startsWith("-CMA=")) {
+				comVal = command.substring(5);
+				Parameter.CACHE_MEMORY_ASSIGNOR = comVal;
+				System.out.println("CacheMemoryAssignor=" + comVal);
+			} else if (command.startsWith("-CMF=")) {
+				comVal = command.substring(5);
+				Parameter.CACHE_MEMORY_FACTORY = comVal;
+				System.out.println("CacheMemoryFactory=" + comVal);
+			} else if (command.startsWith("-W=")) {
+				comVal = command.substring(3);
+				Parameter.WORKLOAD_FILE_PATH = comVal;
+				System.out.println("Workload=" + comVal);
+			}
+		}
+	}
 
+	public static void main(String[] args) {
 		long simStart = System.currentTimeMillis();
 
 		Simulator sim = new Simulator();
 		sim.displayStartMessage();
+
+		// TODO parse command line options
+		cliParse(args);
 
 		Client client = sim.getClient();
 		StorageManager sm = sim.getSM();

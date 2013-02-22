@@ -144,4 +144,17 @@ public class HardDiskDriveTest {
 		int expectedResp = (int)(oneBlockResponse * 2 * 1000000000);
 		assertThat(intRes, is(expectedResp));
 	}
+
+	@Test
+	public void writeLargeDataWithoutDiskCache() {
+		HardDiskDrive hdd = new HardDiskDrive(0, withoutDiskCacheParam);
+		double response = -1;
+		Block[] blocks = null;
+
+		Block block0 = new Block(0, ReplicaLevel.ZERO, 0.0, 0);
+		blocks = new Block[]{block0};
+		response = hdd.write(blocks);
+		assertThat(response < 200, is(true));
+
+	}
 }
