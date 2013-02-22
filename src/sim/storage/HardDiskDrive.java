@@ -62,7 +62,7 @@ public class HardDiskDrive {
 		double overhead = parameter.getHeadSwitchOverhead() + parameter.getCommandOverhead(); // overhead time
 		double transfer_rate = 1.0 / ((double)parameter.getTransferRate() / SECTOR_SIZE); // sectors/s
 
-		return (fsst/2) + (fdrt/2) + fdrt*(block_len/sec_per_track) + overhead + transfer_rate;
+		return (fsst/2) + (fdrt/2) + fdrt*(block_len/sec_per_track) + overhead + transfer_rate * block_len;
 	}
 
 	private double calculateQueueingTime(double arrivalTime) {
