@@ -77,6 +77,14 @@ public class Simulator {
 				comVal = command.substring(3);
 				Parameter.WORKLOAD_FILE_PATH = comVal;
 				System.out.println("Workload=" + comVal);
+			} else if (command.startsWith("-NM=")) {
+				comVal = command.substring(4);
+				Parameter.NUMBER_OF_CACHE_MEMORIES = Integer.parseInt(comVal);
+				System.out.println("NumberOfCacheMemories=" + comVal);
+			} else if (command.startsWith("-MS=")) {
+				comVal = command.substring(4);
+				Parameter.CACHE_MEMORY_SIZE = Integer.parseInt(comVal);
+				System.out.println("MemorySize=" + comVal);
 			}
 		}
 	}
