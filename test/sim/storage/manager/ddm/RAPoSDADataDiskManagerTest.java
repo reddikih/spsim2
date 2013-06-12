@@ -312,5 +312,27 @@ public class RAPoSDADataDiskManagerTest {
 		assertThat(sleepest.getDiskId(), is(2));
 		assertThat(sleepest.getDiskState(), is(DiskState.STANDBY));
 	}
+	
+	@Test
+	public void getSpecificStateDiskIdsTest() {
+		int numdd = 4, numRep = 3;
+		init(numdd, numRep, 10.0);
+
+		List<DiskInfo> dInfos;
+
+		List<Integer> standbyDiskIds = ddm.getSpecificStateDiskIds(0.1, DiskState.STANDBY); 
+		assertThat(standbyDiskIds.size(), is(4));
+		
+		Block block00 = new Block(0, 0.0, 0);
+		setOwnerDiskAndRepLevel(block00, ReplicaLevel.ZERO, numdd);ddm.write(new Block[]{block00});
+		Block block10 = new Block(1, 1.0, 1);
+		setOwnerDiskAndRepLevel(block10, ReplicaLevel.ZERO, numdd);ddm.write(new Block[]{block10});
+		Block block20 = new Block(2, 2.0, 2);
+		setOwnerDiskAndRepLevel(block20, ReplicaLevel.ZERO, numdd);ddm.write(new Block[]{block20});
+		Block block30 = new Block(3, 3.0, 3);
+		setOwnerDiskAndRepLevel(block30, ReplicaLevel.ZERO, numdd);ddm.write(new Block[]{block30});
+		
+	}
+	
 
 }

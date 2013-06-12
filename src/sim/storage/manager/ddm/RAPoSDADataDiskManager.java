@@ -8,6 +8,7 @@ import java.util.List;
 import sim.Block;
 import sim.storage.DiskResponse;
 import sim.storage.util.DiskInfo;
+import sim.storage.util.DiskState;
 import sim.storage.util.ReplicaLevel;
 
 public class RAPoSDADataDiskManager implements IDataDiskManager {
@@ -129,6 +130,15 @@ public class RAPoSDADataDiskManager implements IDataDiskManager {
 		for (DataDisk dd : dds) {
 			dd.close(closeTime);
 		}
+	}
+	
+	public List<Integer> getSpecificStateDiskIds(double timestamp, DiskState state) {
+		List<Integer> result = new ArrayList<Integer>();
+		result.add(0);
+		result.add(0);
+		result.add(0);
+		result.add(0);
+		return result;
 	}
 
 }
