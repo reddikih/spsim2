@@ -70,6 +70,11 @@ public class HardDiskDriveTest {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
+	/*
+	 * You need check the java VM option whether -ea is exists or not before
+	 * running this unit test. If it doesn't exist, you should set the -ea on
+	 * java VM runtime option.
+	 */
 	@Test
 	public void assertionErrorOccurenceInWrite() {
 		HardDiskDrive hdd = new HardDiskDrive(0, withoutDiskCacheParam);
