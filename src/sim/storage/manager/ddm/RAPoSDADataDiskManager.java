@@ -132,12 +132,13 @@ public class RAPoSDADataDiskManager implements IDataDiskManager {
 		}
 	}
 	
-	public List<Integer> getSpecificStateDiskIds(double timestamp, DiskState state) {
+	public List<Integer> getSpecificStateDiskIds(double timestamp, List<DiskState> states) {
 		List<Integer> result = new ArrayList<Integer>();
-		result.add(0);
-		result.add(0);
-		result.add(0);
-		result.add(0);
+		for (DataDisk dd : this.dataDiskMap.values()) {
+			if (states.contains(dd.getState(timestamp))) {
+				result.add(dd.getId());
+			}
+		}
 		return result;
 	}
 

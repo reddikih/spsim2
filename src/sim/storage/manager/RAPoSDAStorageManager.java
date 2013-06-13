@@ -216,6 +216,19 @@ public class RAPoSDAStorageManager extends StorageManager {
 		updateArrivalTimeOfBlocks(blocks, arrivalTime);
 		return cdm.write(blocks);
 	}
+	
+	private List<Integer> getSpinningDiskIds(double timestamp) {
+		List<DiskState> states = new ArrayList<DiskState>();
+		states.add(DiskState.ACTIVE);
+		states.add(DiskState.IDLE);
+		return ddm.getSpecificStateDiskIds(timestamp, states);
+	}
+	
+	private List<Integer> getStandbyDiskIds(double timestamp) {
+		List<DiskState> states = new ArrayList<DiskState>();
+		states.add(DiskState.STANDBY);
+		return ddm.getSpecificStateDiskIds(timestamp, states);
+	}
 
 	@Override
 	public void close(double closeTime) {
