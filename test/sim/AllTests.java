@@ -7,6 +7,7 @@ import sim.storage.DiskCacheTest;
 import sim.storage.HardDiskDriveTest;
 import sim.storage.cli.ClientTest;
 import sim.storage.cli.WorkloadReaderTest;
+import sim.storage.manager.buffer.BufferMonitorTest;
 import sim.storage.manager.cdm.CacheDiskTest;
 import sim.storage.manager.cdm.RAPoSDACacheDiskManagerTest;
 import sim.storage.manager.cmm.RAPoSDACacheMemoryManagerTest;
@@ -25,7 +26,8 @@ import sim.storage.manager.ddm.RAPoSDADataDiskManagerTest;
 	CacheDiskTest.class,
 	RAPoSDACacheDiskManagerTest.class,
 	WorkloadReaderTest.class,
-	ClientTest.class
+	ClientTest.class,
+	BufferMonitorTest.class
 })
 
 public class AllTests {}

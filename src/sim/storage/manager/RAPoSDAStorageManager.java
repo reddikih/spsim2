@@ -10,6 +10,7 @@ import sim.Response;
 import sim.statistics.RAPoSDAStats;
 import sim.storage.CacheResponse;
 import sim.storage.DiskResponse;
+import sim.storage.manager.buffer.BufferMonitor;
 import sim.storage.manager.cdm.RAPoSDACacheDiskManager;
 import sim.storage.manager.cmm.RAPoSDACacheMemoryManager;
 import sim.storage.manager.cmm.RAPoSDACacheWriteResponse;
@@ -23,6 +24,8 @@ public class RAPoSDAStorageManager extends StorageManager {
 	protected RAPoSDACacheMemoryManager cmm;
 	protected RAPoSDACacheDiskManager cdm;
 	protected RAPoSDADataDiskManager ddm;
+	
+	private BufferMonitor bufferMonitor;
 
 	public RAPoSDAStorageManager(
 			RAPoSDACacheMemoryManager cmm,
@@ -39,6 +42,7 @@ public class RAPoSDAStorageManager extends StorageManager {
 		this.numReplica = numReplica;
 
 		this.requestMap = new HashMap<Long, Block[]>();
+		this.bufferMonitor = new BufferMonitor();
 	}
 
 	@Override
@@ -152,6 +156,10 @@ public class RAPoSDAStorageManager extends StorageManager {
 			Block[] replicas = createReplicas(block);
 			for (Block b : replicas) {
 				RAPoSDACacheWriteResponse response = cmm.write(b);
+				
+				// count writes of blocks to monitor arrival rate of buffer
+				bufferMonitor.addWriteBlockCount(1);
+
 				if (response.getOverflows().length == 0) {
 					respTime =
 						response.getResponseTime() > respTime
