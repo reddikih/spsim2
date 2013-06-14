@@ -90,11 +90,33 @@ public class RAPoSDACacheMemoryManager implements ICacheMemoryManager {
 		return result;
 	}
 
-	public List<Chunk> getBufferChunks(int diskId) {
+	public List<Chunk> getBufferChunks(int diskId, int numdd, int numrep) {
 		List<Chunk> result = new ArrayList<Chunk>();
-		result.add(new Chunk(0, ReplicaLevel.ONE.getValue()));
-		result.add(new Chunk(1, ReplicaLevel.ONE.getValue()));
-		result.add(new Chunk(2, ReplicaLevel.ONE.getValue()));
+
+		for (ReplicaLevel repLevel : ReplicaLevel.values()) {
+			if (numrep <= 0) break; 
+			int did = (diskId + numdd - repLevel.getValue()) % numdd;
+			int cacheMemoryId = assignor.assign(did, repLevel.getValue());
+
+			CacheMemory cm = cacheMemories.get(cacheMemoryId);
+			Region region = cm.getRegion(repLevel);
+			
+			Chunk chunk = extractChunk(region, did, repLevel.getValue());
+			if (chunk.getBlocks().size() > 0) result.add(chunk);
+			numrep--;
+		}
 		return result;
+	}
+	
+	private Chunk extractChunk(Region region, int diskId, int repLevel) {
+		Chunk chunk = new Chunk(diskId, repLevel);
+		Block[] blocks = region.getBlocks();
+		for (Block b : blocks) {
+			if (b.getPrimaryDiskId() == diskId &&
+				b.getRepLevel().getValue() == repLevel) {
+				chunk.addBlock(b);
+			}
+		}
+		return chunk;
 	}
 }
