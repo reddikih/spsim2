@@ -1,5 +1,6 @@
 package sim.storage.manager.cmm;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -86,6 +87,14 @@ public class RAPoSDACacheMemoryManager implements ICacheMemoryManager {
 				result = diskInfo;
 			}
 		}
+		return result;
+	}
+
+	public List<Chunk> getBufferChunks(int diskId) {
+		List<Chunk> result = new ArrayList<Chunk>();
+		result.add(new Chunk(0, ReplicaLevel.ONE.getValue()));
+		result.add(new Chunk(1, ReplicaLevel.ONE.getValue()));
+		result.add(new Chunk(2, ReplicaLevel.ONE.getValue()));
 		return result;
 	}
 }
