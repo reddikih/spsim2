@@ -5,12 +5,16 @@ import java.util.HashMap;
 import sim.Block;
 import sim.Request;
 import sim.Response;
+import sim.storage.manager.cdm.ICacheDiskManager;
+import sim.storage.manager.cmm.ICacheMemoryManager;
 import sim.storage.manager.ddm.IDataDiskManager;
 import sim.storage.util.ReplicaLevel;
 
 public abstract class StorageManager {
 
-	private IDataDiskManager ddm;
+	protected ICacheMemoryManager cmm;
+	protected ICacheDiskManager cdm;
+	protected IDataDiskManager ddm;
 
 	protected int blockSize;
 	protected int numReplica;
@@ -18,7 +22,12 @@ public abstract class StorageManager {
 //	protected BigInteger blockNumber = new BigInteger("0");
 	protected long blockNumber = 0L;
 
-	public StorageManager(IDataDiskManager ddm) {
+	public StorageManager(
+			ICacheMemoryManager cmm,
+			ICacheDiskManager cdm,
+			IDataDiskManager ddm) {
+		this.cmm = cmm;
+		this.cdm = cdm;
 		this.ddm = ddm;
 	}
 
