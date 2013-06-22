@@ -1,6 +1,9 @@
 package sim;
 
 public class Parameter {
+	
+	///--- Runtime parameter ---///
+	public static boolean DEBUG_FLAG = true;
 
 	///--- System parameters. ---///
 	public static int NUMBER_OF_CACHE_MEMORIES = 3;
