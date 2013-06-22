@@ -34,6 +34,8 @@ public class Parameter {
 
 	public static double CACHE_MEMORY_BUFFER_COEFFICIENT = 0.2;
 
+	
+	public static String BUFFER_MANAGER_FACTORY = "sim.storage.manager.buffer.RAPoSDABufferManagerFactory";
 
 	///--- Cache memory parameters. ---///
 	/** Capacity threshold ratio of cache memory. (0.0 - 1.0) */

@@ -35,7 +35,7 @@ public abstract class StorageManager {
 
 	abstract public void close(double closeTime);
 
-	protected Block[] createReplicas(Block block) {
+	public Block[] createReplicas(Block block) {
 		Block[] replicas = new Block[numReplica];
 		block.setRepLevel(ReplicaLevel.ZERO);
 		block.setOwnerDiskId(block.getPrimaryDiskId());
@@ -92,7 +92,7 @@ public abstract class StorageManager {
 		return this.blockNumber++;
 	}
 
-	protected void updateArrivalTimeOfBlocks(Block[] blocks, double arrivalTime) {
+	public void updateArrivalTimeOfBlocks(Block[] blocks, double arrivalTime) {
 		for (Block block : blocks) {
 			block.setAccessTime(arrivalTime);
 		}
@@ -114,4 +114,7 @@ public abstract class StorageManager {
 		requestMap.put(requestId, blocks);
 	}
 
+	public IDataDiskManager getDataDiskManager() {
+		return this.ddm;
+	}
 }

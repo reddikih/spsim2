@@ -1,10 +1,10 @@
 package sim.storage.manager.buffer;
 
-import sim.Request;
-import sim.Response;
+import sim.Block;
+import sim.storage.DiskResponse;
 
 public interface IBufferManager {
 	
-	public Response write(Request request);
+	public DiskResponse write(Block[] blocks);
 
 }
