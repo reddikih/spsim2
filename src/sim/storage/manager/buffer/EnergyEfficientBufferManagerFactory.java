@@ -7,8 +7,9 @@ public class EnergyEfficientBufferManagerFactory implements
 
 	@Override
 	public IBufferManager createBufferManager(StorageManager sm) {
-		// TODO Auto-generated method stub
-		return null;
+		EnergyEfficientBufferManager bufferManager = 
+				new EnergyEfficientBufferManager(sm);
+		return bufferManager;
 	}
 
 }

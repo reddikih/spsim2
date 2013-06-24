@@ -31,7 +31,7 @@ public class RAPoSDAStorageManager extends StorageManager {
 			RAPoSDACacheMemoryManager cmm,
 			RAPoSDACacheDiskManager cdm,
 			RAPoSDADataDiskManager ddm,
-			IBufferManagerFactory factory,
+			IBufferManagerFactory bmFactory,
 			int blockSize,
 			int numReplica) {
 		super(cmm, cdm, ddm);
@@ -44,7 +44,7 @@ public class RAPoSDAStorageManager extends StorageManager {
 
 		this.requestMap = new HashMap<Long, Block[]>();
 		
-		this.bm = factory.createBufferManager(this);
+		this.bm = bmFactory.createBufferManager(this);
 	}
 
 	@Override
@@ -233,19 +233,6 @@ public class RAPoSDAStorageManager extends StorageManager {
 		return cdm.write(blocks);
 	}
 	
-	private List<Integer> getSpinningDiskIds(double timestamp) {
-		List<DiskState> states = new ArrayList<DiskState>();
-		states.add(DiskState.ACTIVE);
-		states.add(DiskState.IDLE);
-		return ddm.getSpecificStateDiskIds(timestamp, states);
-	}
-	
-	private List<Integer> getStandbyDiskIds(double timestamp) {
-		List<DiskState> states = new ArrayList<DiskState>();
-		states.add(DiskState.STANDBY);
-		return ddm.getSpecificStateDiskIds(timestamp, states);
-	}
-
 	@Override
 	public void close(double closeTime) {
 		cdm.close(closeTime);
@@ -254,6 +241,10 @@ public class RAPoSDAStorageManager extends StorageManager {
 
 	public RAPoSDACacheMemoryManager getCacheMemoryManager() {
 		return this.cmm;
+	}
+	
+	public int getNumberOfReplica() {
+		return this.numReplica;
 	}
 
 }

@@ -16,11 +16,9 @@ import sim.storage.util.RequestType;
 public class RAPoSDABufferManager implements IBufferManager {
 	
 	private RAPoSDAStorageManager sm;
-	private BufferMonitor bufferMonitor;
 	
 	public RAPoSDABufferManager(StorageManager sm) {
 		this.sm = (RAPoSDAStorageManager)sm;
-		this.bufferMonitor = new BufferMonitor();
 	}
 
 	@Override
@@ -37,9 +35,6 @@ public class RAPoSDABufferManager implements IBufferManager {
 			for (Block b : replicas) {
 				RAPoSDACacheWriteResponse cmResponse = sm.getCacheMemoryManager().write(b);
 				
-				// count writes of blocks to monitor arrival rate of buffer
-				this.bufferMonitor.addWriteBlockCount(1);
-
 				if (cmResponse.getOverflows().length == 0) {
 					respTime =
 						cmResponse.getResponseTime() > respTime
