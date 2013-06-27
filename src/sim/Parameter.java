@@ -13,8 +13,8 @@ public class Parameter {
 	/** Spindown threshold time represents by second. */
 	public static double SPINDOWN_THRESHOLD = 10.0;
 
-	public static int BLOCK_SIZE = 8 * 1024;
-//	public static int BLOCK_SIZE = 1024 * 1024 * 1024;
+//	public static int BLOCK_SIZE = 8 * 1024;
+	public static int BLOCK_SIZE = 1;
 
 	public static int NUMBER_OF_REPLICA = 3;
 
@@ -44,7 +44,7 @@ public class Parameter {
 
 	/** Cache memory size. 4GB by default. */
 //	public static long CACHE_MEMORY_SIZE = 8L * 1024 * 1024 * 1024;
-	public static long CACHE_MEMORY_SIZE = 9;
+	public static long CACHE_MEMORY_SIZE = 3;
 
 	/** Memory access latency represents by second. */
 	public static double CACHE_MEMORY_LATENCY = 0.00001;

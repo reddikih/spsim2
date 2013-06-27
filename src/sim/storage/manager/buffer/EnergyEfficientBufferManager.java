@@ -144,7 +144,7 @@ public class EnergyEfficientBufferManager implements IBufferManager {
 		
 		// sort the buffered data order by descending of its size.
 		BufferOfADisk[] sortedBuffers = sortBufferedData(bufferList);
-		int subsetOfStandbyDisks = 0;
+		int subsetOfStandbyDisks = 1;
 		for (int i = sortedBuffers.length - 1; i >= 0; i--) {
 			double ttnbo = 0.0; // the time to the next buffer overflow
 			ttnbo = (toWriteBuffer.size() + sortedBuffers[i].getSize()) / lambda;
@@ -191,7 +191,7 @@ public class EnergyEfficientBufferManager implements IBufferManager {
         }  
         mergeSort(buf1);  
         mergeSort(buf2);  
-        merge(buf1, buf2, buffers);  		
+        merge(buf1, buf2, buffers);
 	}
 	
 	private void merge(
@@ -201,7 +201,7 @@ public class EnergyEfficientBufferManager implements IBufferManager {
 		
 		int i = 0, j = 0;
 		while (i < buf1.length || j < buf2.length) {
-			if (j >= buf2.length && 
+			if (j >= buf2.length || 
 				(i < buf1.length && buf1[i].getSize() < buf2[j].getSize())) {
 				mergedBuffer[i + j] = buf1[i];
 				i++;

@@ -20,7 +20,7 @@ public class BufferMonitor {
 	
 	public double getMeanArrivalRateOfWriteAccesses(double timestamp) {
 		double betweenBOF = timestamp - this.lastBufferOverflowTimestamp;
-		if (betweenBOF <= 0.0) 
+		if (betweenBOF < 0.0) 
 			throw new IllegalArgumentException(
 					"buffer overflow timestamp should never less than the last one.");
 		
