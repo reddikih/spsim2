@@ -20,7 +20,7 @@ public abstract class StorageManager {
 	protected int numReplica;
 
 //	protected BigInteger blockNumber = new BigInteger("0");
-	protected long blockNumber = 0L;
+	protected long sequenceNumber = 0L;
 
 	public StorageManager(
 			ICacheMemoryManager cmm,
@@ -55,7 +55,7 @@ public abstract class StorageManager {
 			if (repLevel.equals(ReplicaLevel.ZERO)) continue;
 			if (repCounter < 0) break;
 			Block replica = new Block(
-					nextBlockId(),
+					nextBlockId(repLevel),
 					block.getAccessTime(),
 					block.getPrimaryDiskId());
 			replica.setRepLevel(repLevel);
@@ -74,7 +74,7 @@ public abstract class StorageManager {
 		assert numBlocks > 0;
 		blocks = new Block[numBlocks];
 		for (int i=0; i < numBlocks; i++) {
-			long blockId = nextBlockId();
+			long blockId = nextBlockId(ReplicaLevel.ZERO);
 			blocks[i] = new Block(
 					blockId,
 					request.getArrvalTime(),
@@ -95,10 +95,21 @@ public abstract class StorageManager {
 		return (primaryDiskId + repLevel.getValue()) % ddm.getNumberOfDataDisks();
 	}
 
-	protected long nextBlockId() {
+	protected long nextBlockId(ReplicaLevel repLevel) {
 //		BigInteger next = new BigInteger(blockNumber.toString());
 //		blockNumber = blockNumber.add(BigInteger.ONE);
-		return this.blockNumber++;
+		if (repLevel == null) {
+			throw new IllegalArgumentException("ReplicaLevel shouldn't be null!");
+		}
+		
+		long result = Long.MIN_VALUE;
+		if (ReplicaLevel.ZERO.equals(repLevel)) {
+			result = this.sequenceNumber + this.numReplica;
+			this.sequenceNumber++;
+		} else {
+			result = this.sequenceNumber + repLevel.getValue();
+		}
+		return result;
 	}
 
 	public void updateArrivalTimeOfBlocks(Block[] blocks, double arrivalTime) {
@@ -114,7 +125,7 @@ public abstract class StorageManager {
 		if (numBlocks <= 0) numBlocks = 1;
 		blocks = new Block[numBlocks];
 		for (int i=0; i < numBlocks; i++) {
-			long blockId = nextBlockId();
+			long blockId = nextBlockId(ReplicaLevel.ZERO);
 			blocks[i] = new Block(
 					blockId,
 					0.0,
