@@ -8,7 +8,7 @@ public class Parameter {
 	///--- System parameters. ---///
 	public static int NUMBER_OF_CACHE_MEMORIES = 3;
 	public static int NUMBER_OF_CACHE_DISKS = 3;
-	public static int NUMBER_OF_DISKS_PER_CACHE_GROUP = 3;
+	public static int NUMBER_OF_DISKS_PER_CACHE_GROUP = 1;
 
 	/** Spindown threshold time represents by second. */
 	public static double SPINDOWN_THRESHOLD = 10.0;
@@ -26,11 +26,13 @@ public class Parameter {
 //	public static String STORAGE_MANAGER_FACTORY = "sim.storage.manager.NormalStorageManagerFactory";
 
 	///--- Factory names about cache memory ---///
-	public static String CACHE_MEMORY_ASSIGNOR = "cs";
+//	public static String CACHE_MEMORY_ASSIGNOR = "cs";
 //	public static String CACHE_MEMORY_ASSIGNOR = "dga";
+	public static String CACHE_MEMORY_ASSIGNOR = "simple";
 
 	public static String CACHE_MEMORY_FACTORY = "sim.storage.manager.cmm.FixedRegionSizeCacheMemoryFactory";
 //	public static String CACHE_MEMORY_FACTORY = "sim.storage.manager.cmm.VariableRegionSizeCacheMemoryFactory";
+//	public static String CACHE_MEMORY_FACTORY = "sim.storage.manager.cmm.SharedRegionsCacheMemoryFactory";
 
 	public static double CACHE_MEMORY_BUFFER_COEFFICIENT = 0.2;
 

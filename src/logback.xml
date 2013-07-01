@@ -52,6 +52,10 @@
     <appender-ref ref="SIMULATOR_FILE" />
   </logger>
 
+  <logger name="sim.storage.manager.cmm.SharedRegionsCacheMemory" additivity="false">
+    <appender-ref ref="SIMULATOR_FILE" />
+  </logger>
+  
   <logger name="sim.storage.cli.Client" additivity="false">
     <appender-ref ref="CLIENT_RESPONSE_FILE" />
   </logger>

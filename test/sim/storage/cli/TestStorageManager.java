@@ -6,7 +6,6 @@ import sim.storage.manager.buffer.RAPoSDABufferManagerFactory;
 import sim.storage.manager.cdm.RAPoSDACacheDiskManager;
 import sim.storage.manager.cmm.RAPoSDACacheMemoryManager;
 import sim.storage.manager.ddm.RAPoSDADataDiskManager;
-import sim.storage.util.ReplicaLevel;
 
 public class TestStorageManager extends RAPoSDAStorageManager {
 
@@ -28,7 +27,7 @@ public class TestStorageManager extends RAPoSDAStorageManager {
 		assert numBlocks > 0;
 		blocks = new Block[numBlocks];
 		for (int i=0; i < numBlocks; i++) {
-			long blockId = nextBlockId(ReplicaLevel.ZERO);
+			long blockId = nextBlockId();
 			blocks[i] = new Block(
 					blockId,
 					0.0,

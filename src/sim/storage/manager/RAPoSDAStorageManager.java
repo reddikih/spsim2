@@ -158,52 +158,6 @@ public class RAPoSDAStorageManager extends StorageManager {
 				ddResp.getResponseTime() + request.getArrvalTime());
 		
 		return new Response(request.getKey(), ddResp.getResponseTime());
-//		double respTime = Double.MIN_VALUE;
-//
-//		for (Block block : blocks) {
-//			// block access count log
-//			RAPoSDAStats.incrementBlockAccessCount(RequestType.WRITE);
-//
-//			Block[] replicas = createReplicas(block);
-//			for (Block b : replicas) {
-//				RAPoSDACacheWriteResponse response = cmm.write(b);
-//				
-//				if (response.getOverflows().length == 0) {
-//					respTime =
-//						response.getResponseTime() > respTime
-//						? response.getResponseTime() : respTime;
-//				} else { // cache overflow
-//
-//					// overflow statistics
-//					RAPoSDAStats.incrementOverflowCount();
-//
-//					double arrivalTime =
-//						request.getArrvalTime() + response.getResponseTime();
-//
-//					// write to data disk
-//					DiskResponse ddResp =
-//							writeToDataDisk(response, arrivalTime);
-//
-//					// write to cache disk asynchronously
-//					// after data disk write.
-//					writeToCacheDisk(
-//							ddResp.getResults(),
-//							ddResp.getResponseTime() + arrivalTime);
-//
-//					// delete blocks on the cache already written in disks.
-//					double cmDeletedTime = deleteBlocksOnCache(
-//							ddResp.getResults(),
-//							ddResp.getResponseTime() + arrivalTime);
-//
-//					// return least response time;
-//					double tempResp =
-//						ddResp.getResponseTime() + cmDeletedTime;
-//
-//					respTime = respTime < tempResp ? tempResp : respTime;
-//				}
-//			}
-//		}
-//		return new Response(request.getKey(), respTime);
 	}
 
 	public double deleteBlocksOnCache(Block[] blocks, double arrivalTime) {
@@ -217,16 +171,6 @@ public class RAPoSDAStorageManager extends StorageManager {
 		}
 		return response;
 	}
-
-//	private DiskResponse writeToDataDisk(
-//			RAPoSDACacheWriteResponse cmResp, double arrivalTime) {
-//		int maxBufferDiskId = cmResp.getMaxBufferDiskId();
-//		if(!ddm.isSpinning(maxBufferDiskId, arrivalTime))
-//			ddm.spinUp(maxBufferDiskId, arrivalTime);
-//		Block[] blocks = cmResp.getOverflows();
-//		updateArrivalTimeOfBlocks(blocks, arrivalTime);
-//		return ddm.write(blocks);
-//	}
 
 	private DiskResponse writeToCacheDisk(Block[] blocks, double arrivalTime) {
 		updateArrivalTimeOfBlocks(blocks, arrivalTime);

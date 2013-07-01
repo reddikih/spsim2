@@ -16,6 +16,7 @@ import sim.storage.manager.cmm.RAPoSDACacheMemoryManager;
 import sim.storage.manager.cmm.assignor.CacheStripingAssignor;
 import sim.storage.manager.cmm.assignor.DGAAssignor;
 import sim.storage.manager.cmm.assignor.IAssignor;
+import sim.storage.manager.cmm.assignor.SimpleAssignor;
 import sim.storage.manager.ddm.DataDisk;
 import sim.storage.manager.ddm.IDataDiskManager;
 import sim.storage.manager.ddm.RAPoSDADataDiskManager;
@@ -73,6 +74,8 @@ public class RAPoSDAStorageManagerFactory extends StorageManagerFactory {
 		else if (assignorName.equals("cs"))
 			assignor = new CacheStripingAssignor(
 					Parameter.NUMBER_OF_CACHE_MEMORIES);
+		else if (assignorName.equals("simple"))
+			assignor = new SimpleAssignor();
 		return assignor;
 	}
 

@@ -42,7 +42,7 @@ public abstract class CacheMemory {
 		// cache memory read log.
 		logger.trace(
 				String.format(
-						"CM[%d] Regin:%d time:%.5f read blockId:%d hit:%d",
+						"CM[%d] Region:%d time:%.5f read blockId:%d hit:%d",
 						this.id,
 						block.getRepLevel().getValue(),
 						block.getAccessTime(),
@@ -80,7 +80,7 @@ public abstract class CacheMemory {
 		// cache memory write log.
 		logger.trace(
 				String.format(
-						"CM[%d] Regin:%d time:%.5f write blockId:%d overflow:%d ofLength:%d",
+						"CM[%d] Region:%d time:%.5f write blockId:%d overflow:%d ofLength:%d",
 						this.id,
 						block.getRepLevel().getValue(),
 						block.getAccessTime(),

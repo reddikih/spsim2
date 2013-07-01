@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import sim.Block;
 import sim.storage.CacheResponse;
 import sim.storage.manager.cmm.assignor.IAssignor;
@@ -15,6 +18,9 @@ public class RAPoSDACacheMemoryManager implements ICacheMemoryManager {
 	private HashMap<Integer, CacheMemory> cacheMemories;
 	private IAssignor assignor;
 	private int numReplica;
+	
+	private static Logger logger = LoggerFactory.getLogger(RAPoSDACacheMemoryManager.class);
+	private static Logger traceLogger = LoggerFactory.getLogger("DEBUG_GET_BUFFER_CHUNKS");
 
 	public RAPoSDACacheMemoryManager(
 			HashMap<Integer, CacheMemory> cacheMemories,
@@ -58,6 +64,12 @@ public class RAPoSDACacheMemoryManager implements ICacheMemoryManager {
 		// write to corresponding cache memory
 		CacheMemory cm = cacheMemories.get(assignedMemory);
 		response = cm.write(block);
+		
+		// log
+		logger.debug(
+				String.format(
+						"BlockId:%d RepLevel:%d PrimDiskId:%d OwnerDiskId:%d AssginedCM:%d",
+						block.getId(), block.getRepLevel().getValue(), block.getPrimaryDiskId(), block.getOwnerDiskId(), cm.getId()));
 
 		return response;
 	}
@@ -94,7 +106,7 @@ public class RAPoSDACacheMemoryManager implements ICacheMemoryManager {
 		List<Chunk> result = new ArrayList<Chunk>();
 
 		for (ReplicaLevel repLevel : ReplicaLevel.values()) {
-			if (numrep <= 0) break; 
+			if (numrep <= 0) break;
 			int did = (diskId + numdd - repLevel.getValue()) % numdd;
 			int cacheMemoryId = assignor.assign(did, repLevel.getValue());
 
@@ -115,6 +127,12 @@ public class RAPoSDACacheMemoryManager implements ICacheMemoryManager {
 			if (b.getPrimaryDiskId() == diskId &&
 				b.getRepLevel().getValue() == repLevel) {
 				chunk.addBlock(b);
+				
+				// debug log
+				traceLogger.trace(
+					String.format(
+						"chunk.diskId:%d chunk.repLevel:%d block.id:%d block.primaryDiskId:%d block.replicaLevel:%d",
+						chunk.getDiskId(), chunk.getReplicaLevel(), b.getId(), b.getPrimaryDiskId(), b.getRepLevel().getValue()));
 			}
 		}
 		return chunk;

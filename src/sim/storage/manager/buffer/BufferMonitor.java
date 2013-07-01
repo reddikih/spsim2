@@ -24,6 +24,8 @@ public class BufferMonitor {
 			throw new IllegalArgumentException(
 					"buffer overflow timestamp should never less than the last one.");
 		
+		betweenBOF = betweenBOF == 0.0 ? 1 : betweenBOF;
+		
 		double lambda = this.writtenBlockCount / betweenBOF;
 		
 		this.lastBufferOverflowTimestamp = timestamp;

@@ -141,6 +141,7 @@ public class EnergyEfficientBufferManager implements IBufferManager {
 		
 		// energy efficiency of this standby disks and base.
 		double tempEE = Double.MAX_VALUE;
+		List<Integer> toSpinupDiskIds = new ArrayList<Integer>();
 		
 		// sort the buffered data order by descending of its size.
 		BufferOfADisk[] sortedBuffers = sortBufferedData(bufferList);
@@ -153,11 +154,19 @@ public class EnergyEfficientBufferManager implements IBufferManager {
 			if (tempEE < minEE) {
 				toWriteBuffer.addAll(sortedBuffers[i].getBlocks());
 				minEE = tempEE;
+				toSpinupDiskIds.add(sortedBuffers[i].getDiskId());
 				subsetOfStandbyDisks++;
+			} else {
+				break;
 			}
 		}
 		
 		// return the most energy efficient chunks
+		for (Integer diskId : toSpinupDiskIds) {
+			if (!ddm.isSpinning(diskId, arrivalTime)) {
+				ddm.spinUp(diskId, arrivalTime);
+			}
+		}
 		Block[] toWrite = toWriteBuffer.toArray(new Block[0]);
 		sm.updateArrivalTimeOfBlocks(toWrite, arrivalTime);
 		DiskResponse result = ddm.write(toWrite);
