@@ -66,7 +66,7 @@ public class RAPoSDACacheMemoryManager implements ICacheMemoryManager {
 		response = cm.write(block);
 		
 		// log
-		logger.debug(
+		logger.trace(
 				String.format(
 						"BlockId:%d RepLevel:%d PrimDiskId:%d OwnerDiskId:%d AssginedCM:%d",
 						block.getId(), block.getRepLevel().getValue(), block.getPrimaryDiskId(), block.getOwnerDiskId(), cm.getId()));
