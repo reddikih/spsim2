@@ -79,17 +79,21 @@ public class Simulator {
 			} else if (command.startsWith("-BM=")) {
 				comVal = command.substring(4);
 				Parameter.BUFFER_MANAGER_FACTORY = comVal;
+			} else if (command.startsWith("-BS=")) {
+				comVal = command.substring(4);
+				Parameter.BLOCK_SIZE = Integer.parseInt(comVal);
 			} else if (command.startsWith("-DEBUG=")) {
 				comVal = command.substring(4);
 				Parameter.DEBUG_FLAG = Boolean.parseBoolean(comVal);
 			}
 		}
 		if (Parameter.DEBUG_FLAG) {
-			System.out.println(String.format("DataDisks             = %d (%ddisk/mem)", Parameter.NUMBER_OF_CACHE_MEMORIES * Parameter.NUMBER_OF_DISKS_PER_CACHE_GROUP, Parameter.NUMBER_OF_DISKS_PER_CACHE_GROUP));
-			System.out.println(String.format("CacheDisks            = %d", Parameter.NUMBER_OF_CACHE_DISKS));
-			System.out.println(String.format("Replicas              = %d", Parameter.NUMBER_OF_REPLICA));
-			System.out.println(String.format("NumberOfCacheMemories = %d", Parameter.NUMBER_OF_CACHE_MEMORIES));
-			System.out.println(String.format("MemorySize(1 unit)    = %,dByte", Parameter.CACHE_MEMORY_SIZE));
+			System.out.println(String.format("Data disks               = %d (%ddisks/memory)", Parameter.NUMBER_OF_CACHE_MEMORIES * Parameter.NUMBER_OF_DISKS_PER_CACHE_GROUP, Parameter.NUMBER_OF_DISKS_PER_CACHE_GROUP));
+			System.out.println(String.format("Cache disks              = %d", Parameter.NUMBER_OF_CACHE_DISKS));
+			System.out.println(String.format("Replicas                 = %d", Parameter.NUMBER_OF_REPLICA));
+			System.out.println(String.format("Number of cache memories = %d", Parameter.NUMBER_OF_CACHE_MEMORIES));
+			System.out.println(String.format("Memory size(1 unit)      = %,dByte", Parameter.CACHE_MEMORY_SIZE));
+			System.out.println(String.format("Block size               = %,dByte", Parameter.BLOCK_SIZE));
 			System.out.println(String.format("CacheMemoryAssignor   = %s", Parameter.CACHE_MEMORY_ASSIGNOR));
 			System.out.println(String.format("CacheMemoryFactory    = %s", Parameter.CACHE_MEMORY_FACTORY));
 			System.out.println(String.format("StorageManagerFactory = %s", Parameter.STORAGE_MANAGER_FACTORY));
