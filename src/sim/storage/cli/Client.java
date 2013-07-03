@@ -63,7 +63,7 @@ public class Client {
 				lastResponse = lastResponse < tempTime ? tempTime : lastResponse;
 
 				RAPoSDAStats.addResponseTime(response.getResponseTime());
-				logger.trace(
+				logger.info(
 						String.format(
 								"id:%d %s arrival:%.5f response:%.5f RTT:%.5f",
 								response.getKey(),

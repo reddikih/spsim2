@@ -40,7 +40,7 @@ public abstract class CacheMemory {
 			new CacheResponse(parameter.getLatency(), result);
 
 		// cache memory read log.
-		logger.trace(
+		logger.info(
 				String.format(
 						"CM[%d] Region:%d time:%.5f read blockId:%d hit:%d",
 						this.id,
@@ -78,7 +78,7 @@ public abstract class CacheMemory {
 		}
 
 		// cache memory write log.
-		logger.trace(
+		logger.info(
 				String.format(
 						"CM[%d] Region:%d time:%.5f write blockId:%d overflow:%d ofLength:%d",
 						this.id,
