@@ -29,6 +29,7 @@ public class EnergyEfficientBufferManager implements IBufferManager {
 	private RAPoSDADataDiskManager ddm;
 	
 	private static Logger logger = LoggerFactory.getLogger(EnergyEfficientBufferManager.class);
+	private static Logger traceLogger = LoggerFactory.getLogger("TRACE_ARRIVAL_TIME");
 	
 	public EnergyEfficientBufferManager(StorageManager sm) {
 		if (sm == null || sm.getDataDiskManager() == null) {
@@ -69,6 +70,9 @@ public class EnergyEfficientBufferManager implements IBufferManager {
 					
 					double arrivalTime =
 						b.getAccessTime() + cmResponse.getResponseTime();
+					
+					// trace log
+					traceLogger.debug(String.valueOf(arrivalTime));
 
 					// write to data disk
 					DiskResponse ddResp = writeToDataDisk(arrivalTime);

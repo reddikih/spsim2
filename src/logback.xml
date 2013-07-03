@@ -44,6 +44,13 @@
     </encoder>
   </appender>
 
+  <appender name="TRACE_ARRIVAL_TIME_FILE" class="ch.qos.logback.core.FileAppender">
+    <file>${OUT_DIR}/arrivalTimeTrace.log</file>
+    <encoder>
+      <pattern>%msg%n</pattern>
+    </encoder>
+  </appender>
+
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
       <pattern>%msg%n</pattern>
@@ -84,6 +91,10 @@
   
   <logger name="DEBUG_GET_BUFFER_CHUNKS" additivity="false">
     <appender-ref ref="SIMULATOR_FILE" />
+  </logger>
+
+  <logger name="TRACE_ARRIVAL_TIME" additivity="false">
+    <appender-ref ref="TRACE_ARRIVAL_TIME_FILE" />
   </logger>
 
   <root level="${root-level:-debug}">
