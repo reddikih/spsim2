@@ -20,9 +20,15 @@ public class BufferMonitor {
 	
 	public double getMeanArrivalRateOfWriteAccesses(double timestamp) {
 		double betweenBOF = timestamp - this.lastBufferOverflowTimestamp;
-		if (betweenBOF < 0.0) 
+		if (betweenBOF < 0.0)  {
+			String times = 
+					String.format(
+							" lastBufferOFTime:%,.4f arrivalTime:%,.4f",
+							this.lastBufferOverflowTimestamp, timestamp);
 			throw new IllegalArgumentException(
-					"buffer overflow timestamp should never less than the last one.");
+					"buffer overflow timestamp should never less than the last one." +
+					times);
+		}
 		
 		betweenBOF = betweenBOF == 0.0 ? 1 : betweenBOF;
 		
