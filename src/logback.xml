@@ -30,6 +30,20 @@
     </encoder>
   </appender>
 
+  <appender name="BLOCK_ASSIGN_FILE" class="ch.qos.logback.core.FileAppender">
+    <file>${OUT_DIR}/blockAssign.log</file>
+    <encoder>
+      <pattern>%msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="BUFFER_FLUSH_FILE" class="ch.qos.logback.core.FileAppender">
+    <file>${OUT_DIR}/bufferFlush.log</file>
+    <encoder>
+      <pattern>%msg%n</pattern>
+    </encoder>
+  </appender>
+
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
       <pattern>%msg%n</pattern>
@@ -58,6 +72,18 @@
   
   <logger name="sim.storage.cli.Client" additivity="false">
     <appender-ref ref="CLIENT_RESPONSE_FILE" />
+  </logger>
+
+  <logger name="sim.storage.manager.cmm.RAPoSDACacheMemoryManager" additivity="false">
+    <appender-ref ref="BLOCK_ASSIGN_FILE" />
+  </logger>
+  
+  <logger name="sim.storage.manager.buffer.EnergyEfficientBufferManager" additivity="false">
+    <appender-ref ref="BUFFER_FLUSH_FILE" />
+  </logger>
+  
+  <logger name="DEBUG_GET_BUFFER_CHUNKS" additivity="false">
+    <appender-ref ref="SIMULATOR_FILE" />
   </logger>
 
   <root level="${root-level:-debug}">

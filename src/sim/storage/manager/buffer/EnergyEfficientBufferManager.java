@@ -5,6 +5,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import sim.Block;
 import sim.Parameter;
 import sim.statistics.RAPoSDAStats;
@@ -24,6 +27,8 @@ public class EnergyEfficientBufferManager implements IBufferManager {
 	private BufferMonitor bufferMonitor;
 	
 	private RAPoSDADataDiskManager ddm;
+	
+	private static Logger logger = LoggerFactory.getLogger(EnergyEfficientBufferManager.class);
 	
 	public EnergyEfficientBufferManager(StorageManager sm) {
 		if (sm == null || sm.getDataDiskManager() == null) {
@@ -61,7 +66,7 @@ public class EnergyEfficientBufferManager implements IBufferManager {
 
 					// overflow statistics
 					RAPoSDAStats.incrementOverflowCount();
-
+					
 					double arrivalTime =
 						b.getAccessTime() + cmResponse.getResponseTime();
 
@@ -97,9 +102,17 @@ public class EnergyEfficientBufferManager implements IBufferManager {
 		RAPoSDACacheMemoryManager cmm = sm.getCacheMemoryManager();
 		List<Block> baseBlocks = new ArrayList<Block>();
 		
+		StringBuffer spinningDiskIdString = new StringBuffer();
+		StringBuffer standbyDiskIdString = new StringBuffer();
+		
 		// lambda is the mean arrival ratio of write accesses (blocks/s)
 		double lambda = 
 				this.bufferMonitor.getMeanArrivalRateOfWriteAccesses(arrivalTime);
+
+		// log
+		logger.debug("---------------------------------------------");
+		logger.debug(String.format("Over Flow time:%,.4f lambda:%,.4f", arrivalTime, lambda));
+		
 		
 		for (int diskId : spinningDiskIds) {
 			List<Chunk> chunks = cmm.getBufferChunks(
@@ -110,6 +123,7 @@ public class EnergyEfficientBufferManager implements IBufferManager {
 				baseBlocks.addAll(chunk.getBlocks());
 				chunk = null;
 			}
+			spinningDiskIdString.append(diskId).append(",");
 		}
 		
 		// set the initial value of results
@@ -118,6 +132,10 @@ public class EnergyEfficientBufferManager implements IBufferManager {
 		double baseTimeToNextBufferOverflow = baseBufferSize / lambda;
 		// minimum energy efficiency of the base.
 		double minEE = 1 / baseTimeToNextBufferOverflow;
+		
+		// log the efficiency of the base
+		logger.debug(String.format("Spinning(base) Disk ID:%s", spinningDiskIdString));
+		logger.debug(String.format("Base Size:%d baseEE:%,.4f", baseBufferSize, minEE));
 		
 		// buffer data to be written to the data disks.
 		List<Block> toWriteBuffer = new ArrayList<Block>();
@@ -137,7 +155,11 @@ public class EnergyEfficientBufferManager implements IBufferManager {
 				buffer.addBlocks(chunk.getBlocks());
 			}
 			bufferList.add(buffer);
+			standbyDiskIdString.append(diskId).append(",");
 		}
+		
+		// debug log
+		logger.debug(String.format("Standby Disk ID:%s", standbyDiskIdString));
 		
 		// energy efficiency of this standby disks and base.
 		double tempEE = Double.MAX_VALUE;
@@ -161,15 +183,24 @@ public class EnergyEfficientBufferManager implements IBufferManager {
 			}
 		}
 		
+		StringBuffer toSpinupDiskIdString = new StringBuffer();
+		
 		// return the most energy efficient chunks
 		for (Integer diskId : toSpinupDiskIds) {
 			if (!ddm.isSpinning(diskId, arrivalTime)) {
 				ddm.spinUp(diskId, arrivalTime);
 			}
+			toSpinupDiskIdString.append(diskId).append(",");
 		}
+		
 		Block[] toWrite = toWriteBuffer.toArray(new Block[0]);
 		sm.updateArrivalTimeOfBlocks(toWrite, arrivalTime);
 		DiskResponse result = ddm.write(toWrite);
+		
+		// log the selected disks to flush
+		logger.debug(String.format("ToSpinup Disk ID:%s", toSpinupDiskIdString));
+		logger.debug(String.format("To be Flush Buffer Size:%d mostEE:%,.4f", toWrite.length, minEE));
+
 		return result;
 	}
 	
