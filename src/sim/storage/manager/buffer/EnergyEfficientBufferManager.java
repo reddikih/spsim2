@@ -172,10 +172,13 @@ public class EnergyEfficientBufferManager implements IBufferManager {
 		// sort the buffered data order by descending of its size.
 		BufferOfADisk[] sortedBuffers = sortBufferedData(bufferList);
 		int subsetOfStandbyDisks = 1;
+		double powerWeight = 0.0;
+		double spinupPower = Parameter.HDD_SPINUP_ENERGY / Parameter.HDD_SPINUP_TIME;
 		for (int i = sortedBuffers.length - 1; i >= 0; i--) {
 			double ttnbo = 0.0; // the time to the next buffer overflow
 			ttnbo = (toWriteBuffer.size() + sortedBuffers[i].getSize()) / lambda;
-			tempEE = (Parameter.EE_CALCULUS_COEFFICIENT * Math.exp(subsetOfStandbyDisks)) / ttnbo;
+			powerWeight = powerWeight + (1 / subsetOfStandbyDisks) * spinupPower;
+			tempEE = powerWeight / ttnbo;
 			
 			if (tempEE < minEE) {
 				toWriteBuffer.addAll(sortedBuffers[i].getBlocks());
