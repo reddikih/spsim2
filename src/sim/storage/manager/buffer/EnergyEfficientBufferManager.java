@@ -175,7 +175,7 @@ public class EnergyEfficientBufferManager implements IBufferManager {
 		for (int i = sortedBuffers.length - 1; i >= 0; i--) {
 			double ttnbo = 0.0; // the time to the next buffer overflow
 			ttnbo = (toWriteBuffer.size() + sortedBuffers[i].getSize()) / lambda;
-			tempEE = (subsetOfStandbyDisks * (Parameter.HDD_SPINUP_ENERGY / Parameter.HDD_SPINUP_TIME)) / ttnbo;
+			tempEE = Math.exp(subsetOfStandbyDisks) / ttnbo;
 			
 			if (tempEE < minEE) {
 				toWriteBuffer.addAll(sortedBuffers[i].getBlocks());
