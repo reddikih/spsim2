@@ -10,7 +10,7 @@ import sim.Response;
 import sim.statistics.RAPoSDAStats;
 import sim.storage.CacheResponse;
 import sim.storage.DiskResponse;
-import sim.storage.manager.buffer.IBufferManager;
+import sim.storage.manager.buffer.BufferManager;
 import sim.storage.manager.buffer.IBufferManagerFactory;
 import sim.storage.manager.cdm.RAPoSDACacheDiskManager;
 import sim.storage.manager.cmm.RAPoSDACacheMemoryManager;
@@ -25,7 +25,7 @@ public class RAPoSDAStorageManager extends StorageManager {
 	protected RAPoSDACacheDiskManager cdm;
 	protected RAPoSDADataDiskManager ddm;
 	
-	private IBufferManager bm;
+	private BufferManager bm;
 	
 	public RAPoSDAStorageManager(
 			RAPoSDACacheMemoryManager cmm,

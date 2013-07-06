@@ -85,7 +85,7 @@
     <appender-ref ref="BLOCK_ASSIGN_FILE" />
   </logger>
   
-  <logger name="sim.storage.manager.buffer.EnergyEfficientBufferManager" additivity="false">
+  <logger name="sim.storage.manager.buffer.BufferManager" additivity="false">
     <appender-ref ref="BUFFER_FLUSH_FILE" />
   </logger>
   
@@ -96,7 +96,11 @@
   <logger name="TRACE_ARRIVAL_TIME" additivity="false">
     <appender-ref ref="TRACE_ARRIVAL_TIME_FILE" />
   </logger>
-
+  
+  <logger name="REQUEST_BLOCK_MAPPING" additivity="false">
+    <appender-ref ref="SIMULATOR_FILE" />
+  </logger>
+  
   <root level="${root-level:-debug}">
     <appender-ref ref="STDOUT" />
   </root>

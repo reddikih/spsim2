@@ -1,105 +1,32 @@
 package sim.storage.manager.buffer;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import sim.Block;
 import sim.Parameter;
-import sim.statistics.RAPoSDAStats;
 import sim.storage.DiskResponse;
-import sim.storage.manager.RAPoSDAStorageManager;
 import sim.storage.manager.StorageManager;
 import sim.storage.manager.cmm.Chunk;
 import sim.storage.manager.cmm.RAPoSDACacheMemoryManager;
-import sim.storage.manager.cmm.RAPoSDACacheWriteResponse;
 import sim.storage.manager.ddm.RAPoSDADataDiskManager;
-import sim.storage.util.DiskState;
-import sim.storage.util.RequestType;
 
-public class EnergyEfficientBufferManager implements IBufferManager {
-	
-	private RAPoSDAStorageManager sm;
-	private BufferMonitor bufferMonitor;
+public class EnergyEfficientBufferManager extends BufferManager {
 	
 	private RAPoSDADataDiskManager ddm;
 	
-	private static Logger logger = LoggerFactory.getLogger(EnergyEfficientBufferManager.class);
-	private static Logger traceLogger = LoggerFactory.getLogger("TRACE_ARRIVAL_TIME");
-	
 	public EnergyEfficientBufferManager(StorageManager sm) {
+		super(sm);
 		if (sm == null || sm.getDataDiskManager() == null) {
 			throw new IllegalArgumentException(
 					"StorageManager or DataDiskManager is null!");
 		}
-		this.sm = (RAPoSDAStorageManager)sm;
-		this.bufferMonitor = new BufferMonitor();
 		this.ddm = (RAPoSDADataDiskManager)sm.getDataDiskManager();
 	}
 
 	@Override
-	public DiskResponse write(Block[] blocks) {
-		double respTime = Double.MIN_VALUE;
-		
-		List<Block> ddWrittenBlocks = new ArrayList<Block>();
-		
-		for (Block block : blocks) {
-			// block access count log
-			RAPoSDAStats.incrementBlockAccessCount(RequestType.WRITE);
-
-			Block[] replicas = sm.createReplicas(block);
-			for (Block b : replicas) {
-				RAPoSDACacheWriteResponse cmResponse =
-						sm.getCacheMemoryManager().write(b);
-				
-				// count writes of blocks to monitor arrival rate of buffer
-				this.bufferMonitor.addWriteBlockCount(1);
-
-				if (cmResponse.getOverflows().length == 0) {
-					respTime =
-						cmResponse.getResponseTime() > respTime
-						? cmResponse.getResponseTime() : respTime;
-				} else { // cache overflow
-
-					// overflow statistics
-					RAPoSDAStats.incrementOverflowCount();
-					
-					double arrivalTime =
-						b.getAccessTime() + cmResponse.getResponseTime();
-					
-					// trace log
-					traceLogger.debug(String.valueOf(arrivalTime));
-
-					// write to data disk
-					DiskResponse ddResp = writeToDataDisk(arrivalTime);
-					
-					ddWrittenBlocks.addAll(Arrays.asList(ddResp.getResults()));
-
-					// delete blocks on the cache already written in disks.
-					double cmDeletedTime = sm.deleteBlocksOnCache(
-							ddResp.getResults(),
-							ddResp.getResponseTime() + arrivalTime);
-
-					// return least response time;
-					double tempResp =
-						ddResp.getResponseTime() + cmDeletedTime;
-
-					respTime = respTime < tempResp ? tempResp : respTime;
-				}
-			}
-		}
-		
-		DiskResponse result = 
-				new DiskResponse(respTime, ddWrittenBlocks.toArray(new Block[0]));
-		
-		return result;
-	}
-	
-	private DiskResponse writeToDataDisk(double arrivalTime) {
+	protected DiskResponse writeToDataDisk(double arrivalTime) {
 		
 		// get all buffered data chunks of active disks.
 		List<Integer> spinningDiskIds = getSpinningDiskIds(arrivalTime);
@@ -258,20 +185,6 @@ public class EnergyEfficientBufferManager implements IBufferManager {
 				j++;
 			}
 		}
-	}
-	
-	
-	private List<Integer> getSpinningDiskIds(double timestamp) {
-		List<DiskState> states = new ArrayList<DiskState>();
-		states.add(DiskState.ACTIVE);
-		states.add(DiskState.IDLE);
-		return ddm.getSpecificStateDiskIds(timestamp, states);
-	}
-	
-	private List<Integer> getStandbyDiskIds(double timestamp) {
-		List<DiskState> states = new ArrayList<DiskState>();
-		states.add(DiskState.STANDBY);
-		return ddm.getSpecificStateDiskIds(timestamp, states);
 	}
 	
 	private class BufferOfADisk {

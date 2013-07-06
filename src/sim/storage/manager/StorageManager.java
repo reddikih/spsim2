@@ -2,6 +2,9 @@ package sim.storage.manager;
 
 import java.util.HashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import sim.Block;
 import sim.Request;
 import sim.Response;
@@ -19,9 +22,9 @@ public abstract class StorageManager {
 	protected int blockSize;
 	protected int numReplica;
 
-//	protected BigInteger blockNumber = new BigInteger("0");
-//	protected long sequenceNumber = 0L;
 	protected long sequenceNumber = 1L; // 1 origin
+	
+	private static Logger mappinglogger = LoggerFactory.getLogger("REQUEST_BLOCK_MAPPING");
 
 	public StorageManager(
 			ICacheMemoryManager cmm,
@@ -109,6 +112,7 @@ public abstract class StorageManager {
 
 	public void register(long requestId, int size) {
 		// TODO refactoring. integrate with divideRequest method
+		StringBuffer blocksBuf = new StringBuffer();
 		Block[] blocks = null;
 		int numBlocks = (int)Math.ceil(size / blockSize);
 		if (numBlocks <= 0) numBlocks = 1;
@@ -119,8 +123,15 @@ public abstract class StorageManager {
 					blockId,
 					0.0,
 					assignPrimaryDiskId(blockId));
+			blocksBuf.append(blockId).append(",");
 		}
 		requestMap.put(requestId, blocks);
+		
+		// logging the mapping information
+		mappinglogger.trace(
+				String.format(
+						"RequestId:%d blockIds:%s",
+						requestId, blocksBuf.toString()));
 	}
 
 	public IDataDiskManager getDataDiskManager() {

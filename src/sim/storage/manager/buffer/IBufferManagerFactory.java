@@ -4,6 +4,6 @@ import sim.storage.manager.StorageManager;
 
 public interface IBufferManagerFactory {
 	
-	public IBufferManager createBufferManager(StorageManager sm);
+	public BufferManager createBufferManager(StorageManager sm);
 
 }

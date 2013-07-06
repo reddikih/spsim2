@@ -2,13 +2,13 @@ package sim.storage.manager.buffer;
 
 import sim.storage.manager.StorageManager;
 
-public class EnergyEfficientBufferManagerFactory implements
+public class FlushToAllSpinningDiskBufferManagerFactory implements
 		IBufferManagerFactory {
 
 	@Override
 	public BufferManager createBufferManager(StorageManager sm) {
-		EnergyEfficientBufferManager bufferManager = 
-				new EnergyEfficientBufferManager(sm);
+		FlushToAllSpinningDiskBufferManager bufferManager = 
+				new FlushToAllSpinningDiskBufferManager(sm);
 		return bufferManager;
 	}
 

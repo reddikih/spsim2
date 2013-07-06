@@ -152,6 +152,8 @@ public class WithSleepDiskStateManager extends DiskStateManager {
 							start,
 							end));
 			break;
+		default:
+			break;
 		}
 
 		// log spindown count
@@ -167,7 +169,7 @@ public class WithSleepDiskStateManager extends DiskStateManager {
 
 		spindownWait = stateUpdate(dd, accessTime, lastIdleStartTime);
 
-		// calculate spinup energy
+		// calculate spin up energy
 		start = accessTime + spindownWait;
 		end = start + parameter.getSpinupTime();
 		energy = calcEnergy(DiskState.SPINUP, end - start);
