@@ -5,6 +5,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import sim.Block;
 import sim.storage.DiskResponse;
 import sim.storage.util.DiskInfo;
@@ -17,6 +20,8 @@ public class RAPoSDADataDiskManager implements IDataDiskManager {
 	private final int numberOfReplica;
 
 	private HashMap<Integer, DataDisk> dataDiskMap;
+	
+	private Logger spinupLogger = LoggerFactory.getLogger("SPIN_UP_INFO_TRACE");
 
 	public RAPoSDADataDiskManager(
 			int numberOfDataDisks,
@@ -79,6 +84,11 @@ public class RAPoSDADataDiskManager implements IDataDiskManager {
 	public double spinUp(int diskId, double accessTime) {
 		DataDisk dd = dataDiskMap.get(diskId);
 		assert dd != null;
+		
+		// spin up log
+		spinupLogger.trace(
+				String.format("DISKID:%d ACCESSTIME:%,.4f", diskId, accessTime));
+		
 		return dd.spinUp(accessTime);
 	}
 

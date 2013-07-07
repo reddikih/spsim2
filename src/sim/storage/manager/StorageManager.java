@@ -130,8 +130,8 @@ public abstract class StorageManager {
 		// logging the mapping information
 		mappinglogger.trace(
 				String.format(
-						"RequestId:%d blockIds:%s",
-						requestId, blocksBuf.toString()));
+						"RequestId:%d blockIds:%s primaryDiskId:%d",
+						requestId, blocksBuf.toString(), blocks[0].getPrimaryDiskId()));
 	}
 
 	public IDataDiskManager getDataDiskManager() {
