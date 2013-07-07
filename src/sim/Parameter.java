@@ -37,8 +37,9 @@ public class Parameter {
 	public static double CACHE_MEMORY_BUFFER_COEFFICIENT = 0.2;
 
 	
-	public static String BUFFER_MANAGER_FACTORY = "sim.storage.manager.buffer.RAPoSDABufferManagerFactory";
+//	public static String BUFFER_MANAGER_FACTORY = "sim.storage.manager.buffer.RAPoSDABufferManagerFactory";
 //	public static String BUFFER_MANAGER_FACTORY = "sim.storage.manager.buffer.FlushToAllSpinningDiskBufferManagerFactory";
+	public static String BUFFER_MANAGER_FACTORY = "sim.storage.manager.buffer.SpinupEnergyEfficientDisksBufferManagerFactory";
 //	public static String BUFFER_MANAGER_FACTORY = "sim.storage.manager.buffer.EnergyEfficientBufferManagerFactory";
 
 	///--- Cache memory parameters. ---///
