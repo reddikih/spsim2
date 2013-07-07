@@ -28,6 +28,12 @@ public class RAPoSDAStats {
 	private static double standbyStateTime;
 	private static double spindownStateTime;
 	private static double spinupStateTime;
+	
+	private static double activeStateCount;
+	private static double idleStateCount;
+	private static double standbyStateCount;
+	private static double spindownStateCount;
+	private static double spinupStateCount;
 
 	private static int spindownCount;
 	private static int spinupCount;
@@ -56,22 +62,27 @@ public class RAPoSDAStats {
 		case ACTIVE:
 			totalActiveEnergy += added;
 			activeStateTime += time;
+			activeStateCount++;
 			break;
 		case IDLE:
 			totalIdleEnergy += added;
 			idleStateTime += time;
+			idleStateCount++;
 			break;
 		case STANDBY:
 			totalStandbyEnergy += added;
 			standbyStateTime += time;
+			standbyStateCount++;
 			break;
 		case SPINUP:
 			totalSpinupEnergy += added;
 			spinupStateTime += time;
+			spinupStateCount++;
 			break;
 		case SPINDOWN:
 			totalSpindownEnergy += added;
 			spindownStateTime += time;
+			spindownStateCount++;
 			break;
 		default:
 			throw new IllegalArgumentException("state is invalid." + type);
@@ -273,12 +284,12 @@ public class RAPoSDAStats {
 	public static void showStatistics(double closeTime) {
 		System.out.println("------------------");
 		System.out.printf("Simulation Time: %.3f\n", closeTime);
-		System.out.printf("Total Energy(time): %,.4f\n", getTotalEnergyConsumption());
-		System.out.printf("  ACTIVE   : %,.4f(%,.4f)\n", getTotalEnergyConsumptionByState(DiskState.ACTIVE), activeStateTime);
-		System.out.printf("  IDLE     : %,.4f(%,.4f)\n", getTotalEnergyConsumptionByState(DiskState.IDLE), idleStateTime);
-		System.out.printf("  STANDBY  : %,.4f(%,.4f)\n", getTotalEnergyConsumptionByState(DiskState.STANDBY), standbyStateTime);
-		System.out.printf("  SPINDOWN : %,.4f(%,.4f)\n", getTotalEnergyConsumptionByState(DiskState.SPINDOWN), spindownStateTime);
-		System.out.printf("  SPINUP   : %,.4f(%,.4f)\n", getTotalEnergyConsumptionByState(DiskState.SPINUP), spinupStateTime);
+		System.out.printf("Total Energy(totaltime : avg time): %,.4f\n", getTotalEnergyConsumption());
+		System.out.printf("  ACTIVE   : %,.4f(%,.4f : %,.4f)\n", getTotalEnergyConsumptionByState(DiskState.ACTIVE), activeStateTime, activeStateCount != 0.0 ? activeStateTime / activeStateCount : -1.0);
+		System.out.printf("  IDLE     : %,.4f(%,.4f : %,.4f)\n", getTotalEnergyConsumptionByState(DiskState.IDLE), idleStateTime, idleStateCount != 0.0 ? idleStateTime / idleStateCount : -1.0);
+		System.out.printf("  STANDBY  : %,.4f(%,.4f : %,.4f)\n", getTotalEnergyConsumptionByState(DiskState.STANDBY), standbyStateTime, standbyStateCount != 0.0 ? standbyStateTime / standbyStateCount : -1.0);
+		System.out.printf("  SPINDOWN : %,.4f(%,.4f : %,.4f)\n", getTotalEnergyConsumptionByState(DiskState.SPINDOWN), spindownStateTime, spindownStateCount != 0.0 ? spindownStateTime / spindownStateCount : -1.0);
+		System.out.printf("  SPINUP   : %,.4f(%,.4f : %,.4f)\n", getTotalEnergyConsumptionByState(DiskState.SPINUP), spinupStateTime, spinupStateCount != 0.0 ? spinupStateTime / spinupStateCount : -1.0);
 		System.out.printf("Avg. Response Time: %.6f\n", getAverageResponseTime());
 		System.out.printf("Total Request count  : %,d\n", getRequestCount(RequestType.READ) + getRequestCount(RequestType.WRITE));
 		System.out.printf("  Read Request count : %,d(%,d)\n", getRequestCount(RequestType.READ), getBlockAccessCount(RequestType.READ));
