@@ -112,6 +112,17 @@ public abstract class BufferManager {
 		return ddm.getSpecificStateDiskIds(timestamp, states);
 	}
 	
+	protected Block[] extraUniqueBlocks(List<Block> blockList, Block[] blockArray) {
+		if (blockArray.length > 0) {
+			for (Block b : blockArray) {
+				if (!blockList.contains(b)) {
+					blockList.add(b);
+				}
+			}
+		}
+		return blockList.toArray(new Block[0]);
+	}
+	
 	protected void logHeader(double arrivalTime) {
 		// log
 		logger.debug("---------------------------------------------");
@@ -135,7 +146,7 @@ public abstract class BufferManager {
 			spinupDiskIdString.append(diskId).append(",");
 		}
 		logger.debug(String.format("ToSpinup Disk ID:%s", spinupDiskIdString));
-		logger.debug(String.format("Flushed Buffer Size:%d", writtenBlocks.length));
+		logger.debug(String.format("Actual Flushed Buffer Size:%d", writtenBlocks.length));
 	}
 
 }

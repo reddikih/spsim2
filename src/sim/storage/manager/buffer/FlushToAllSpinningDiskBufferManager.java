@@ -65,15 +65,4 @@ public class FlushToAllSpinningDiskBufferManager extends BufferManager {
 		return baseBlocks;
 	}
 	
-	private Block[] extraUniqueBlocks(List<Block> blockList, Block[] blockArray) {
-		if (blockArray.length > 0) {
-			for (Block b : blockArray) {
-				if (!blockList.contains(b)) {
-					blockList.add(b);
-				}
-			}
-		}
-		return blockList.toArray(new Block[0]);
-	}
-
 }
