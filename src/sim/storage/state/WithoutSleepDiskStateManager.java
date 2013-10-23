@@ -56,8 +56,8 @@ public class WithoutSleepDiskStateManager extends DiskStateManager {
 			end = updateTime;
 			energy = calcEnergy(DiskState.IDLE, end - start);
 			if (energy > 0) {
-				RAPoSDAStats.addEnergy(energy, DiskState.IDLE);
-				logger.trace(
+				RAPoSDAStats.addEnergy(energy, DiskState.IDLE, end - start);
+				logger.info(
 						String.format(
 								WithoutSleepDiskStateManager.format,
 								cd.getId(),
@@ -83,8 +83,8 @@ public class WithoutSleepDiskStateManager extends DiskStateManager {
 					"start time should be less than equal end time");
 
 		double energy = calcEnergy(state, end - start);
-		RAPoSDAStats.addEnergy(energy, state);
-		logger.trace(
+		RAPoSDAStats.addEnergy(energy, state, end - start);
+		logger.info(
 				String.format(
 						WithoutSleepDiskStateManager.format,
 						disk.getId(),

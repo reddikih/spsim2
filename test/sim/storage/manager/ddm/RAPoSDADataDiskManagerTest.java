@@ -3,6 +3,7 @@ package sim.storage.manager.ddm;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -311,6 +312,53 @@ public class RAPoSDADataDiskManagerTest {
 		sleepest = ddm.getLongestStandbyDiskInfo(dInfos, block50.getAccessTime());
 		assertThat(sleepest.getDiskId(), is(2));
 		assertThat(sleepest.getDiskState(), is(DiskState.STANDBY));
+	}
+	
+	@Test
+	public void getStandbyDiskIdsTest() {
+		int numdd = 4, numRep = 3;
+		init(numdd, numRep, 10.0);
+
+		List<Integer> standbyDiskIds;
+		
+		ArrayList<DiskState> states = new ArrayList<DiskState>();
+		states.add(DiskState.IDLE);
+		
+		standbyDiskIds = ddm.getSpecificStateDiskIds(0.1, states); 
+		assertThat(standbyDiskIds.size(), is(4));
+		
+		states.clear();
+		states.add(DiskState.STANDBY);
+		// assuming that spindown threshold = 10.0, spindown time = 0.7
+		standbyDiskIds = ddm.getSpecificStateDiskIds(10.8, states); 
+		assertThat(standbyDiskIds.size(), is(4));
+	}
+	
+	@Test
+	public void getSpinningDiskIdsTest() {
+		int numdd = 4, numRep = 3;
+		init(numdd, numRep, 10.0);
+
+		List<Integer> standbyDiskIds;
+		ArrayList<DiskState> states = new ArrayList<DiskState>();
+		
+		Block block00 = new Block(0, 0.0, 0);
+		setOwnerDiskAndRepLevel(block00, ReplicaLevel.ZERO, numdd);ddm.write(new Block[]{block00});
+		block00.setAccessTime(9);
+		ddm.write(new Block[]{block00});
+		states.add(DiskState.STANDBY);
+		standbyDiskIds = ddm.getSpecificStateDiskIds(11, states);
+		assertThat(standbyDiskIds.size(), is(3));
+		
+		states.clear();
+		states.add(DiskState.ACTIVE);
+		List<Integer> spinningDiskIds;
+		spinningDiskIds = ddm.getSpecificStateDiskIds(9.001, states);
+		assertThat(spinningDiskIds.size(), is(1));
+		
+		states.add(DiskState.IDLE);
+		spinningDiskIds = ddm.getSpecificStateDiskIds(11, states);
+		assertThat(spinningDiskIds.size(), is(1));
 	}
 
 }

@@ -10,9 +10,10 @@ import sim.Response;
 import sim.statistics.RAPoSDAStats;
 import sim.storage.CacheResponse;
 import sim.storage.DiskResponse;
+import sim.storage.manager.buffer.BufferManager;
+import sim.storage.manager.buffer.IBufferManagerFactory;
 import sim.storage.manager.cdm.RAPoSDACacheDiskManager;
 import sim.storage.manager.cmm.RAPoSDACacheMemoryManager;
-import sim.storage.manager.cmm.RAPoSDACacheWriteResponse;
 import sim.storage.manager.ddm.RAPoSDADataDiskManager;
 import sim.storage.util.DiskInfo;
 import sim.storage.util.DiskState;
@@ -23,14 +24,17 @@ public class RAPoSDAStorageManager extends StorageManager {
 	protected RAPoSDACacheMemoryManager cmm;
 	protected RAPoSDACacheDiskManager cdm;
 	protected RAPoSDADataDiskManager ddm;
-
+	
+	private BufferManager bm;
+	
 	public RAPoSDAStorageManager(
 			RAPoSDACacheMemoryManager cmm,
 			RAPoSDACacheDiskManager cdm,
 			RAPoSDADataDiskManager ddm,
+			IBufferManagerFactory bmFactory,
 			int blockSize,
 			int numReplica) {
-		super(ddm);
+		super(cmm, cdm, ddm);
 
 		this.cmm = cmm;
 		this.cdm = cdm;
@@ -39,6 +43,8 @@ public class RAPoSDAStorageManager extends StorageManager {
 		this.numReplica = numReplica;
 
 		this.requestMap = new HashMap<Long, Block[]>();
+		
+		this.bm = bmFactory.createBufferManager(this);
 	}
 
 	@Override
@@ -142,55 +148,19 @@ public class RAPoSDAStorageManager extends StorageManager {
 			// update(override) request
 			updateArrivalTimeOfBlocks(blocks, request.getArrvalTime());
 		}
-
-		double respTime = Double.MIN_VALUE;
-
-		for (Block block : blocks) {
-			// block access count log
-			RAPoSDAStats.incrementBlockAccessCount(RequestType.WRITE);
-
-			Block[] replicas = createReplicas(block);
-			for (Block b : replicas) {
-				RAPoSDACacheWriteResponse response = cmm.write(b);
-				if (response.getOverflows().length == 0) {
-					respTime =
-						response.getResponseTime() > respTime
-						? response.getResponseTime() : respTime;
-				} else { // cache overflow
-
-					// overflow statistics
-					RAPoSDAStats.incrementOverflowCount();
-
-					double arrivalTime =
-						request.getArrvalTime() + response.getResponseTime();
-
-					// write to data disk
-					DiskResponse ddResp =
-							writeToDataDisk(response, arrivalTime);
-
-					// write to cache disk asynchronously
-					// after data disk write.
-					writeToCacheDisk(
-							ddResp.getResults(),
-							ddResp.getResponseTime() + arrivalTime);
-
-					// delete blocks on the cache already written in disks.
-					double cmDeletedTime = deleteBlocksOnCache(
-							ddResp.getResults(),
-							ddResp.getResponseTime() + arrivalTime);
-
-					// return least response time;
-					double tempResp =
-						ddResp.getResponseTime() + cmDeletedTime;
-
-					respTime = respTime < tempResp ? tempResp : respTime;
-				}
-			}
-		}
-		return new Response(request.getKey(), respTime);
+		
+		DiskResponse ddResp = this.bm.write(blocks);
+		
+		// write to cache disk asynchronously
+		// after data disk write.
+		writeToCacheDisk(
+				ddResp.getResults(),
+				ddResp.getResponseTime() + request.getArrvalTime());
+		
+		return new Response(request.getKey(), ddResp.getResponseTime());
 	}
 
-	private double deleteBlocksOnCache(Block[] blocks, double arrivalTime) {
+	public double deleteBlocksOnCache(Block[] blocks, double arrivalTime) {
 		updateArrivalTimeOfBlocks(blocks, arrivalTime);
 		double response = Double.MIN_VALUE;
 		for (Block block : blocks) {
@@ -202,25 +172,23 @@ public class RAPoSDAStorageManager extends StorageManager {
 		return response;
 	}
 
-	private DiskResponse writeToDataDisk(
-			RAPoSDACacheWriteResponse cmResp, double arrivalTime) {
-		int maxBufferDiskId = cmResp.getMaxBufferDiskId();
-		if(!ddm.isSpinning(maxBufferDiskId, arrivalTime))
-			ddm.spinUp(maxBufferDiskId, arrivalTime);
-		Block[] blocks = cmResp.getOverflows();
-		updateArrivalTimeOfBlocks(blocks, arrivalTime);
-		return ddm.write(blocks);
-	}
-
 	private DiskResponse writeToCacheDisk(Block[] blocks, double arrivalTime) {
 		updateArrivalTimeOfBlocks(blocks, arrivalTime);
 		return cdm.write(blocks);
 	}
-
+	
 	@Override
 	public void close(double closeTime) {
 		cdm.close(closeTime);
 		ddm.close(closeTime);
+	}
+
+	public RAPoSDACacheMemoryManager getCacheMemoryManager() {
+		return this.cmm;
+	}
+	
+	public int getNumberOfReplica() {
+		return this.numReplica;
 	}
 
 }

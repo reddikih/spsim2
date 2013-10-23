@@ -5,6 +5,7 @@ import java.util.HashMap;
 import sim.Parameter;
 import sim.storage.CacheParameter;
 import sim.storage.HDDParameter;
+import sim.storage.manager.buffer.IBufferManagerFactory;
 import sim.storage.manager.cdm.CacheDisk;
 import sim.storage.manager.cdm.ICacheDiskManager;
 import sim.storage.manager.cdm.RAPoSDACacheDiskManager;
@@ -15,6 +16,7 @@ import sim.storage.manager.cmm.RAPoSDACacheMemoryManager;
 import sim.storage.manager.cmm.assignor.CacheStripingAssignor;
 import sim.storage.manager.cmm.assignor.DGAAssignor;
 import sim.storage.manager.cmm.assignor.IAssignor;
+import sim.storage.manager.cmm.assignor.SimpleAssignor;
 import sim.storage.manager.ddm.DataDisk;
 import sim.storage.manager.ddm.IDataDiskManager;
 import sim.storage.manager.ddm.RAPoSDADataDiskManager;
@@ -72,6 +74,8 @@ public class RAPoSDAStorageManagerFactory extends StorageManagerFactory {
 		else if (assignorName.equals("cs"))
 			assignor = new CacheStripingAssignor(
 					Parameter.NUMBER_OF_CACHE_MEMORIES);
+		else if (assignorName.equals("simple"))
+			assignor = new SimpleAssignor();
 		return assignor;
 	}
 
@@ -161,11 +165,20 @@ public class RAPoSDAStorageManagerFactory extends StorageManagerFactory {
 		int numRep = Parameter.NUMBER_OF_REPLICA;
 
 		assert numRep > 0 : "number of replica parameter should greater than 0";
-
+		
+		IBufferManagerFactory factory = null;
+		try {
+			factory = (IBufferManagerFactory) Class.forName(Parameter.BUFFER_MANAGER_FACTORY).newInstance();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
 		return new RAPoSDAStorageManager(
 				(RAPoSDACacheMemoryManager)cmm,
 				(RAPoSDACacheDiskManager)cdm,
 				(RAPoSDADataDiskManager)ddm,
+				factory,
 				blockSize, numRep);
 	}
 

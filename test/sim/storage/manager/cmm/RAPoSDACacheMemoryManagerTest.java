@@ -2,6 +2,7 @@ package sim.storage.manager.cmm;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -383,5 +384,111 @@ public class RAPoSDACacheMemoryManagerTest {
 		assertThat(cResp.getResponseTime(), is(Parameter.CACHE_MEMORY_LATENCY));
 		assertThat(cResp.getResult(), is(Block.NULL));
 
+	}
+	
+	@Test
+	public void getBufferChunksWithThreeDataDisksAndThreeReplicas() {
+		int numReplica = 3, numCacheMemory = 3, cacheSize = 6, blockSize = 1, numdd = 3;
+		init(numReplica, numCacheMemory, cacheSize, blockSize);
+		
+		Block blockR00 = new Block(0, 0.0, 0); blockR00.setRepLevel(ReplicaLevel.ZERO);
+		Block blockR10 = new Block(1, 0.0, 1); blockR10.setRepLevel(ReplicaLevel.ZERO);
+		Block blockR20 = new Block(2, 0.0, 2); blockR20.setRepLevel(ReplicaLevel.ZERO);
+		Block blockR01 = new Block(3, 0.0, 0); blockR01.setRepLevel(ReplicaLevel.ONE);
+		Block blockR11 = new Block(4, 0.0, 1); blockR11.setRepLevel(ReplicaLevel.ONE);
+		Block blockR21 = new Block(5, 0.0, 2); blockR21.setRepLevel(ReplicaLevel.ONE);
+		Block blockR02 = new Block(6, 0.0, 0); blockR02.setRepLevel(ReplicaLevel.TWO);
+		Block blockR12 = new Block(7, 0.0, 1); blockR12.setRepLevel(ReplicaLevel.TWO);
+		Block blockR22 = new Block(8, 0.0, 2); blockR22.setRepLevel(ReplicaLevel.TWO);
+		Block[] blocks = new Block[]{
+				blockR00, blockR10, blockR20,
+				blockR01, blockR11, blockR21,
+				blockR02, blockR12, blockR22};
+		for (Block b : blocks) {
+			cmm.write(b);
+		}
+
+		// We sure that the data placement policy of cache memories is 
+		// Cache Striping(CS) in this test class.
+		List<Chunk> chunks;
+		chunks= cmm.getBufferChunks(0, numdd, numReplica);
+		assertThat(chunks.size(), is(3));
+		for (Chunk chunk : chunks) {
+			if (chunk.getDiskId() == 0) {
+				for (Block b : chunk.getBlocks()) {
+					assertThat(b.getRepLevel().getValue(), is(0));
+				}
+			} else if (chunk.getDiskId() == 1) {
+				for (Block b : chunk.getBlocks()) {
+					assertThat(b.getRepLevel().getValue(), is(2));
+				}
+			} else if (chunk.getDiskId() == 2) {
+				for (Block b : chunk.getBlocks()) {
+					assertThat(b.getRepLevel().getValue(), is(1));
+				}
+			} else {
+				fail("chunk has invalid disk id [" + chunk.getDiskId() + "]");
+			}
+		}
+	}
+	
+	@Test
+	public void getBufferChunksWithSixDataDisksAndThreeReplicas() {
+		int numReplica = 3, numCacheMemory = 3, cacheSize = 9, blockSize = 1, numdd = 6;
+		init(numReplica, numCacheMemory, cacheSize, blockSize);
+		
+		Block blockR00 = new Block(0, 0.0, 0); blockR00.setRepLevel(ReplicaLevel.ZERO);
+		Block blockR10 = new Block(1, 0.0, 1); blockR10.setRepLevel(ReplicaLevel.ZERO);
+		Block blockR20 = new Block(2, 0.0, 2); blockR20.setRepLevel(ReplicaLevel.ZERO);
+		Block blockR30 = new Block(3, 0.0, 3); blockR30.setRepLevel(ReplicaLevel.ZERO);
+		Block blockR40 = new Block(4, 0.0, 4); blockR40.setRepLevel(ReplicaLevel.ZERO);
+		Block blockR50 = new Block(5, 0.0, 5); blockR50.setRepLevel(ReplicaLevel.ZERO);
+		Block blockR01 = new Block(6, 0.0, 0); blockR01.setRepLevel(ReplicaLevel.ONE);
+		Block blockR11 = new Block(7, 0.0, 1); blockR11.setRepLevel(ReplicaLevel.ONE);
+		Block blockR21 = new Block(8, 0.0, 2); blockR21.setRepLevel(ReplicaLevel.ONE);
+		Block blockR02 = new Block(9, 0.0, 0); blockR02.setRepLevel(ReplicaLevel.TWO);
+		Block blockR12 = new Block(10, 0.0, 1); blockR12.setRepLevel(ReplicaLevel.TWO);
+		Block blockR22 = new Block(11, 0.0, 2); blockR22.setRepLevel(ReplicaLevel.TWO);
+		Block[] blocks = new Block[]{
+				blockR00, blockR10, blockR20, blockR30, blockR40, blockR50,
+				blockR01, blockR11, blockR21,
+				blockR02, blockR12, blockR22};
+		for (Block b : blocks) {
+			cmm.write(b);
+		}
+		
+		// We sure that the data placement policy of cache memories is 
+		// Cache Striping(CS) in this test class.
+		List<Chunk> chunks;
+		chunks = cmm.getBufferChunks(0, numdd, numReplica);
+		assertThat(chunks.size(), is(1));
+		for (Chunk chunk : chunks) {
+			assertThat(chunk.getDiskId(), is(0));
+			if (chunk.getDiskId() == 0) assertThat(chunk.getBlocks().size(), is(1));
+			for (Block b : chunk.getBlocks()) {
+				assertThat(
+						checkChunkIndex(chunk.getDiskId(), chunk.getReplicaLevel(), b),
+						is(true));
+			}
+		}
+		
+		chunks = cmm.getBufferChunks(4, numdd, numReplica);
+		assertThat(chunks.size(), is(2));
+		for (Chunk chunk : chunks) {
+			if (chunk.getDiskId() == 4) assertThat(chunk.getBlocks().size(), is(1));
+			else if (chunk.getDiskId() == 2) assertThat(chunk.getBlocks().size(), is(1));
+			else fail("chunk has invalid disk id [" + chunk.getDiskId() + "]");
+			for (Block b : chunk.getBlocks()) {
+				assertThat(
+						checkChunkIndex(chunk.getDiskId(), chunk.getReplicaLevel(), b),
+						is(true));
+			}
+		}
+
+	}
+	
+	private boolean checkChunkIndex(int did, int rid, Block block) {
+		return did == block.getPrimaryDiskId() &&
+				rid == block.getRepLevel().getValue();
 	}
 }

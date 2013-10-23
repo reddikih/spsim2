@@ -21,7 +21,7 @@ public class NormalStorageManager extends StorageManager {
 			NormalDataDiskManager ddm,
 			int blockSize,
 			int numReplica) {
-		super(ddm);
+		super(cmm, null, ddm);
 
 		this.cmm = cmm;
 		this.ddm = ddm;

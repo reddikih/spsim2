@@ -67,8 +67,8 @@ public class WithSleepDiskStateManager extends DiskStateManager {
 			start = lastIdleStartTime;
 			end = updateTime;
 			energy = calcEnergy(DiskState.IDLE, end - start);
-			RAPoSDAStats.addEnergy(energy, DiskState.IDLE);
-			logger.trace(
+			RAPoSDAStats.addEnergy(energy, DiskState.IDLE, end - start);
+			logger.info(
 					String.format(
 							WithSleepDiskStateManager.format,
 							dd.getId(),
@@ -82,8 +82,8 @@ public class WithSleepDiskStateManager extends DiskStateManager {
 			start = lastIdleStartTime;
 			end = start + spindownThreshold;
 			energy = calcEnergy(DiskState.IDLE, end - start);
-			RAPoSDAStats.addEnergy(energy, DiskState.IDLE);
-			logger.trace(
+			RAPoSDAStats.addEnergy(energy, DiskState.IDLE, end - start);
+			logger.info(
 					String.format(
 							WithSleepDiskStateManager.format,
 							dd.getId(),
@@ -97,8 +97,8 @@ public class WithSleepDiskStateManager extends DiskStateManager {
 			assert start <= updateTime;
 			end = updateTime;
 			energy = calcEnergy(DiskState.SPINDOWN, end - start);
-			RAPoSDAStats.addEnergy(energy, DiskState.SPINDOWN);
-			logger.trace(
+			RAPoSDAStats.addEnergy(energy, DiskState.SPINDOWN, end - start);
+			logger.info(
 					String.format(
 							WithSleepDiskStateManager.format,
 							dd.getId(),
@@ -113,8 +113,8 @@ public class WithSleepDiskStateManager extends DiskStateManager {
 			start = lastIdleStartTime;
 			end = start + spindownThreshold;
 			energy = calcEnergy(DiskState.IDLE, end - start);
-			RAPoSDAStats.addEnergy(energy, DiskState.IDLE);
-			logger.trace(
+			RAPoSDAStats.addEnergy(energy, DiskState.IDLE, end - start);
+			logger.info(
 					String.format(
 							WithSleepDiskStateManager.format,
 							dd.getId(),
@@ -127,8 +127,8 @@ public class WithSleepDiskStateManager extends DiskStateManager {
 			start = end;
 			end = start + parameter.getSpindownTime();
 			energy = calcEnergy(DiskState.SPINDOWN, end - start);
-			RAPoSDAStats.addEnergy(energy, DiskState.SPINDOWN);
-			logger.trace(
+			RAPoSDAStats.addEnergy(energy, DiskState.SPINDOWN, end - start);
+			logger.info(
 					String.format(
 							WithSleepDiskStateManager.format,
 							dd.getId(),
@@ -141,8 +141,8 @@ public class WithSleepDiskStateManager extends DiskStateManager {
 			start = end;
 			end = updateTime;
 			energy = calcEnergy(DiskState.STANDBY, end - start);
-			RAPoSDAStats.addEnergy(energy, DiskState.STANDBY);
-			logger.trace(
+			RAPoSDAStats.addEnergy(energy, DiskState.STANDBY, end - start);
+			logger.info(
 					String.format(
 							WithSleepDiskStateManager.format,
 							dd.getId(),
@@ -151,6 +151,8 @@ public class WithSleepDiskStateManager extends DiskStateManager {
 							end - start,
 							start,
 							end));
+			break;
+		default:
 			break;
 		}
 
@@ -167,12 +169,12 @@ public class WithSleepDiskStateManager extends DiskStateManager {
 
 		spindownWait = stateUpdate(dd, accessTime, lastIdleStartTime);
 
-		// calculate spinup energy
+		// calculate spin up energy
 		start = accessTime + spindownWait;
 		end = start + parameter.getSpinupTime();
 		energy = calcEnergy(DiskState.SPINUP, end - start);
-		RAPoSDAStats.addEnergy(energy, DiskState.SPINUP);
-		logger.trace(
+		RAPoSDAStats.addEnergy(energy, DiskState.SPINUP, end - start);
+		logger.info(
 				String.format(
 						WithSleepDiskStateManager.format,
 						dd.getId(),
@@ -192,8 +194,8 @@ public class WithSleepDiskStateManager extends DiskStateManager {
 	public void postStateUpdate(
 			HardDiskDrive disk, DiskState state, double start, double end) {
 		double energy = calcEnergy(state, end - start);
-		RAPoSDAStats.addEnergy(energy, state);
-		logger.trace(
+		RAPoSDAStats.addEnergy(energy, state, end - start);
+		logger.info(
 				String.format(
 						WithSleepDiskStateManager.format,
 						disk.getId(),

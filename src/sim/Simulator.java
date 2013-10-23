@@ -52,40 +52,53 @@ public class Simulator {
 			if (command.startsWith("-DD=")) {
 				comVal = command.substring(4);
 				Parameter.NUMBER_OF_DISKS_PER_CACHE_GROUP = Integer.parseInt(comVal);
-				System.out.println("DataDisks=" + Parameter.NUMBER_OF_DISKS_PER_CACHE_GROUP);
 			} else if (command.startsWith("-CD=")) {
 				comVal = command.substring(4);
 				Parameter.NUMBER_OF_CACHE_DISKS = Integer.parseInt(comVal);
-				System.out.println("CacheDisks=" + Parameter.NUMBER_OF_CACHE_DISKS);
 			} else if (command.startsWith("-R=")) {
 				comVal = command.substring(3);
 				Parameter.NUMBER_OF_REPLICA = Integer.parseInt(comVal);
-				System.out.println("Replicas=" + Parameter.NUMBER_OF_REPLICA);
 			} else if (command.startsWith("-SM=")) {
 				comVal = command.substring(4);
 				Parameter.STORAGE_MANAGER_FACTORY = comVal;
-				System.out.println("StorageManagerFactory=" + Parameter.STORAGE_MANAGER_FACTORY);
 			} else if (command.startsWith("-CMA=")) {
 				comVal = command.substring(5);
 				Parameter.CACHE_MEMORY_ASSIGNOR = comVal;
-				System.out.println("CacheMemoryAssignor=" + Parameter.CACHE_MEMORY_ASSIGNOR);
 			} else if (command.startsWith("-CMF=")) {
 				comVal = command.substring(5);
 				Parameter.CACHE_MEMORY_FACTORY = comVal;
-				System.out.println("CacheMemoryFactory=" + Parameter.CACHE_MEMORY_FACTORY);
 			} else if (command.startsWith("-W=")) {
 				comVal = command.substring(3);
 				Parameter.WORKLOAD_FILE_PATH = comVal;
-				System.out.println("Workload=" + Parameter.WORKLOAD_FILE_PATH);
 			} else if (command.startsWith("-NM=")) {
 				comVal = command.substring(4);
 				Parameter.NUMBER_OF_CACHE_MEMORIES = Integer.parseInt(comVal);
-				System.out.println("NumberOfCacheMemories=" + Parameter.NUMBER_OF_CACHE_MEMORIES);
 			} else if (command.startsWith("-MS=")) {
 				comVal = command.substring(4);
 				Parameter.CACHE_MEMORY_SIZE = Long.parseLong(comVal) * 1024 * 1024 * 1024;
-				System.out.println("MemorySize=" + Parameter.CACHE_MEMORY_SIZE);
+			} else if (command.startsWith("-BM=")) {
+				comVal = command.substring(4);
+				Parameter.BUFFER_MANAGER_FACTORY = comVal;
+			} else if (command.startsWith("-BS=")) {
+				comVal = command.substring(4);
+				Parameter.BLOCK_SIZE = Integer.parseInt(comVal);
+			} else if (command.startsWith("-DEBUG=")) {
+				comVal = command.substring(4);
+				Parameter.DEBUG_FLAG = Boolean.parseBoolean(comVal);
 			}
+		}
+		if (Parameter.DEBUG_FLAG) {
+			System.out.println(String.format("Data disks               = %d (%ddisks/memory)", Parameter.NUMBER_OF_CACHE_MEMORIES * Parameter.NUMBER_OF_DISKS_PER_CACHE_GROUP, Parameter.NUMBER_OF_DISKS_PER_CACHE_GROUP));
+			System.out.println(String.format("Cache disks              = %d", Parameter.NUMBER_OF_CACHE_DISKS));
+			System.out.println(String.format("Replicas                 = %d", Parameter.NUMBER_OF_REPLICA));
+			System.out.println(String.format("Number of cache memories = %d", Parameter.NUMBER_OF_CACHE_MEMORIES));
+			System.out.println(String.format("Memory size(1 unit)      = %,dByte", Parameter.CACHE_MEMORY_SIZE));
+			System.out.println(String.format("Block size               = %,dByte", Parameter.BLOCK_SIZE));
+			System.out.println(String.format("CacheMemoryAssignor   = %s", Parameter.CACHE_MEMORY_ASSIGNOR));
+			System.out.println(String.format("CacheMemoryFactory    = %s", Parameter.CACHE_MEMORY_FACTORY));
+			System.out.println(String.format("StorageManagerFactory = %s", Parameter.STORAGE_MANAGER_FACTORY));
+			System.out.println(String.format("BufferManagerFactory  = %s", Parameter.BUFFER_MANAGER_FACTORY));
+			System.out.println(String.format("Workload              = %s", Parameter.WORKLOAD_FILE_PATH));
 		}
 	}
 
