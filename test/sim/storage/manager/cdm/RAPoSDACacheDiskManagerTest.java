@@ -168,8 +168,8 @@ public class RAPoSDACacheDiskManagerTest {
 
         Block rd01 = new Block(0, 2.0, 1);
         cacheRes = cdm.read(rd01);
-        assertThat(cacheRes.getResponseTime(), is(0.0));
-        assertThat(cacheRes.getResult(), is(rd01));
+        assertThat(cacheRes.getResponseTime(), is(Double.MAX_VALUE));
+        assertThat(cacheRes.getResult(), is(Block.NULL));
     }
 
     @Test
