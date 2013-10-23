@@ -5,3 +5,5 @@ bin
 out
 config/workload
 *logback-test.xml
+*.iml
+.idea
