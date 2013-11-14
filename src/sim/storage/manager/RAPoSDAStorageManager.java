@@ -1,9 +1,5 @@
 package sim.storage.manager;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import sim.Block;
 import sim.Request;
 import sim.Response;
@@ -19,176 +15,179 @@ import sim.storage.util.DiskInfo;
 import sim.storage.util.DiskState;
 import sim.storage.util.RequestType;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 public class RAPoSDAStorageManager extends StorageManager {
 
-	protected RAPoSDACacheMemoryManager cmm;
-	protected RAPoSDACacheDiskManager cdm;
-	protected RAPoSDADataDiskManager ddm;
-	
-	private BufferManager bm;
-	
-	public RAPoSDAStorageManager(
-			RAPoSDACacheMemoryManager cmm,
-			RAPoSDACacheDiskManager cdm,
-			RAPoSDADataDiskManager ddm,
-			IBufferManagerFactory bmFactory,
-			int blockSize,
-			int numReplica) {
-		super(cmm, cdm, ddm);
+    protected RAPoSDACacheMemoryManager cmm;
+    protected RAPoSDACacheDiskManager cdm;
+    protected RAPoSDADataDiskManager ddm;
 
-		this.cmm = cmm;
-		this.cdm = cdm;
-		this.ddm = ddm;
-		this.blockSize = blockSize;
-		this.numReplica = numReplica;
+    private BufferManager bm;
 
-		this.requestMap = new HashMap<Long, Block[]>();
-		
-		this.bm = bmFactory.createBufferManager(this);
-	}
+    public RAPoSDAStorageManager(
+            RAPoSDACacheMemoryManager cmm,
+            RAPoSDACacheDiskManager cdm,
+            RAPoSDADataDiskManager ddm,
+            IBufferManagerFactory bmFactory,
+            int blockSize,
+            int numReplica) {
+        super(cmm, cdm, ddm);
 
-	@Override
-	public Response read(Request request) {
-		Block[] blocks = requestMap.get(request.getKey());
-		if (blocks == null) throw new IllegalArgumentException();
+        this.cmm = cmm;
+        this.cdm = cdm;
+        this.ddm = ddm;
+        this.blockSize = blockSize;
+        this.numReplica = numReplica;
 
-		updateArrivalTimeOfBlocks(blocks, request.getArrvalTime());
+        this.requestMap = new HashMap<Long, Block[]>();
 
-		double respTime = Double.MIN_VALUE;
+        this.bm = bmFactory.createBufferManager(this);
+    }
 
-		for (Block b : blocks) {
-			// block access count log
-			RAPoSDAStats.incrementBlockAccessCount(RequestType.READ);
+    @Override
+    public Response read(Request request) {
+        Block[] blocks = requestMap.get(request.getKey());
+        if (blocks == null) throw new IllegalArgumentException();
 
-			// retrieve from cache memory
-			CacheResponse cmResp = cmm.read(b);
-			if (!Block.NULL.equals(cmResp.getResult())) {
-				respTime =
-					respTime < cmResp.getResponseTime()
-					? cmResp.getResponseTime() : respTime;
-			} else {
-				// retrieve from cache disk
-				CacheResponse cdResp = cdm.read(b);
-				if (!Block.NULL.equals(cdResp.getResult())) {
-					respTime =
-						respTime < cdResp.getResponseTime()
-						? cdResp.getResponseTime() : respTime;
-				} else {
-					// read from data disk.
-					DiskResponse ddResp = readFromDataDisk(b);
-					assert ddResp.getResults().length == 1;
-					respTime =
-						respTime < ddResp.getResponseTime()
-						? ddResp.getResponseTime() : respTime;
+        updateArrivalTimeOfBlocks(blocks, request.getArrvalTime());
 
-					// write to cache disk asynchronously
-					// after read from data disk.
-					writeToCacheDisk(
-							ddResp.getResults(),
-							ddResp.getResponseTime() + b.getAccessTime());
-				}
-			}
-		}
-		return new Response(request.getKey(), respTime);
-	}
+        double respTime = Double.MIN_VALUE;
 
-	private DiskResponse readFromDataDisk(Block block) {
+        for (Block b : blocks) {
+            // block access count log
+            RAPoSDAStats.incrementBlockAccessCount(RequestType.READ);
 
-		List<DiskInfo> relatedDiskInfos = ddm.getRelatedDisksInfo(block);
-		List<DiskInfo> activeDiskInfos = extractActiveDisks(relatedDiskInfos);
+            // retrieve from cache memory
+            CacheResponse cmResp = cmm.read(b);
+            if (!Block.NULL.equals(cmResp.getResult())) {
+                respTime =
+                        respTime < cmResp.getResponseTime()
+                                ? cmResp.getResponseTime() : respTime;
+            } else {
+                // retrieve from cache disk
+                CacheResponse cdResp = cdm.read(b);
+                if (!Block.NULL.equals(cdResp.getResult())) {
+                    respTime =
+                            respTime < cdResp.getResponseTime()
+                                    ? cdResp.getResponseTime() : respTime;
+                } else {
+                    // read from data disk.
+                    DiskResponse ddResp = readFromDataDisk(b);
+                    assert ddResp.getResults().length == 1;
+                    respTime =
+                            respTime < ddResp.getResponseTime()
+                                    ? ddResp.getResponseTime() : respTime;
 
-		// case 1. one of n disks is spinning.
-		if (activeDiskInfos.size() == 1)
-			return actualRead(block, activeDiskInfos.get(0));
+                    // write to cache disk asynchronously
+                    // after read from data disk.
+                    writeToCacheDisk(
+                            ddResp.getResults(),
+                            ddResp.getResponseTime() + b.getAccessTime());
+                }
+            }
+        }
+        return new Response(request.getKey(), respTime);
+    }
 
-		// case 2. some of n disks are spinning.
-		if (activeDiskInfos.size() > 1
-				&& activeDiskInfos.size() <= relatedDiskInfos.size()) {
-			DiskInfo diskState = cmm.getMaxBufferDisk(activeDiskInfos);
-			return actualRead(block, diskState);
-		}
+    private DiskResponse readFromDataDisk(Block block) {
 
-		// case 3. all of n disks are stopping.
-		assert activeDiskInfos.size() == 0;
-		DiskInfo diskState =
-				ddm.getLongestStandbyDiskInfo(
-						relatedDiskInfos,
-						block.getAccessTime());
-		return actualRead(block, diskState);
-	}
+        List<DiskInfo> relatedDiskInfos = ddm.getRelatedDisksInfo(block);
+        List<DiskInfo> activeDiskInfos = extractActiveDisks(relatedDiskInfos);
 
-	private DiskResponse actualRead(Block block, DiskInfo diskInfo) {
-		if (diskInfo == null)
-			throw new IllegalArgumentException("diskInfo is null");
-		int ownerDiskId = assignOwnerDiskId(
-				block.getPrimaryDiskId(), diskInfo.getRepLevel());
-		block.setOwnerDiskId(ownerDiskId);
-		block.setRepLevel(diskInfo.getRepLevel());
-		return ddm.read(new Block[]{block});
-	}
+        // case 1. one of n disks is spinning.
+        if (activeDiskInfos.size() == 1)
+            return actualRead(block, activeDiskInfos.get(0));
 
-	private List<DiskInfo> extractActiveDisks(List<DiskInfo> diskInfos) {
-		List<DiskInfo> result = new ArrayList<DiskInfo>();
-		for (DiskInfo dInfo : diskInfos) {
-			if (DiskState.ACTIVE.equals(dInfo.getDiskState())
-					|| DiskState.IDLE.equals(dInfo.getDiskState()))
-				result.add(dInfo);
-		}
-		return result;
-	}
+        // case 2. some of n disks are spinning.
+        if (activeDiskInfos.size() > 1) {
+            DiskInfo diskState = cmm.getMaxBufferDisk(activeDiskInfos);
+            return actualRead(block, diskState);
+        }
 
-	@Override
-	public Response write(Request request) {
-		Block[] blocks = requestMap.get(request.getKey());
-		if (blocks == null) {
-			// new request
-			blocks = divideRequest(request);
-			requestMap.put(request.getKey(), blocks);
-		} else {
-			// update(override) request
-			updateArrivalTimeOfBlocks(blocks, request.getArrvalTime());
-		}
-		
-		DiskResponse ddResp = this.bm.write(blocks);
-		
-		// write to cache disk asynchronously
-		// after data disk write.
-		writeToCacheDisk(
-				ddResp.getResults(),
-				ddResp.getResponseTime() + request.getArrvalTime());
-		
-		return new Response(request.getKey(), ddResp.getResponseTime());
-	}
+        // case 3. all of n disks are stopping.
+        assert activeDiskInfos.size() == 0;
+        DiskInfo diskState =
+                ddm.getLongestStandbyDiskInfo(
+                        relatedDiskInfos,
+                        block.getAccessTime());
+        return actualRead(block, diskState);
+    }
 
-	public double deleteBlocksOnCache(Block[] blocks, double arrivalTime) {
-		updateArrivalTimeOfBlocks(blocks, arrivalTime);
-		double response = Double.MIN_VALUE;
-		for (Block block : blocks) {
-			CacheResponse cmResp = cmm.remove(block);
-			response =
-				response < cmResp.getResponseTime()
-				? cmResp.getResponseTime() : response;
-		}
-		return response;
-	}
+    private DiskResponse actualRead(Block block, DiskInfo diskInfo) {
+        if (diskInfo == null)
+            throw new IllegalArgumentException("diskInfo is null");
+        int ownerDiskId = assignOwnerDiskId(
+                block.getPrimaryDiskId(), diskInfo.getRepLevel());
+        block.setOwnerDiskId(ownerDiskId);
+        block.setRepLevel(diskInfo.getRepLevel());
+        return ddm.read(new Block[]{block});
+    }
 
-	private DiskResponse writeToCacheDisk(Block[] blocks, double arrivalTime) {
-		updateArrivalTimeOfBlocks(blocks, arrivalTime);
-		return cdm.write(blocks);
-	}
-	
-	@Override
-	public void close(double closeTime) {
-		cdm.close(closeTime);
-		ddm.close(closeTime);
-	}
+    private List<DiskInfo> extractActiveDisks(List<DiskInfo> diskInfos) {
+        List<DiskInfo> result = new ArrayList<DiskInfo>();
+        for (DiskInfo dInfo : diskInfos) {
+            if (DiskState.ACTIVE.equals(dInfo.getDiskState())
+                    || DiskState.IDLE.equals(dInfo.getDiskState()))
+                result.add(dInfo);
+        }
+        return result;
+    }
 
-	public RAPoSDACacheMemoryManager getCacheMemoryManager() {
-		return this.cmm;
-	}
-	
-	public int getNumberOfReplica() {
-		return this.numReplica;
-	}
+    @Override
+    public Response write(Request request) {
+        Block[] blocks = requestMap.get(request.getKey());
+        if (blocks == null) {
+            // new request
+            blocks = divideRequest(request);
+            requestMap.put(request.getKey(), blocks);
+        } else {
+            // update(override) request
+            updateArrivalTimeOfBlocks(blocks, request.getArrvalTime());
+        }
+
+        DiskResponse ddResp = this.bm.write(blocks);
+
+        // write to cache disk asynchronously
+        // after data disk write.
+        writeToCacheDisk(
+                ddResp.getResults(),
+                ddResp.getResponseTime() + request.getArrvalTime());
+
+        return new Response(request.getKey(), ddResp.getResponseTime());
+    }
+
+    public double deleteBlocksOnCache(Block[] blocks, double arrivalTime) {
+        updateArrivalTimeOfBlocks(blocks, arrivalTime);
+        double response = Double.MIN_VALUE;
+        for (Block block : blocks) {
+            CacheResponse cmResp = cmm.remove(block);
+            response =
+                    response < cmResp.getResponseTime()
+                            ? cmResp.getResponseTime() : response;
+        }
+        return response;
+    }
+
+    private DiskResponse writeToCacheDisk(Block[] blocks, double arrivalTime) {
+        updateArrivalTimeOfBlocks(blocks, arrivalTime);
+        return cdm.write(blocks);
+    }
+
+    @Override
+    public void close(double closeTime) {
+        cdm.close(closeTime);
+        ddm.close(closeTime);
+    }
+
+    public RAPoSDACacheMemoryManager getCacheMemoryManager() {
+        return this.cmm;
+    }
+
+    public int getNumberOfReplica() {
+        return this.numReplica;
+    }
 
 }
