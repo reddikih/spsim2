@@ -2,6 +2,7 @@ package sim.storage.manager.cmm;
 
 import sim.Block;
 import sim.storage.CacheResponse;
+import sim.storage.util.ReplicaLevel;
 
 public class MAIDCacheMemoryManager implements ICacheMemoryManager {
 
@@ -18,6 +19,7 @@ public class MAIDCacheMemoryManager implements ICacheMemoryManager {
                 block.getId(),
                 block.getAccessTime(),
                 block.getPrimaryDiskId());
+        retrieveBlock.setRepLevel(ReplicaLevel.ZERO);
         result = cacheMemory.read(retrieveBlock);
 
         assert result != null

@@ -72,10 +72,13 @@ public class MAIDStorageManager extends StorageManager {
                     respTime =
                             respTime < ddResponse.getResponseTime()
                                     ? ddResponse.getResponseTime() : respTime;
+                    // write to the cache memory
+                    b.setAccessTime(b.getAccessTime() + ddResponse.getResponseTime());
+                    cmm.write(b);
                 }
             }
         }
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return new Response(request.getKey(), respTime);
     }
 
     @Override
