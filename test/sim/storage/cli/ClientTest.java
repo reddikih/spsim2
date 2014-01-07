@@ -1,13 +1,12 @@
 package sim.storage.cli;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-
 import sim.storage.manager.buffer.RAPoSDABufferManagerFactory;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 @RunWith(JUnit4.class)
 public class ClientTest {
@@ -24,8 +23,8 @@ public class ClientTest {
 		
 		TestStorageManager sm =
 				new TestStorageManager(null,null,null,factory,blockSize,numReplica);
-		
-		client.registerInitialData(sm);
-		assertThat(sm.requestMapSize(), is(10));
+
+        client.registerInitialData(sm, false);
+        assertThat(sm.requestMapSize(), is(10));
 	}
 }
